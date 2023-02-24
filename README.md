@@ -1,6 +1,6 @@
 # whitespace-format
 
-[![CircleCI](https://circleci.com/gh/DavidPal/whitespace-format/tree/master.svg?style=svg)](https://circleci.com/gh/DavidPal/whitespace-format/tree/master)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/DavidPal/whitespace-format/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/DavidPal/whitespace-format/tree/main)
 
 Beautifier of text files.
 
