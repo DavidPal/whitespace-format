@@ -261,21 +261,21 @@ def main():
     )
     parser.add_argument(
         "--remove-trailing-whitespace",
-        help=("Remove whitespace at the end of each line."),
+        help="Remove whitespace at the end of each line.",
         required=False,
         default=False,
         action="store_true",
     )
     parser.add_argument(
         "--remove-trailing-empty-lines",
-        help=("Remove empty lines at the end of each file."),
+        help="Remove empty lines at the end of each file.",
         required=False,
         default=False,
         action="store_true",
     )
     parser.add_argument(
         "--remove-non-standard-whitespace",
-        help=("Remove '\v' and '\f' from each file."),
+        help="Remove '\v' and '\f' from each file.",
         required=False,
         default=False,
         action="store_true",
