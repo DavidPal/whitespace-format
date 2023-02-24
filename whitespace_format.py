@@ -7,7 +7,7 @@ Date: 2023
 
 Usage:
 
-   whitespace_format.py some_file.txt
+   whitespace_format.py [OPTIONS] [FILES ...]
 """
 
 import argparse
@@ -60,6 +60,7 @@ def remove_trailing_whitespace(file_content: str) -> str:
     """Removes trailing whitespace from every line."""
     file_content = re.sub(r"[ \t\f\v]*\n", "\n", file_content)
     file_content = re.sub(r"[ \t\f\v]*\r", "\r", file_content)
+    file_content = re.sub(r"[ \t\f\v]*$", "", file_content)
     return file_content
 
 
@@ -72,13 +73,13 @@ def remove_last_end_of_line(file_content: str) -> str:
     return file_content
 
 
-def fix_last_character(file_content: str, mode: str, new_line_marker_guess: str) -> str:
+def fix_end_of_file(file_content: str, mode: str, new_line_marker_guess: str) -> str:
     """Fixes end of line character at the end of the file."""
     if mode == "keep":
         return file_content
 
     if mode == "remove":
-        file_content.rstrip("\r\n")
+        return file_content.rstrip("\r\n")
 
     if mode == "auto":
         new_line_marker = new_line_marker_guess
@@ -120,17 +121,17 @@ def format_file_content(file_content: str, parsed_argument: argparse.Namespace) 
     if not file_content.strip():
         return fix_empty_file(file_content, parsed_argument.whitespace_only_files)
 
-    if parsed_argument.remove_trailing_empty_lines:
-        file_content = remove_trailing_empty_lines(file_content)
-
     if parsed_argument.remove_trailing_whitespace:
         file_content = remove_trailing_whitespace(file_content)
+
+    if parsed_argument.remove_trailing_empty_lines:
+        file_content = remove_trailing_empty_lines(file_content)
 
     file_content = fix_line_endings(
         file_content, parsed_argument.line_endings, new_line_marker_guess
     )
 
-    file_content = fix_last_character(
+    file_content = fix_end_of_file(
         file_content, parsed_argument.new_line_at_end_of_file, new_line_marker_guess
     )
 
