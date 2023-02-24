@@ -70,9 +70,15 @@ class TestWhitespaceFormat(unittest.TestCase):
         self.assertEqual("\r\n", whitespace_format.remove_trailing_empty_lines("\r\n\r\n\r\n\r\n"))
 
         self.assertEqual("hello\r\n", whitespace_format.remove_trailing_empty_lines("hello\r\n"))
-        self.assertEqual("hello\r\n", whitespace_format.remove_trailing_empty_lines("hello\r\n\r\n"))
-        self.assertEqual("hello\r\n", whitespace_format.remove_trailing_empty_lines("hello\r\n\r\n\r\n"))
-        self.assertEqual("hello\r\n", whitespace_format.remove_trailing_empty_lines("hello\r\n\r\n\r\n\r\n"))
+        self.assertEqual(
+            "hello\r\n", whitespace_format.remove_trailing_empty_lines("hello\r\n\r\n")
+        )
+        self.assertEqual(
+            "hello\r\n", whitespace_format.remove_trailing_empty_lines("hello\r\n\r\n\r\n")
+        )
+        self.assertEqual(
+            "hello\r\n", whitespace_format.remove_trailing_empty_lines("hello\r\n\r\n\r\n\r\n")
+        )
 
         self.assertEqual("\n", whitespace_format.remove_trailing_empty_lines("\n\r"))
         self.assertEqual("\n", whitespace_format.remove_trailing_empty_lines("\n\r\r"))
@@ -90,25 +96,61 @@ class TestWhitespaceFormat(unittest.TestCase):
         self.assertEqual("", whitespace_format.remove_trailing_whitespace("    "))
         self.assertEqual("", whitespace_format.remove_trailing_whitespace(" \t \v \f "))
 
-        self.assertEqual("\t\v\f hello\n", whitespace_format.remove_trailing_whitespace("\t\v\f hello  \n"))
-        self.assertEqual("\t\v\f hello\r", whitespace_format.remove_trailing_whitespace("\t\v\f hello  \r"))
-        self.assertEqual("\t\v\f hello\r\n", whitespace_format.remove_trailing_whitespace("\t\v\f hello  \r\n"))
+        self.assertEqual(
+            "\t\v\f hello\n", whitespace_format.remove_trailing_whitespace("\t\v\f hello  \n")
+        )
+        self.assertEqual(
+            "\t\v\f hello\r", whitespace_format.remove_trailing_whitespace("\t\v\f hello  \r")
+        )
+        self.assertEqual(
+            "\t\v\f hello\r\n", whitespace_format.remove_trailing_whitespace("\t\v\f hello  \r\n")
+        )
 
-        self.assertEqual("\t\v\f hello\n", whitespace_format.remove_trailing_whitespace("\t\v\f hello  \n \t\v\f "))
-        self.assertEqual("\t\v\f hello\r", whitespace_format.remove_trailing_whitespace("\t\v\f hello  \r  \t\v\f "))
-        self.assertEqual("\t\v\f hello\r\n", whitespace_format.remove_trailing_whitespace("\t\v\f hello  \r\n \t\v\f "))
+        self.assertEqual(
+            "\t\v\f hello\n",
+            whitespace_format.remove_trailing_whitespace("\t\v\f hello  \n \t\v\f "),
+        )
+        self.assertEqual(
+            "\t\v\f hello\r",
+            whitespace_format.remove_trailing_whitespace("\t\v\f hello  \r  \t\v\f "),
+        )
+        self.assertEqual(
+            "\t\v\f hello\r\n",
+            whitespace_format.remove_trailing_whitespace("\t\v\f hello  \r\n \t\v\f "),
+        )
 
-        self.assertEqual(" line1\n  line2", whitespace_format.remove_trailing_whitespace(" line1  \n  line2    "))
-        self.assertEqual(" line1\r  line2", whitespace_format.remove_trailing_whitespace(" line1  \r  line2    "))
-        self.assertEqual(" line1\r\n  line2", whitespace_format.remove_trailing_whitespace(" line1  \r\n  line2    "))
+        self.assertEqual(
+            " line1\n  line2", whitespace_format.remove_trailing_whitespace(" line1  \n  line2    ")
+        )
+        self.assertEqual(
+            " line1\r  line2", whitespace_format.remove_trailing_whitespace(" line1  \r  line2    ")
+        )
+        self.assertEqual(
+            " line1\r\n  line2",
+            whitespace_format.remove_trailing_whitespace(" line1  \r\n  line2    "),
+        )
 
-        self.assertEqual(" line1\n  line2\n", whitespace_format.remove_trailing_whitespace(" line1  \n  line2  \n"))
-        self.assertEqual(" line1\r  line2\r", whitespace_format.remove_trailing_whitespace(" line1  \r  line2  \r"))
-        self.assertEqual(" line1\r\n  line2\r\n",
-                         whitespace_format.remove_trailing_whitespace(" line1  \r\n  line2   \r\n"))
+        self.assertEqual(
+            " line1\n  line2\n",
+            whitespace_format.remove_trailing_whitespace(" line1  \n  line2  \n"),
+        )
+        self.assertEqual(
+            " line1\r  line2\r",
+            whitespace_format.remove_trailing_whitespace(" line1  \r  line2  \r"),
+        )
+        self.assertEqual(
+            " line1\r\n  line2\r\n",
+            whitespace_format.remove_trailing_whitespace(" line1  \r\n  line2   \r\n"),
+        )
 
-        self.assertEqual(" line1\n  line2\r", whitespace_format.remove_trailing_whitespace(" line1  \n  line2  \r"))
-        self.assertEqual(" line1\r  line2\n", whitespace_format.remove_trailing_whitespace(" line1  \r  line2  \n"))
+        self.assertEqual(
+            " line1\n  line2\r",
+            whitespace_format.remove_trailing_whitespace(" line1  \n  line2  \r"),
+        )
+        self.assertEqual(
+            " line1\r  line2\n",
+            whitespace_format.remove_trailing_whitespace(" line1  \r  line2  \n"),
+        )
 
     def test_remove_last_end_of_line(self):
         """Tests remove_last_end_of_line() function."""
