@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "whitespace-format"
 version = "0.0.1"
-description = "Beautifier of BibTeX files"
+description = "Whitespace formatter"
 authors = ["David Pal <davidko.pal@gmail.com>"]
 
 [tool.poetry.dependencies]
