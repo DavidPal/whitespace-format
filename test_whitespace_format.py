@@ -165,6 +165,53 @@ class TestWhitespaceFormat(unittest.TestCase):
         self.assertEqual(" ", whitespace_format.remove_last_end_of_line(" \r\n"))
         self.assertEqual(" \n", whitespace_format.remove_last_end_of_line(" \n\r"))
 
+    def test_fix_empty_file(self):
+        """Tests fix_empty_file() function."""
+        self.assertEqual("", whitespace_format.fix_empty_file("", "ignore"))
+        self.assertEqual("", whitespace_format.fix_empty_file("", "empty"))
+        self.assertEqual("\n", whitespace_format.fix_empty_file("", "one-line-linux"))
+        self.assertEqual("\r", whitespace_format.fix_empty_file("", "one-line-mac"))
+        self.assertEqual("\r\n", whitespace_format.fix_empty_file("", "one-line-windows"))
+
+        self.assertEqual(" \t ", whitespace_format.fix_empty_file(" \t ", "ignore"))
+        self.assertEqual("", whitespace_format.fix_empty_file(" \t ", "empty"))
+        self.assertEqual("\n", whitespace_format.fix_empty_file(" \t ", "one-line-linux"))
+        self.assertEqual("\r", whitespace_format.fix_empty_file(" \t ", "one-line-mac"))
+        self.assertEqual("\r\n", whitespace_format.fix_empty_file(" \t ", "one-line-windows"))
+
+    def test_fix_end_of_file(self):
+        """Tests fix_end_of_file() function."""
+        self.assertEqual("", whitespace_format.fix_end_of_file("", "ignore", "\n"))
+        self.assertEqual("  ", whitespace_format.fix_end_of_file("  ", "ignore", "\n"))
+        self.assertEqual("hello", whitespace_format.fix_end_of_file("hello", "ignore", "\n"))
+        self.assertEqual("  \n", whitespace_format.fix_end_of_file("  \n", "ignore", "\n"))
+        self.assertEqual("  \r", whitespace_format.fix_end_of_file("  \r", "ignore", "\n"))
+        self.assertEqual("  \r\n", whitespace_format.fix_end_of_file("  \r\n", "ignore", "\n"))
+
+        self.assertEqual("", whitespace_format.fix_end_of_file("", "remove", "\n"))
+        self.assertEqual("  ", whitespace_format.fix_end_of_file("  ", "remove", "\n"))
+        self.assertEqual("hello", whitespace_format.fix_end_of_file("hello", "remove", "\n"))
+        self.assertEqual("\n  ", whitespace_format.fix_end_of_file("\n  \n", "remove", "\n"))
+        self.assertEqual("\n  ", whitespace_format.fix_end_of_file("\n  \r", "remove", "\n"))
+        self.assertEqual("\n  ", whitespace_format.fix_end_of_file("\n  \r\n", "remove", "\n"))
+        self.assertEqual("hello", whitespace_format.fix_end_of_file("hello\n\n\n", "remove", "\n"))
+        self.assertEqual("hello", whitespace_format.fix_end_of_file("hello\r\r\r", "remove", "\n"))
+        self.assertEqual(
+            "hello", whitespace_format.fix_end_of_file("hello\r\n\r\n\r\n", "remove", "\n")
+        )
+
+        self.assertEqual("", whitespace_format.fix_end_of_file("", "remove", "\n"))
+        self.assertEqual("  ", whitespace_format.fix_end_of_file("  ", "remove", "\n"))
+        self.assertEqual("hello", whitespace_format.fix_end_of_file("hello", "remove", "\n"))
+        self.assertEqual("\n  ", whitespace_format.fix_end_of_file("\n  \n", "remove", "\n"))
+        self.assertEqual("\n  ", whitespace_format.fix_end_of_file("\n  \r", "remove", "\n"))
+        self.assertEqual("\n  ", whitespace_format.fix_end_of_file("\n  \r\n", "remove", "\n"))
+        self.assertEqual("hello", whitespace_format.fix_end_of_file("hello\n\n\n", "remove", "\n"))
+        self.assertEqual("hello", whitespace_format.fix_end_of_file("hello\r\r\r", "remove", "\n"))
+        self.assertEqual(
+            "hello", whitespace_format.fix_end_of_file("hello\r\n\r\n\r\n", "remove", "\n")
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
