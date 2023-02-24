@@ -161,11 +161,11 @@ def format_file_content(file_content: str, parsed_argument: argparse.Namespace) 
         file_content = remove_non_standard_whitespace(file_content)
 
     file_content = fix_line_endings(
-        file_content, parsed_argument.line_ending, new_line_marker_guess
+        file_content, parsed_argument.new_line_marker, new_line_marker_guess
     )
 
     file_content = fix_end_of_file(
-        file_content, parsed_argument.new_line_at_end_of_file, new_line_marker_guess
+        file_content, parsed_argument.new_line_marker_at_end_of_file, new_line_marker_guess
     )
 
     return file_content
@@ -178,12 +178,15 @@ def process_file(file_name: str, parsed_argument: argparse.Namespace):
     formatted_file_content = format_file_content(file_content, parsed_argument)
     if parsed_argument.check_only:
         if formatted_file_content != file_content:
-            print(f"The file '{file_name}' needs to formatted.")
+            print(f"✘ File '{file_name}' needs to formatted.")
+        else:
+            print(f"✔ File '{file_name}' is correctly formatted already.")
     else:
         if formatted_file_content != file_content:
-            print(f"Writing formatted file '{file_name}'.")
+            print(f"✘ Writing formatted file '{file_name}'.")
             write_file(file_name, formatted_file_content)
-    # print(formatted_file_content, end="")
+        else:
+            print(f"✔ File '{file_name}' remains unchanged.")
 
 
 def guess_new_line_marker(file_content: str) -> str:
