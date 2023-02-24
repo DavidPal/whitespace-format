@@ -38,13 +38,22 @@ def die(error_code: int, message: str):
 def read_file_content(file_name: str) -> str:
     """Reads content of a file."""
     try:
-        with open(file_name, "rt", encoding="utf-8") as file:
+        with open(file_name, "r", encoding="utf-8") as file:
             return file.read()
     except IOError as exception:
-        die(1, f"Cannot open file '{file_name}': {exception}")
+        die(1, f"Cannot read file '{file_name}': {exception}")
     except UnicodeError as exception:
         die(2, f"Cannot decode file '{file_name}': {exception}")
     return ""
+
+
+def write_file(file_name: str, file_content: str):
+    """Writes data to a file."""
+    try:
+        with open(file_name, "w", encoding="utf-8") as file:
+            file.write(file_content)
+    except IOError as exception:
+        die(1, f"Cannot write to file '{file_name}': {exception}")
 
 
 def remove_trailing_empty_lines(file_content: str) -> str:
@@ -164,9 +173,17 @@ def format_file_content(file_content: str, parsed_argument: argparse.Namespace) 
 
 def process_file(file_name: str, parsed_argument: argparse.Namespace):
     """Processes a file."""
+    print(f"Processing file '{file_name}'...")
     file_content = read_file_content(file_name)
     formatted_file_content = format_file_content(file_content, parsed_argument)
-    print(formatted_file_content, end="")
+    if parsed_argument.check_only:
+        if formatted_file_content != file_content:
+            print(f"The file '{file_name}' needs to formatted.")
+    else:
+        if formatted_file_content != file_content:
+            print(f"Writing formatted file '{file_name}'.")
+            write_file(file_name, formatted_file_content)
+    # print(formatted_file_content, end="")
 
 
 def guess_new_line_marker(file_content: str) -> str:
@@ -196,7 +213,7 @@ def main():
         allow_abbrev=False,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    parser.add_argument("--check", required=False, action="store_true", default=False)
+    parser.add_argument("--check-only", required=False, action="store_true", default=False)
     parser.add_argument("--diff", required=False, action="store_true", default=False)
     parser.add_argument(
         "--new-line-marker",
