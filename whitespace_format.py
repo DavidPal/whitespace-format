@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Formatter of white space in text files.
+"""Formatter of whitespace in text files.
 
 Author: David Pal <davidko.pal@gmail.com>
 Date: 2023
@@ -28,10 +28,10 @@ EMPTY_FILES = {
 }
 
 
-def die(error_code: int, message: str):
+def die(error_code: int, message: str = ""):
     """Exits the script."""
-    print(message)
-    print("Exiting.")
+    if message:
+        print(message)
     sys.exit(error_code)
 
 
@@ -41,9 +41,9 @@ def read_file_content(file_name: str) -> str:
         with open(file_name, "r", encoding="utf-8") as file:
             return file.read()
     except IOError as exception:
-        die(1, f"Cannot read file '{file_name}': {exception}")
+        die(2, f"Cannot read file '{file_name}': {exception}")
     except UnicodeError as exception:
-        die(2, f"Cannot decode file '{file_name}': {exception}")
+        die(3, f"Cannot decode file '{file_name}': {exception}")
     return ""
 
 
@@ -53,7 +53,7 @@ def write_file(file_name: str, file_content: str):
         with open(file_name, "w", encoding="utf-8") as file:
             file.write(file_content)
     except IOError as exception:
-        die(1, f"Cannot write to file '{file_name}': {exception}")
+        die(4, f"Cannot write to file '{file_name}': {exception}")
 
 
 def remove_trailing_empty_lines(file_content: str) -> str:
@@ -171,22 +171,51 @@ def format_file_content(file_content: str, parsed_argument: argparse.Namespace) 
     return file_content
 
 
-def process_file(file_name: str, parsed_argument: argparse.Namespace):
+def process_file(file_name: str, parsed_argument: argparse.Namespace) -> bool:
     """Processes a file."""
     print(f"Processing file '{file_name}'...")
     file_content = read_file_content(file_name)
     formatted_file_content = format_file_content(file_content, parsed_argument)
+    is_formatted = formatted_file_content != file_content
     if parsed_argument.check_only:
-        if formatted_file_content != file_content:
-            print(f"✘ File '{file_name}' needs to formatted.")
+        if is_formatted:
+            print(f"✘ would reformat '{file_name}'")
         else:
-            print(f"✔ File '{file_name}' is correctly formatted already.")
+            print(f"✔ '{file_name}' would be left unchanged")
     else:
-        if formatted_file_content != file_content:
-            print(f"✘ Writing formatted file '{file_name}'.")
+        if is_formatted:
+            print(f"✘ reformatted '{file_name}'")
             write_file(file_name, formatted_file_content)
         else:
-            print(f"✔ File '{file_name}' remains unchanged.")
+            print(f"✔ '{file_name}' left unchanged.")
+    return is_formatted
+
+
+def process_files(file_names: list[str], parsed_arguments: argparse.Namespace):
+    """Processes a list of files."""
+    num_format_files = 0
+    for file_name in file_names:
+        is_formatted = process_file(file_name, parsed_arguments)
+        if is_formatted:
+            num_format_files += 1
+
+    if parsed_arguments.check_only:
+        if num_format_files:
+            print(
+                f"{num_format_files} files would be formatted, "
+                f"{len(file_names) - num_format_files} file would be left unchanged."
+            )
+            die(1)
+        else:
+            print(f"{len(file_names)} file would be left unchanged.")
+    else:
+        if num_format_files:
+            print(
+                f"{num_format_files} formatted, "
+                f"{len(file_names) - num_format_files} left unchanged."
+            )
+        else:
+            print(f"{len(file_names)} left unchanged.")
 
 
 def guess_new_line_marker(file_content: str) -> str:
@@ -311,12 +340,9 @@ def main():
         default=-1,
         type=int,
     )
-
     parser.add_argument("input_files", help="List of input files", nargs="+", default=[], type=str)
     parsed_arguments = parser.parse_args()
-
-    for file_name in parsed_arguments.input_files:
-        process_file(file_name, parsed_arguments)
+    process_files(parsed_arguments.input_files, parsed_arguments)
 
 
 if __name__ == "__main__":
