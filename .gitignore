@@ -1,0 +1,23 @@
+# Python temporary file
+*.pyc
+__pycache__/
+.cache/
+
+# PyCharm files
+.idea/
+
+# Vim temporary files
+*.swp
+*.swo
+
+# Pyenv files
+.python-version
+
+# Mypy files
+.mypy_cache/
+
+# Coverage files
+.coverage
+coverage.xml
+.pytest_cache/
+pytest_results/

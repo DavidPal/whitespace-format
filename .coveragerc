@@ -1,0 +1,5 @@
+[run]
+branch = True
+
+[xml]
+output = pytest_results/coverage.xml
