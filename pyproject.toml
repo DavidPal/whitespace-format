@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "whitespace-format"
-version = "0.1.2"
+version = "0.0.1"
 description = "Beautifier of BibTeX files"
 authors = ["David Pal <davidko.pal@gmail.com>"]
 
@@ -9,12 +9,12 @@ python = "^3.10"
 
 [tool.poetry.dev-dependencies]
 black = "^23.1.0"
-coverage = "^7.1.0"
+coverage = "^7.2.0"
 flake8 = "^6.0.0"
 isort = {extras = ["colors"], version = "^5.12.0"}
-mypy = "^1.0.0"
+mypy = "^1.0.1"
 pytest = "^7.2.1"
-pylint = "^2.16.1"
+pylint = "^2.16.2"
 pylint-quotes = "^0.2.3"
 
 [build-system]
