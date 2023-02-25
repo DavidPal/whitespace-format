@@ -13,6 +13,7 @@ Usage:
 import argparse
 import re
 import sys
+from typing import List
 
 LINE_ENDINGS = {
     "linux": "\n",
@@ -84,7 +85,9 @@ def remove_last_end_of_line(file_content: str) -> str:
     return file_content
 
 
-def fix_end_of_file(file_content: str, mode: str, new_line_marker_guess: str) -> str:
+def normalize_new_line_marker_at_end_of_file(
+    file_content: str, mode: str, new_line_marker_guess: str
+) -> str:
     """Fixes end of line character at the end of the file."""
     if mode == "ignore":
         return file_content
@@ -100,7 +103,7 @@ def fix_end_of_file(file_content: str, mode: str, new_line_marker_guess: str) ->
     return remove_last_end_of_line(file_content) + new_line_marker
 
 
-def fix_line_endings(file_content: str, mode: str, new_line_marker_guess: str) -> str:
+def normalize_new_line_markers(file_content: str, mode: str, new_line_marker_guess: str) -> str:
     """Fixes line endings."""
     if mode == "ignore":
         return file_content
@@ -115,7 +118,7 @@ def fix_line_endings(file_content: str, mode: str, new_line_marker_guess: str) -
     return file_content.replace("\n", new_line_marker)
 
 
-def fix_empty_file(file_content: str, mode: str) -> str:
+def normalize_empty_file(file_content: str, mode: str) -> str:
     """Replaces file with an empty file."""
     if mode == "ignore":
         return file_content
@@ -127,12 +130,16 @@ def is_whitespace_only(file_content: str) -> bool:
     return not file_content.strip(" \n\r\t\v\f")
 
 
-def remove_non_standard_whitespace(file_content: str) -> str:
+def normalize_non_standard_whitespace(file_content: str, mode: str) -> str:
     """Removes non-standard whitespace characters."""
+    if mode == "ignore":
+        return file_content
+    if mode == "replace":
+        return file_content.translate(str.maketrans("\v\f", "  ", ""))
     return file_content.translate(str.maketrans("", "", "\v\f"))
 
 
-def replace_tabs(file_content: str, num_spaces: int) -> str:
+def replace_tabs_with_spaces(file_content: str, num_spaces: int) -> str:
     """Replaces tabs with spaces."""
     if num_spaces < 0:
         return file_content
@@ -144,10 +151,10 @@ def format_file_content(file_content: str, parsed_argument: argparse.Namespace) 
     new_line_marker_guess = guess_new_line_marker(file_content)
 
     if not file_content:
-        return fix_empty_file(file_content, parsed_argument.empty_files)
+        file_content = normalize_empty_file(file_content, parsed_argument.normalize_empty_files)
 
     if is_whitespace_only(file_content):
-        return fix_empty_file(file_content, parsed_argument.whitespace_only_files)
+        return normalize_empty_file(file_content, parsed_argument.normalize_whitespace_only_files)
 
     if parsed_argument.remove_trailing_whitespace:
         file_content = remove_trailing_whitespace(file_content)
@@ -155,17 +162,20 @@ def format_file_content(file_content: str, parsed_argument: argparse.Namespace) 
     if parsed_argument.remove_trailing_empty_lines:
         file_content = remove_trailing_empty_lines(file_content)
 
-    file_content = replace_tabs(file_content, parsed_argument.replace_tabs_with_spaces)
+    file_content = replace_tabs_with_spaces(file_content, parsed_argument.replace_tabs_with_spaces)
 
-    if parsed_argument.remove_non_standard_whitespace:
-        file_content = remove_non_standard_whitespace(file_content)
-
-    file_content = fix_line_endings(
-        file_content, parsed_argument.new_line_marker, new_line_marker_guess
+    file_content = normalize_non_standard_whitespace(
+        file_content, parsed_argument.normalize_non_standard_whitespace
     )
 
-    file_content = fix_end_of_file(
-        file_content, parsed_argument.new_line_marker_at_end_of_file, new_line_marker_guess
+    file_content = normalize_new_line_markers(
+        file_content, parsed_argument.normalize_new_line_markers, new_line_marker_guess
+    )
+
+    file_content = normalize_new_line_marker_at_end_of_file(
+        file_content,
+        parsed_argument.normalize_new_line_marker_at_end_of_file,
+        new_line_marker_guess,
     )
 
     return file_content
@@ -191,7 +201,7 @@ def process_file(file_name: str, parsed_argument: argparse.Namespace) -> bool:
     return is_formatted
 
 
-def process_files(file_names: list[str], parsed_arguments: argparse.Namespace):
+def process_files(file_names: List[str], parsed_arguments: argparse.Namespace):
     """Processes a list of files."""
     num_format_files = 0
     for file_name in file_names:
@@ -248,7 +258,7 @@ def main():
     parser.add_argument("--check-only", required=False, action="store_true", default=False)
     parser.add_argument("--diff", required=False, action="store_true", default=False)
     parser.add_argument(
-        "--new-line-marker",
+        "--normalize-new-line-markers",
         help=(
             "Make new line markers consistent in each file "
             "by replacing '\\r\\n', '\\n', and `\\r` with a consistent new line marker. "
@@ -264,20 +274,23 @@ def main():
         choices=["auto", "ignore", "linux", "windows", "mac"],
     )
     parser.add_argument(
-        "--empty-files",
+        "--normalize-empty-files",
         help=(
             "Replace files of zero length. "
-            "ignore: leave empty files as is. "
+            "ignore: Leave empty files as is. "
+            "empty: Same as ignore. "
             "one-line-linux: Replace them with '\\n'. "
             "one-line-mac: Replace them with '\\r'. "
             "one-line-windows: Replace them with '\\r\\n'. "
+            "If --whitespace-only-files is set to value other than 'ignore', "
+            "it overrides --empty-files setting. "
         ),
         required=False,
         default="ignore",
-        choices=["ignore", "one-line-linux", "one-line-windows", "one-line-mac"],
+        choices=["ignore", "empty", "one-line-linux", "one-line-windows", "one-line-mac"],
     )
     parser.add_argument(
-        "--whitespace-only-files",
+        "--normalize-whitespace-only-files",
         help=(
             "Replace files consisting of whitespace only. "
             "ignore: Leave empty files as is. "
@@ -285,13 +298,15 @@ def main():
             "one-line-linux: Replace each file with a file consisting of single byte '\\n'. "
             "one-line-mac: Replace each file with a file consisting of single byte '\\r'. "
             "one-line-windows: Replace each file with a file consisting of two bytes '\\r\\n'. "
+            "If --normalize-whitespace-only-files is set to value other than 'ignore', "
+            "it overrides --normalize-empty-files setting. "
         ),
         required=False,
         default="ignore",
         choices=["ignore", "empty", "one-line-linux", "one-line-windows", "one-line-mac"],
     )
     parser.add_argument(
-        "--new-line-marker-at-end-of-file",
+        "--normalize-new-line-marker-at-end-of-file",
         help=(
             "Fix new line marker at end of each file. "
             "auto: Ensure that the file ends with a new line marker. "
@@ -323,11 +338,17 @@ def main():
         action="store_true",
     )
     parser.add_argument(
-        "--remove-non-standard-whitespace",
-        help="Remove '\v' and '\f' from each file.",
+        "--normalize-non-standard-whitespace",
+        help=(
+            "Normalize '\\v' and '\\f' from each file. "
+            "ignore: Leave '\\v' and '\\f' as is. "
+            "remove: Remove all occurrences of '\\v' and '\\f'. "
+            "replace: Replace each occurrence of '\\v' and '\\f' with a single space. "
+        ),
         required=False,
-        default=False,
-        action="store_true",
+        default="ignore",
+        type=str,
+        choices=["ignore", "remove", "replace"],
     )
     parser.add_argument(
         "--replace-tabs-with-spaces",
