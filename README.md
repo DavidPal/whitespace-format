@@ -12,7 +12,8 @@ Beautifier of source code files and text files. Its main features are:
 * Remove/replace non-standard whitespace characters.
 * Auto-detection of line endings.
 
-The motivation for this tool is to normalize source code files and text files before checking them into a version control system.  
+The motivation for this tool is to normalize source code files and text files
+before checking them into a version control system.  
 
 Currently, the tool supports only UTF-8 encoding (which includes ASCII).
 
@@ -40,36 +41,41 @@ python whitespace_format.py \
        --remove-trailing-whitespace \
        *.py *.c *.h *.java *.go *.md *.json *.tex *.csv
 ```
-This is a command could be used as validation step before checking the source files into a version control system.
-The command outputs non-zero exit code if any of the files would be formatted. 
+This command could be used as validation step before checking the source files
+into a version control system.  The command outputs non-zero exit code if any
+of the files would be formatted. 
 
 ### Handling empty files
 
-There are separate options for handling empty files and files consisting of whitespace characters only.
+There are separate options for handling empty files and files consisting of
+whitespace characters only:
 
 * `--normalize-empty-files MODE`
 * `--normalize-whitespace-only-files MODE`
 
-These files can be replaced by zero-byte files, or files consisting of single end of line marker, depending on
-the `MODE`:
+These files can be replaced by zero-byte files, or files consisting of single
+end of line marker, depending on the `MODE`:
+
 * `ignore` -- Leave the file as is.
 * `empty` -- Replace the file with an empty file.
-* `one-line-linux` -- Replace each file with a file consisting of single byte `\\n`.
-* `one-line-mac` -- Replace each file with a file consisting of single byte `\\r`.
-* `one-line-windows` -- Replace each file with a file consisting of two bytes `\\r\\n`.
+* `one-line-linux` -- Replace each file with a file consisting of single byte `\n`.
+* `one-line-mac` -- Replace each file with a file consisting of single byte `\r`.
+* `one-line-windows` -- Replace each file with a file consisting of two bytes `\r\n`.
 
-If `--normalize-whitespace-only-files` is set to value other than `ignore`, 
-it overrides `--normalize-empty-files setting` so that formatting is idempotent, i.e., 
-running the same settings multiple times does not change the result.
+If `--normalize-whitespace-only-files` is set to value other than `ignore`, it
+overrides `--normalize-empty-files setting` so that formatting is idempotent,
+i.e., running the same settings multiple times does not change the result.
 
 
 ### Handling special characters
 
-Tabs can be replaced with spaces by passing the options `--replace-tabs-with-spaces N` 
-where is `N` is the number of spaces. If `N` is negative, tabs are not replaced.
+Tabs can be replaced with spaces by passing the options
+`--replace-tabs-with-spaces N` where is `N` is the number of spaces. If `N` is
+negative, tabs are not replaced.
 
-Non-standard whitespace characters (`\v` and `\f`) can be replaced by spaces or removed with the option
-`--normalize-non-standard-whitespace MODE` where `MODE` either `replace`, `remove`, or `ignore`. 
+Non-standard whitespace characters (`\v` and `\f`) can be replaced by spaces or
+removed with the option `--normalize-non-standard-whitespace MODE` where `MODE`
+either `replace`, `remove`, or `ignore`. 
 
 
 ## MacOS development setup
