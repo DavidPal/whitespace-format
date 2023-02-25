@@ -16,6 +16,9 @@ import re
 import sys
 from typing import List
 
+# Regular expression that does NOT match any string.
+UNMATCHABLE_REGEX = "$."
+
 LINE_ENDINGS = {
     "linux": "\n",
     "windows": "\r\n",
@@ -222,6 +225,33 @@ def reformat_file(file_name: str, parsed_argument: argparse.Namespace) -> bool:
     return is_formatted
 
 
+def reformat_files(file_names: List[str], parsed_arguments: argparse.Namespace):
+    """Reformats multiple files."""
+    num_format_files = 0
+    for file_name in file_names:
+        is_formatted = reformat_file(file_name, parsed_arguments)
+        if is_formatted:
+            num_format_files += 1
+
+    if parsed_arguments.check_only:
+        if num_format_files:
+            print(
+                f"{num_format_files} files would be formatted, "
+                f"{len(file_names) - num_format_files} file would be left unchanged."
+            )
+            die(1)
+        else:
+            print(f"{len(file_names)} file would be left unchanged.")
+    else:
+        if num_format_files:
+            print(
+                f"{num_format_files} formatted, "
+                f"{len(file_names) - num_format_files} left unchanged."
+            )
+        else:
+            print(f"{len(file_names)} left unchanged.")
+
+
 def find_all_files_recursively(file_name: str, follow_symlinks: bool) -> List[str]:
     """Finds files in directories recursively."""
     if (not follow_symlinks) and pathlib.Path(file_name).is_symlink():
@@ -256,33 +286,6 @@ def find_files_to_process(file_names: List[str], parsed_arguments: argparse.Name
     ]
 
 
-def reformat_files(file_names: List[str], parsed_arguments: argparse.Namespace):
-    """Reformats multiple files."""
-    num_format_files = 0
-    for file_name in file_names:
-        is_formatted = reformat_file(file_name, parsed_arguments)
-        if is_formatted:
-            num_format_files += 1
-
-    if parsed_arguments.check_only:
-        if num_format_files:
-            print(
-                f"{num_format_files} files would be formatted, "
-                f"{len(file_names) - num_format_files} file would be left unchanged."
-            )
-            die(1)
-        else:
-            print(f"{len(file_names)} file would be left unchanged.")
-    else:
-        if num_format_files:
-            print(
-                f"{num_format_files} formatted, "
-                f"{len(file_names) - num_format_files} left unchanged."
-            )
-        else:
-            print(f"{len(file_names)} left unchanged.")
-
-
 def parse_command_line() -> argparse.Namespace:
     """Parses command line arguments."""
     parser = argparse.ArgumentParser(
@@ -290,8 +293,33 @@ def parse_command_line() -> argparse.Namespace:
         allow_abbrev=False,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    parser.add_argument("--check-only", required=False, action="store_true", default=False)
-    parser.add_argument("--diff", required=False, action="store_true", default=False)
+    parser.add_argument(
+        "--check-only",
+        help="Do NOT format files. Only report which files would be formatted.",
+        required=False,
+        action="store_true",
+        default=False,
+    )
+    parser.add_argument(
+        "--follow-symlinks",
+        help="Follow symlinks when looking for files. By default this option is turned off. ",
+        required=False,
+        action="store_true",
+        default=False,
+    )
+    parser.add_argument(
+        "--exclude",
+        help=(
+            "Regular expression that specifies which files or directories to exclude. "
+            "The matching is done on the path of the file. "
+            "Example #1: --exclude='(.jpeg|.png)$' excludes files "
+            "with '.jpeg' or '.png' extension. "
+            "Example #2: --exclude='.git/' excludes all files in the git directory. "
+        ),
+        required=False,
+        type=str,
+        default=UNMATCHABLE_REGEX,
+    )
     parser.add_argument(
         "--normalize-new-line-markers",
         help=(

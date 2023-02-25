@@ -24,22 +24,24 @@ Currently, the tool supports only UTF-8 encoding (which includes ASCII).
 A sample command that formats source code files:
 ```
 python whitespace_format.py \
+       --exclude ".git/|.idea/" \
        --normalize-new-line-markers auto \
        --normalize-new-line-marker-at-end-of-file auto \
        --remove-trailing-empty-lines \
        --remove-trailing-whitespace \
-       *.py *.c *.h *.java *.go *.md *.json *.tex *.csv
+       *
 ```
 
 If you want only know if any changes **would be** made, add `--check-only` option:
 ```
 python whitespace_format.py \
+       --exclude ".git/|.idea/" \
        --check-only \
        --normalize-new-line-markers auto \
        --normalize-new-line-marker-at-end-of-file auto \
        --remove-trailing-empty-lines \
        --remove-trailing-whitespace \
-       *.py *.c *.h *.java *.go *.md *.json *.tex *.csv
+       *
 ```
 This command could be used as validation step before checking the source files
 into a version control system.  The command outputs non-zero exit code if any
