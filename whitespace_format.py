@@ -19,17 +19,10 @@ from typing import List
 # Regular expression that does NOT match any string.
 UNMATCHABLE_REGEX = "$."
 
-LINE_ENDINGS = {
+NEW_LINE_MARKERS = {
     "linux": "\n",
     "windows": "\r\n",
     "mac": "\r",
-}
-
-EMPTY_FILES = {
-    "empty": "",
-    "one-line-linux": "\n",
-    "one-line-windows": "\r\n",
-    "one-line-mac": "\r",
 }
 
 
@@ -100,8 +93,8 @@ def remove_trailing_whitespace(file_content: str) -> str:
     return file_content
 
 
-def remove_last_end_of_line(file_content: str) -> str:
-    """Removes last of line character."""
+def remove_new_line_marker_from_end_of_file(file_content: str) -> str:
+    """Removes the last new line marker from the last line."""
     if file_content.endswith("\r\n"):
         return file_content[:-2]
     if file_content.endswith("\n") or file_content.endswith("\r"):
@@ -109,44 +102,25 @@ def remove_last_end_of_line(file_content: str) -> str:
     return file_content
 
 
-def normalize_new_line_marker_at_end_of_file(
-    file_content: str, mode: str, new_line_marker_guess: str
-) -> str:
-    """Fixes end of line character at the end of the file."""
-    if mode == "ignore":
-        return file_content
-
-    if mode == "remove":
-        return file_content.rstrip("\r\n")
-
-    if mode == "auto":
-        new_line_marker = new_line_marker_guess
-    else:
-        new_line_marker = LINE_ENDINGS[mode]
-
-    return remove_last_end_of_line(file_content) + new_line_marker
+def add_new_line_marker_at_end_of_file(file_content: str, new_line_marker: str) -> str:
+    """Adds new line marker to the end of file if it is missing."""
+    return remove_new_line_marker_from_end_of_file(file_content) + new_line_marker
 
 
-def normalize_new_line_markers(file_content: str, mode: str, new_line_marker_guess: str) -> str:
+def normalize_new_line_markers(file_content: str, new_line_marker: str) -> str:
     """Fixes line endings."""
-    if mode == "ignore":
-        return file_content
-
-    if mode == "auto":
-        new_line_marker = new_line_marker_guess
-    else:
-        new_line_marker = LINE_ENDINGS[mode]
-
     file_content = file_content.replace("\r\n", "\n")
     file_content = file_content.replace("\r", "\n")
     return file_content.replace("\n", new_line_marker)
 
 
-def normalize_empty_file(file_content: str, mode: str) -> str:
+def normalize_empty_file(file_content: str, mode: str, new_line_marker: str) -> str:
     """Replaces file with an empty file."""
-    if mode == "ignore":
-        return file_content
-    return EMPTY_FILES[mode]
+    if mode == "empty":
+        return ""
+    if mode == "one-line":
+        return new_line_marker
+    return file_content
 
 
 def is_whitespace_only(file_content: str) -> bool:
@@ -170,37 +144,43 @@ def replace_tabs_with_spaces(file_content: str, num_spaces: int) -> str:
     return file_content.replace("\t", num_spaces * " ")
 
 
-def format_file_content(file_content: str, parsed_argument: argparse.Namespace) -> str:
+def format_file_content(file_content: str, parsed_arguments: argparse.Namespace) -> str:
     """Formats the content of file represented as a string."""
-    new_line_marker_guess = guess_new_line_marker(file_content)
-
-    if not file_content:
-        file_content = normalize_empty_file(file_content, parsed_argument.normalize_empty_files)
+    new_line_marker = NEW_LINE_MARKERS.get(
+        parsed_arguments.new_line_marker, guess_new_line_marker(file_content)
+    )
 
     if is_whitespace_only(file_content):
-        return normalize_empty_file(file_content, parsed_argument.normalize_whitespace_only_files)
+        if not file_content:
+            file_content = normalize_empty_file(
+                file_content, parsed_arguments.normalize_empty_files, new_line_marker
+            )
+        file_content = normalize_empty_file(
+            file_content, parsed_arguments.normalize_whitespace_only_files, new_line_marker
+        )
 
-    if parsed_argument.remove_trailing_whitespace:
-        file_content = remove_trailing_whitespace(file_content)
+    else:
+        if parsed_arguments.remove_trailing_whitespace:
+            file_content = remove_trailing_whitespace(file_content)
 
-    if parsed_argument.remove_trailing_empty_lines:
-        file_content = remove_trailing_empty_lines(file_content)
+        if parsed_arguments.remove_trailing_empty_lines:
+            file_content = remove_trailing_empty_lines(file_content)
 
-    file_content = replace_tabs_with_spaces(file_content, parsed_argument.replace_tabs_with_spaces)
+        file_content = replace_tabs_with_spaces(
+            file_content, parsed_arguments.replace_tabs_with_spaces
+        )
 
-    file_content = normalize_non_standard_whitespace(
-        file_content, parsed_argument.normalize_non_standard_whitespace
-    )
+        file_content = normalize_non_standard_whitespace(
+            file_content, parsed_arguments.normalize_non_standard_whitespace
+        )
 
-    file_content = normalize_new_line_markers(
-        file_content, parsed_argument.normalize_new_line_markers, new_line_marker_guess
-    )
+        if parsed_arguments.normalize_new_line_markers:
+            file_content = normalize_new_line_markers(file_content, new_line_marker)
 
-    file_content = normalize_new_line_marker_at_end_of_file(
-        file_content,
-        parsed_argument.normalize_new_line_marker_at_end_of_file,
-        new_line_marker_guess,
-    )
+        if parsed_arguments.add_new_line_marker_at_end_of_file:
+            file_content = add_new_line_marker_at_end_of_file(file_content, new_line_marker)
+        elif parsed_arguments.remove_new_line_marker_from_end_of_file:
+            file_content = remove_new_line_marker_from_end_of_file(file_content)
 
     return file_content
 
@@ -302,7 +282,7 @@ def parse_command_line() -> argparse.Namespace:
     )
     parser.add_argument(
         "--follow-symlinks",
-        help="Follow symlinks when looking for files. By default this option is turned off. ",
+        help="Follow symlinks when looking for files. By default this option is turned off.",
         required=False,
         action="store_true",
         default=False,
@@ -321,20 +301,25 @@ def parse_command_line() -> argparse.Namespace:
         default=UNMATCHABLE_REGEX,
     )
     parser.add_argument(
-        "--normalize-new-line-markers",
+        "--new-line-marker",
         help=(
-            "Make new line markers consistent in each file "
-            "by replacing '\\r\\n', '\\n', and `\\r` with a consistent new line marker. "
+            "Specifies what marker to use. "
             "auto: Use new line marker that is the most common in each individual file. "
-            "ignore: Leave new line markers as is. "
+            "If no new line marker is present in the file, Linux '\\n' is used."
             "linux: Use Linux new line marker '\\n'. "
             "mac: Use Mac new line marker '\\r'. "
             "windows: Use Windows new line marker '\\r\\n'. "
         ),
+    )
+    parser.add_argument(
+        "--normalize-new-line-markers",
+        help=(
+            "Make new line markers consistent in each file "
+            "by replacing '\\r\\n', '\\n', and `\\r` with a consistent new line marker. "
+        ),
         required=False,
-        default="auto",
-        type=str,
-        choices=["auto", "ignore", "linux", "windows", "mac"],
+        default=False,
+        action="store_true",
     )
     parser.add_argument(
         "--normalize-empty-files",
@@ -342,15 +327,13 @@ def parse_command_line() -> argparse.Namespace:
             "Replace files of zero length. "
             "ignore: Leave empty files as is. "
             "empty: Same as ignore. "
-            "one-line-linux: Replace them with '\\n'. "
-            "one-line-mac: Replace them with '\\r'. "
-            "one-line-windows: Replace them with '\\r\\n'. "
+            "one-line: Replace the file with a single empty line with an end of line marker. "
             "If --whitespace-only-files is set to value other than 'ignore', "
             "it overrides --empty-files setting. "
         ),
         required=False,
         default="ignore",
-        choices=["ignore", "empty", "one-line-linux", "one-line-windows", "one-line-mac"],
+        choices=["ignore", "empty", "one-line"],
     )
     parser.add_argument(
         "--normalize-whitespace-only-files",
@@ -358,33 +341,27 @@ def parse_command_line() -> argparse.Namespace:
             "Replace files consisting of whitespace only. "
             "ignore: Leave empty files as is. "
             "empty: Replace each file with an empty file. "
-            "one-line-linux: Replace each file with a file consisting of single byte '\\n'. "
-            "one-line-mac: Replace each file with a file consisting of single byte '\\r'. "
-            "one-line-windows: Replace each file with a file consisting of two bytes '\\r\\n'. "
+            "one-line: Replace the file with a single empty line with an end of line marker. "
             "If --normalize-whitespace-only-files is set to value other than 'ignore', "
             "it overrides --normalize-empty-files setting. "
         ),
         required=False,
         default="ignore",
-        choices=["ignore", "empty", "one-line-linux", "one-line-windows", "one-line-mac"],
+        choices=["ignore", "empty", "one-line"],
     )
     parser.add_argument(
-        "--normalize-new-line-marker-at-end-of-file",
-        help=(
-            "Fix new line marker at end of each file. "
-            "auto: Ensure that the file ends with a new line marker. "
-            "Use the marker that is the most commonly occurring in each individual file. "
-            "ignore: Leave the end of file as is. "
-            "remove: Ensure that file doesn't end with any new line marker "
-            "by removing any occurrences of '\n' and '\r' at the end of the file. "
-            "linux: Ensure that the file ends with '\\n'. "
-            "mac: Ensure that each file ends with '\\r'. "
-            "windows: Ensure that each file ends with '\\r\\n'. "
-        ),
+        "--add-new-line-marker-at-end-of-file",
+        help="Add missing new line marker at end of each file.",
         required=False,
-        default="auto",
-        type=str,
-        choices=["auto", "ignore", "remove", "linux", "windows", "mac"],
+        default=False,
+        action="store_true",
+    )
+    parser.add_argument(
+        "--remove-new-line-marker-from-end-of-file",
+        help="Remove new line markers from the end of each file.",
+        required=False,
+        default=False,
+        action="store_true",
     )
     parser.add_argument(
         "--remove-trailing-whitespace",

@@ -159,211 +159,114 @@ class TestWhitespaceFormat(unittest.TestCase):
             whitespace_format.remove_trailing_whitespace(" line1  \r  line2  \n"),
         )
 
-    def test_remove_last_end_of_line(self):
-        """Tests remove_last_end_of_line() function."""
-        self.assertEqual("", whitespace_format.remove_last_end_of_line(""))
-        self.assertEqual("hello", whitespace_format.remove_last_end_of_line("hello"))
-        self.assertEqual("hello", whitespace_format.remove_last_end_of_line("hello\n"))
-        self.assertEqual("hello", whitespace_format.remove_last_end_of_line("hello\r"))
-        self.assertEqual("hello", whitespace_format.remove_last_end_of_line("hello\r\n"))
-        self.assertEqual("hello\n", whitespace_format.remove_last_end_of_line("hello\n\r"))
-        self.assertEqual(" ", whitespace_format.remove_last_end_of_line(" \n"))
-        self.assertEqual(" ", whitespace_format.remove_last_end_of_line(" \r"))
-        self.assertEqual(" ", whitespace_format.remove_last_end_of_line(" \r\n"))
-        self.assertEqual(" \n", whitespace_format.remove_last_end_of_line(" \n\r"))
+    def test_remove_new_line_marker_from_end_of_file(self):
+        """Tests remove_new_line_marker_from_end_of_file() function."""
+        self.assertEqual("", whitespace_format.remove_new_line_marker_from_end_of_file(""))
+        self.assertEqual(
+            "hello", whitespace_format.remove_new_line_marker_from_end_of_file("hello")
+        )
+        self.assertEqual(
+            "hello", whitespace_format.remove_new_line_marker_from_end_of_file("hello\n")
+        )
+        self.assertEqual(
+            "hello", whitespace_format.remove_new_line_marker_from_end_of_file("hello\r")
+        )
+        self.assertEqual(
+            "hello", whitespace_format.remove_new_line_marker_from_end_of_file("hello\r\n")
+        )
+        self.assertEqual(
+            "hello\n", whitespace_format.remove_new_line_marker_from_end_of_file("hello\n\r")
+        )
+        self.assertEqual(" ", whitespace_format.remove_new_line_marker_from_end_of_file(" \n"))
+        self.assertEqual(" ", whitespace_format.remove_new_line_marker_from_end_of_file(" \r"))
+        self.assertEqual(" ", whitespace_format.remove_new_line_marker_from_end_of_file(" \r\n"))
+        self.assertEqual(" \n", whitespace_format.remove_new_line_marker_from_end_of_file(" \n\r"))
 
-    def test_fix_empty_file(self):
-        """Tests fix_empty_file() function."""
-        self.assertEqual("", whitespace_format.normalize_empty_file("", "ignore"))
-        self.assertEqual("", whitespace_format.normalize_empty_file("", "empty"))
-        self.assertEqual("\n", whitespace_format.normalize_empty_file("", "one-line-linux"))
-        self.assertEqual("\r", whitespace_format.normalize_empty_file("", "one-line-mac"))
-        self.assertEqual("\r\n", whitespace_format.normalize_empty_file("", "one-line-windows"))
+    def test_normalize_empty_file(self):
+        """Tests fix_normalize_empty_file() function."""
+        self.assertEqual("", whitespace_format.normalize_empty_file("", "ignore", "\n"))
+        self.assertEqual("", whitespace_format.normalize_empty_file("", "empty", "\n"))
+        self.assertEqual("\n", whitespace_format.normalize_empty_file("", "one-line", "\n"))
+        self.assertEqual("\r", whitespace_format.normalize_empty_file("", "one-line", "\r"))
+        self.assertEqual("\r\n", whitespace_format.normalize_empty_file("", "one-line", "\r\n"))
 
-        self.assertEqual(" \t ", whitespace_format.normalize_empty_file(" \t ", "ignore"))
-        self.assertEqual("", whitespace_format.normalize_empty_file(" \t ", "empty"))
-        self.assertEqual("\n", whitespace_format.normalize_empty_file(" \t ", "one-line-linux"))
-        self.assertEqual("\r", whitespace_format.normalize_empty_file(" \t ", "one-line-mac"))
-        self.assertEqual("\r\n", whitespace_format.normalize_empty_file(" \t ", "one-line-windows"))
+        self.assertEqual(" \t ", whitespace_format.normalize_empty_file(" \t ", "ignore", "\n"))
+        self.assertEqual("", whitespace_format.normalize_empty_file(" \t ", "empty", "\n"))
+        self.assertEqual("\n", whitespace_format.normalize_empty_file(" \t ", "one-line", "\n"))
+        self.assertEqual("\r", whitespace_format.normalize_empty_file(" \t ", "one-line", "\r"))
+        self.assertEqual("\r\n", whitespace_format.normalize_empty_file(" \t ", "one-line", "\r\n"))
 
-    def test_fix_end_of_file(self):
-        """Tests fix_end_of_file() function."""
+    def test_add_new_line_marker_at_end_of_fil(self):
+        """Tests add_new_line_marker_at_end_of_fil() function."""
+        self.assertEqual("\n", whitespace_format.add_new_line_marker_at_end_of_file("", "\n"))
+        self.assertEqual("  \n", whitespace_format.add_new_line_marker_at_end_of_file("  ", "\n"))
         self.assertEqual(
-            "", whitespace_format.normalize_new_line_marker_at_end_of_file("", "ignore", "\n")
-        )
-        self.assertEqual(
-            "  ", whitespace_format.normalize_new_line_marker_at_end_of_file("  ", "ignore", "\n")
-        )
-        self.assertEqual(
-            "hello",
-            whitespace_format.normalize_new_line_marker_at_end_of_file("hello", "ignore", "\n"),
-        )
-        self.assertEqual(
-            "  \n",
-            whitespace_format.normalize_new_line_marker_at_end_of_file("  \n", "ignore", "\n"),
-        )
-        self.assertEqual(
-            "  \r",
-            whitespace_format.normalize_new_line_marker_at_end_of_file("  \r", "ignore", "\n"),
-        )
-        self.assertEqual(
-            "  \r\n",
-            whitespace_format.normalize_new_line_marker_at_end_of_file("  \r\n", "ignore", "\n"),
+            "hello\n",
+            whitespace_format.add_new_line_marker_at_end_of_file("hello", "\n"),
         )
 
+        self.assertEqual("\n", whitespace_format.add_new_line_marker_at_end_of_file("\n", "\n"))
+        self.assertEqual("  \n", whitespace_format.add_new_line_marker_at_end_of_file("  \n", "\n"))
         self.assertEqual(
-            "", whitespace_format.normalize_new_line_marker_at_end_of_file("", "remove", "\n")
-        )
-        self.assertEqual(
-            "  ", whitespace_format.normalize_new_line_marker_at_end_of_file("  ", "remove", "\n")
-        )
-        self.assertEqual(
-            "hello",
-            whitespace_format.normalize_new_line_marker_at_end_of_file("hello", "remove", "\n"),
-        )
-        self.assertEqual(
-            "\n  ",
-            whitespace_format.normalize_new_line_marker_at_end_of_file("\n  \n", "remove", "\n"),
-        )
-        self.assertEqual(
-            "\n  ",
-            whitespace_format.normalize_new_line_marker_at_end_of_file("\n  \r", "remove", "\n"),
-        )
-        self.assertEqual(
-            "\n  ",
-            whitespace_format.normalize_new_line_marker_at_end_of_file("\n  \r\n", "remove", "\n"),
-        )
-        self.assertEqual(
-            "hello",
-            whitespace_format.normalize_new_line_marker_at_end_of_file(
-                "hello\n\n\n", "remove", "\n"
-            ),
-        )
-        self.assertEqual(
-            "hello",
-            whitespace_format.normalize_new_line_marker_at_end_of_file(
-                "hello\r\r\r", "remove", "\n"
-            ),
-        )
-        self.assertEqual(
-            "hello",
-            whitespace_format.normalize_new_line_marker_at_end_of_file(
-                "hello\r\n\r\n\r\n", "remove", "\n"
-            ),
+            "hello\n",
+            whitespace_format.add_new_line_marker_at_end_of_file("hello\n", "\n"),
         )
 
+        self.assertEqual("\r", whitespace_format.add_new_line_marker_at_end_of_file("\n", "\r"))
+        self.assertEqual("  \r", whitespace_format.add_new_line_marker_at_end_of_file("  \n", "\r"))
         self.assertEqual(
-            "", whitespace_format.normalize_new_line_marker_at_end_of_file("", "remove", "\n")
+            "hello\r",
+            whitespace_format.add_new_line_marker_at_end_of_file("hello\n", "\r"),
+        )
+
+        self.assertEqual("\r", whitespace_format.add_new_line_marker_at_end_of_file("\r\n", "\r"))
+        self.assertEqual(
+            "  \r", whitespace_format.add_new_line_marker_at_end_of_file("  \r\n", "\r")
         )
         self.assertEqual(
-            "  ", whitespace_format.normalize_new_line_marker_at_end_of_file("  ", "remove", "\n")
-        )
-        self.assertEqual(
-            "hello",
-            whitespace_format.normalize_new_line_marker_at_end_of_file("hello", "remove", "\n"),
-        )
-        self.assertEqual(
-            "\n  ",
-            whitespace_format.normalize_new_line_marker_at_end_of_file("\n  \n", "remove", "\n"),
-        )
-        self.assertEqual(
-            "\n  ",
-            whitespace_format.normalize_new_line_marker_at_end_of_file("\n  \r", "remove", "\n"),
-        )
-        self.assertEqual(
-            "\n  ",
-            whitespace_format.normalize_new_line_marker_at_end_of_file("\n  \r\n", "remove", "\n"),
-        )
-        self.assertEqual(
-            "hello",
-            whitespace_format.normalize_new_line_marker_at_end_of_file(
-                "hello\n\n\n", "remove", "\n"
-            ),
-        )
-        self.assertEqual(
-            "hello",
-            whitespace_format.normalize_new_line_marker_at_end_of_file(
-                "hello\r\r\r", "remove", "\n"
-            ),
-        )
-        self.assertEqual(
-            "hello",
-            whitespace_format.normalize_new_line_marker_at_end_of_file(
-                "hello\r\n\r\n\r\n", "remove", "\n"
-            ),
+            "hello\r",
+            whitespace_format.add_new_line_marker_at_end_of_file("hello\r\n", "\r"),
         )
 
     def test_normalize_new_line_markers(self):
         """Tests normalize_new_line_markers() function."""
-        self.assertEqual("", whitespace_format.normalize_new_line_markers("", "ignore", "\n"))
-        self.assertEqual("  ", whitespace_format.normalize_new_line_markers("  ", "ignore", "\n"))
-        self.assertEqual(
-            "\n\n\r\r", whitespace_format.normalize_new_line_markers("\n\n\r\r", "ignore", "\n")
-        )
-        self.assertEqual(
-            "hello\nworld\r",
-            whitespace_format.normalize_new_line_markers("hello\nworld\r", "ignore", "\n"),
-        )
-        self.assertEqual(
-            "\r\r\r\n\r\n\n\n",
-            whitespace_format.normalize_new_line_markers("\r\r\r\n\r\n\n\n", "ignore", "\n"),
-        )
-
-        self.assertEqual("", whitespace_format.normalize_new_line_markers("", "auto", "\n"))
-        self.assertEqual("  ", whitespace_format.normalize_new_line_markers("  ", "auto", "\n"))
-        self.assertEqual(
-            "\n\n\n\n", whitespace_format.normalize_new_line_markers("\n\n\r\r", "auto", "\n")
-        )
+        self.assertEqual("", whitespace_format.normalize_new_line_markers("", "\n"))
+        self.assertEqual("  ", whitespace_format.normalize_new_line_markers("  ", "\n"))
+        self.assertEqual("\n\n\n\n", whitespace_format.normalize_new_line_markers("\n\n\r\r", "\n"))
         self.assertEqual(
             "hello\nworld\n",
-            whitespace_format.normalize_new_line_markers("hello\nworld\r", "auto", "\n"),
+            whitespace_format.normalize_new_line_markers("hello\nworld\r", "\n"),
         )
         self.assertEqual(
             "\n\n\n\n\n\n",
-            whitespace_format.normalize_new_line_markers("\r\r\r\n\r\n\n\n", "auto", "\n"),
+            whitespace_format.normalize_new_line_markers("\r\r\r\n\r\n\n\n", "\n"),
         )
 
-        self.assertEqual("", whitespace_format.normalize_new_line_markers("", "mac", ""))
-        self.assertEqual("  ", whitespace_format.normalize_new_line_markers("  ", "mac", ""))
-        self.assertEqual(
-            "\r\r\r\r", whitespace_format.normalize_new_line_markers("\n\n\r\r", "mac", "")
-        )
+        self.assertEqual("", whitespace_format.normalize_new_line_markers("", "\r"))
+        self.assertEqual("  ", whitespace_format.normalize_new_line_markers("  ", "\r"))
+        self.assertEqual("\r\r\r\r", whitespace_format.normalize_new_line_markers("\n\n\r\r", "\r"))
         self.assertEqual(
             "hello\rworld\r",
-            whitespace_format.normalize_new_line_markers("hello\nworld\r", "mac", ""),
+            whitespace_format.normalize_new_line_markers("hello\nworld\r", "\r"),
         )
         self.assertEqual(
             "\r\r\r\r\r\r",
-            whitespace_format.normalize_new_line_markers("\r\r\r\n\r\n\n\n", "mac", ""),
+            whitespace_format.normalize_new_line_markers("\r\r\r\n\r\n\n\n", "\r"),
         )
 
-        self.assertEqual("", whitespace_format.normalize_new_line_markers("", "linux", ""))
-        self.assertEqual("  ", whitespace_format.normalize_new_line_markers("  ", "linux", ""))
-        self.assertEqual(
-            "\n\n\n\n", whitespace_format.normalize_new_line_markers("\n\n\r\r", "linux", "")
-        )
-        self.assertEqual(
-            "hello\nworld\n",
-            whitespace_format.normalize_new_line_markers("hello\nworld\r", "linux", ""),
-        )
-        self.assertEqual(
-            "\n\n\n\n\n\n",
-            whitespace_format.normalize_new_line_markers("\r\r\r\n\r\n\n\n", "linux", ""),
-        )
-
-        self.assertEqual("", whitespace_format.normalize_new_line_markers("", "windows", ""))
-        self.assertEqual("  ", whitespace_format.normalize_new_line_markers("  ", "windows", ""))
+        self.assertEqual("", whitespace_format.normalize_new_line_markers("", "\r\n"))
+        self.assertEqual("  ", whitespace_format.normalize_new_line_markers("  ", "\r\n"))
         self.assertEqual(
             "\r\n\r\n\r\n\r\n",
-            whitespace_format.normalize_new_line_markers("\n\n\r\r", "windows", ""),
+            whitespace_format.normalize_new_line_markers("\n\n\r\r", "\r\n"),
         )
         self.assertEqual(
             "hello\r\nworld\r\n",
-            whitespace_format.normalize_new_line_markers("hello\nworld\r", "windows", ""),
+            whitespace_format.normalize_new_line_markers("hello\nworld\r", "\r\n"),
         )
         self.assertEqual(
             "\r\n\r\n\r\n\r\n\r\n\r\n",
-            whitespace_format.normalize_new_line_markers("\r\r\r\n\r\n\n\n", "windows", ""),
+            whitespace_format.normalize_new_line_markers("\r\r\r\n\r\n\n\n", "\r\n"),
         )
 
     def test_normalize_non_standard_whitespace(self):
