@@ -11,6 +11,7 @@ Usage:
 """
 
 import argparse
+import pathlib
 import re
 import sys
 from typing import List
@@ -55,6 +56,26 @@ def write_file(file_name: str, file_content: str):
             file.write(file_content)
     except IOError as exception:
         die(4, f"Cannot write to file '{file_name}': {exception}")
+
+
+def guess_new_line_marker(file_content: str) -> str:
+    """Guesses newline character for a file.
+
+    The guess is based on the counts of "\n", "\r" and "\rn" in the file.
+    """
+    windows_count = file_content.count("\r\n")
+    linux_count = file_content.count("\n") - windows_count
+    mac_count = file_content.count("\r") - windows_count
+
+    # Pick the new line marker with the highest count.
+    # Break ties according to the ordering: Linux > Windows > Mac.
+    _, _, new_line_marker_guess = max(
+        (linux_count, 3, "\n"),
+        (windows_count, 2, "\r\n"),
+        (mac_count, 1, "\r"),
+    )
+
+    return new_line_marker_guess
 
 
 def remove_trailing_empty_lines(file_content: str) -> str:
@@ -181,8 +202,8 @@ def format_file_content(file_content: str, parsed_argument: argparse.Namespace) 
     return file_content
 
 
-def process_file(file_name: str, parsed_argument: argparse.Namespace) -> bool:
-    """Processes a file."""
+def reformat_file(file_name: str, parsed_argument: argparse.Namespace) -> bool:
+    """Reformats a file."""
     print(f"Processing file '{file_name}'...")
     file_content = read_file_content(file_name)
     formatted_file_content = format_file_content(file_content, parsed_argument)
@@ -201,11 +222,45 @@ def process_file(file_name: str, parsed_argument: argparse.Namespace) -> bool:
     return is_formatted
 
 
-def process_files(file_names: List[str], parsed_arguments: argparse.Namespace):
-    """Processes a list of files."""
+def find_all_files_recursively(file_name: str, follow_symlinks: bool) -> List[str]:
+    """Finds files in directories recursively."""
+    if (not follow_symlinks) and pathlib.Path(file_name).is_symlink():
+        return []
+
+    if pathlib.Path(file_name).is_file():
+        return [file_name]
+
+    if pathlib.Path(file_name).is_dir():
+        return [
+            expanded_file_name
+            for inner_file in sorted(pathlib.Path(file_name).iterdir())
+            for expanded_file_name in find_all_files_recursively(str(inner_file), follow_symlinks)
+        ]
+
+    return []
+
+
+def find_files_to_process(file_names: List[str], parsed_arguments: argparse.Namespace) -> List[str]:
+    """Finds files that need to be processed.
+
+    The function excludes files that match the regular expression specified
+    by the --exclude command line option.
+    """
+    return [
+        expanded_file_name
+        for file_name in file_names
+        for expanded_file_name in find_all_files_recursively(
+            file_name, parsed_arguments.follow_symlinks
+        )
+        if not re.match(parsed_arguments.exclude, expanded_file_name)
+    ]
+
+
+def reformat_files(file_names: List[str], parsed_arguments: argparse.Namespace):
+    """Reformats multiple files."""
     num_format_files = 0
     for file_name in file_names:
-        is_formatted = process_file(file_name, parsed_arguments)
+        is_formatted = reformat_file(file_name, parsed_arguments)
         if is_formatted:
             num_format_files += 1
 
@@ -228,28 +283,8 @@ def process_files(file_names: List[str], parsed_arguments: argparse.Namespace):
             print(f"{len(file_names)} left unchanged.")
 
 
-def guess_new_line_marker(file_content: str) -> str:
-    """Guesses newline character for a file.
-
-    The guess is based on the counts of "\n", "\r" and "\rn" in the file.
-    """
-    windows_count = file_content.count("\r\n")
-    linux_count = file_content.count("\n") - windows_count
-    mac_count = file_content.count("\r") - windows_count
-
-    # Pick the new line marker with the highest count.
-    # Break ties according to the ordering: Linux > Windows > Mac.
-    _, _, new_line_marker_guess = max(
-        (linux_count, 3, "\n"),
-        (windows_count, 2, "\r\n"),
-        (mac_count, 1, "\r"),
-    )
-
-    return new_line_marker_guess
-
-
-def main():
-    """Formats white space in text files."""
+def parse_command_line() -> argparse.Namespace:
+    """Parses command line arguments."""
     parser = argparse.ArgumentParser(
         description="Formats whitespace in text files",
         allow_abbrev=False,
@@ -362,8 +397,14 @@ def main():
         type=int,
     )
     parser.add_argument("input_files", help="List of input files", nargs="+", default=[], type=str)
-    parsed_arguments = parser.parse_args()
-    process_files(parsed_arguments.input_files, parsed_arguments)
+    return parser.parse_args()
+
+
+def main():
+    """Formats white space in text files."""
+    parsed_arguments = parse_command_line()
+    file_names = find_files_to_process(parsed_arguments.input_files, parsed_arguments)
+    reformat_files(file_names, parsed_arguments)
 
 
 if __name__ == "__main__":

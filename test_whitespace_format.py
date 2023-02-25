@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """Unit tests for whitespace_format module."""
 
 import unittest
@@ -396,6 +394,17 @@ class TestWhitespaceFormat(unittest.TestCase):
         )
         self.assertEqual(
             "  \t  \n", whitespace_format.normalize_non_standard_whitespace("\v\f\t  \n", "replace")
+        )
+
+    def test_find_all_files_recursively(self):
+        """Tests find_all_files_recursively() function."""
+        self.assertEqual(
+            [".circleci/config.yml"],
+            whitespace_format.find_all_files_recursively(".circleci", False),
+        )
+        self.assertEqual(
+            [".circleci/config.yml"],
+            whitespace_format.find_all_files_recursively(".circleci/", True),
         )
 
 
