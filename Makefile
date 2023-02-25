@@ -1,7 +1,7 @@
 .PHONY: black-check black-format pylint flake8 isort-check isort-format mypy test coverage clean install-python create-environment delete-environment install-dependencies build-package
 
 PYTHON_ENVIRONMENT = "whitespace_format"
-PYTHON_VERSION = "3.10.7"
+PYTHON_VERSION = "3.7.5"
 SOURCE_FILES = *.py
 
 black-check:
