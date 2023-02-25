@@ -4,7 +4,7 @@
 
 Beautifier of source code files and text files. Its main features are:
 
-* Add new line marker at the file if it is missing. 
+* Add new line marker at the file if it is missing.
 * Make new line markers consistent (Linux `\n`, Windows `\r\n`, Mac `\r`).
 * Remove empty lines at the end of the file.
 * Remove whitespace at the end of each line.
@@ -13,7 +13,7 @@ Beautifier of source code files and text files. Its main features are:
 * Auto-detection of line endings.
 
 The motivation for this tool is to normalize source code files and text files
-before checking them into a version control system.  
+before checking them into a version control system.
 
 Currently, the tool supports only UTF-8 encoding (which includes ASCII).
 
@@ -21,7 +21,7 @@ Currently, the tool supports only UTF-8 encoding (which includes ASCII).
 
 ### Basic usage
 
-A sample command that formats source code files: 
+A sample command that formats source code files:
 ```
 python whitespace_format.py \
        --normalize-new-line-markers auto \
@@ -43,7 +43,7 @@ python whitespace_format.py \
 ```
 This command could be used as validation step before checking the source files
 into a version control system.  The command outputs non-zero exit code if any
-of the files would be formatted. 
+of the files would be formatted.
 
 ### Handling empty files
 
@@ -75,7 +75,7 @@ negative, tabs are not replaced.
 
 Non-standard whitespace characters (`\v` and `\f`) can be replaced by spaces or
 removed with the option `--normalize-non-standard-whitespace MODE` where `MODE`
-either `replace`, `remove`, or `ignore`. 
+either `replace`, `remove`, or `ignore`.
 
 
 ## MacOS development setup
