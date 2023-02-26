@@ -53,10 +53,12 @@ COLORS = {
 }
 
 
-def color_print(message: str, color_output: bool):
-    """Creates a color message."""
+def color_print(message: str, parsed_arguments: argparse.Namespace):
+    """Outputs a colored message."""
+    if parsed_arguments.quiet:
+        return
     for color, code in COLORS.items():
-        if color_output:
+        if parsed_arguments.color_output:
             message = message.replace(f"[{color}]", code)
         else:
             message = message.replace(f"[{color}]", "")
@@ -284,30 +286,35 @@ def format_file_content(
     return file_content_tracker.file_content
 
 
-def reformat_file(file_name: str, parsed_argument: argparse.Namespace) -> bool:
+def reformat_file(file_name: str, parsed_arguments: argparse.Namespace) -> bool:
     """Reformats a file."""
     file_content = read_file_content(file_name)
     file_content_tracker = FileContentTracker(file_content)
-    format_file_content(file_content_tracker, parsed_argument)
+    format_file_content(file_content_tracker, parsed_arguments)
     is_changed = file_content_tracker.is_changed()
-    if parsed_argument.check_only:
+    if parsed_arguments.verbose:
+        color_print(f"Processing file '{file_name}'...", parsed_arguments)
+    if parsed_arguments.check_only:
         if is_changed:
             color_print(
-                f"[RED]✘ '{file_name}' needs to be formatted [RESET_ALL]", parsed_argument.color
+                f"[RED]✘[RESET_ALL] [BOLD][WHITE]'{file_name}' "
+                f"[RED]needs to be formatted. [RESET_ALL]",
+                parsed_arguments,
             )
             for change in file_content_tracker.changes:
-                color_print(f"[RED] → {change}[RESET_ALL]", parsed_argument.color)
+                color_print(f"   [BOLD][BLUE]↳ [WHITE]{change}[RESET_ALL]", parsed_arguments)
         else:
-            color_print(
-                f"[GREEN]✔[RESET_ALL] '{file_name}' would be left unchanged", parsed_argument.color
-            )
+            if parsed_arguments.verbose:
+                color_print(
+                    f"[GREEN]✔[RESET_ALL] '{file_name}' would be left unchanged", parsed_arguments
+                )
     else:
-        color_print(f"Processing file '{file_name}'...", parsed_argument.color)
         if is_changed:
-            color_print(f"[WHITE]Reformatted '{file_name}'.[RESET_ALL]", parsed_argument.color)
+            color_print(f"[WHITE]Reformatted '{file_name}'.[RESET_ALL]", parsed_arguments)
             write_file(file_name, file_content_tracker.file_content)
         else:
-            color_print(f"'{file_name}' left unchanged.", parsed_argument.color)
+            if parsed_arguments.verbose:
+                color_print(f"'{file_name}' left unchanged.", parsed_arguments)
     return is_changed
 
 
@@ -323,16 +330,16 @@ def reformat_files(file_names: List[str], parsed_arguments: argparse.Namespace):
         if num_changed_files > 0:
             color_print(
                 f"[BOLD][WHITE]{num_changed_files} "
-                f"[BLUE]files would be changed,[RESET_ALL] "
+                f"[BLUE]file(s) need to be formatted,[RESET_ALL] "
                 f"[WHITE]{len(file_names) - num_changed_files} "
-                f"[BLUE]file would be left unchanged.[RESET_ALL]",
-                parsed_arguments.color,
+                f"[BLUE]file(s) would be left unchanged.[RESET_ALL]",
+                parsed_arguments,
             )
             die(1)
         else:
             color_print(
-                f"[WHITE]{len(file_names)} " f"[BLUE]file would be left unchanged.[RESET_ALL]",
-                parsed_arguments.color,
+                f"[WHITE]{len(file_names)} " f"[BLUE]file(s) would be left unchanged.[RESET_ALL]",
+                parsed_arguments,
             )
     else:
         if num_changed_files > 0:
@@ -340,13 +347,13 @@ def reformat_files(file_names: List[str], parsed_arguments: argparse.Namespace):
                 f"[BOLD][WHITE]{num_changed_files} "
                 f"[BLUE]files changed,[RESET_ALL] "
                 f"[WHITE]{len(file_names) - num_changed_files} "
-                f"[BLUE]files left unchanged.[RESET_ALL]",
-                parsed_arguments.color,
+                f"[BLUE]file(s) left unchanged.[RESET_ALL]",
+                parsed_arguments,
             )
         else:
             color_print(
-                f"[WHITE]{len(file_names)} [BLUE]files left unchanged[RESET_ALL].",
-                parsed_arguments.color,
+                f"[WHITE]{len(file_names)} [BLUE]file(s) left unchanged[RESET_ALL].",
+                parsed_arguments,
             )
 
 
@@ -394,6 +401,20 @@ def parse_command_line() -> argparse.Namespace:
     parser.add_argument(
         "--check-only",
         help="Do NOT format files. Only report which files would be formatted.",
+        required=False,
+        action="store_true",
+        default=False,
+    )
+    parser.add_argument(
+        "--verbose",
+        help="Print more messages.",
+        required=False,
+        action="store_true",
+        default=False,
+    )
+    parser.add_argument(
+        "--quiet",
+        help="Print more messages.",
         required=False,
         action="store_true",
         default=False,
@@ -527,7 +548,17 @@ def parse_command_line() -> argparse.Namespace:
         type=int,
     )
     parser.add_argument("input_files", help="List of input files", nargs="+", default=[], type=str)
-    return parser.parse_args()
+
+    parsed_arguments = parser.parse_args()
+
+    # Fix command line arguments.
+    if parsed_arguments.normalize_whitespace_only_files != "ignore":
+        parsed_arguments.normalize_empty_files = parsed_arguments.normalize_whitespace_only_files
+
+    if parsed_arguments.verbose:
+        parsed_arguments.quiet = False
+
+    return parsed_arguments
 
 
 def main():
