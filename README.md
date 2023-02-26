@@ -15,84 +15,121 @@ Beautifier of source code files and text files. Its main features are:
 The motivation for this tool is to normalize source code files and text files
 before checking them into a version control system.
 
-Currently, the tool supports only UTF-8 encoding (which includes ASCII).
+Technically, the tool supports only UTF-8 encoding. However, many encodings are
+valid UTF-8 sequences and the tool processes only ` `, `\n`, `\f`, `\v`, `\t`
+characters. As a result, the tool should work for many other encodings (e.g.
+ASCII, ISO-8859-1, CP1250).
 
 ## Usage
 
-### Basic usage
-
 A sample command that formats source code files:
-```
+```shell
 python whitespace_format.py \
        --exclude ".git/|.idea/|.pyc$" \
        --new-line-marker linux \
        --normalize-new-line-markers \
-       *
+       foo.txt  my_project/
 ```
+The command above formats `foo.txt` and all files contained `my_project/` and
+its subdirectories. Files that contain `.git/` or `.idea/` in their (relative)
+path are excluded. For example, files in `my_project/.git/` and files in
+`my_project/.idea/` are excluded. Likewise, files ending with `*.pyc` are
+excluded.
 
 If you want only know if any changes **would be** made, add `--check-only` option:
-```
+```shell
 python whitespace_format.py \
        --exclude ".git/|.idea/|.pyc$" \
        --check-only \
        --new-line-marker linux \
        --normalize-new-line-markers \
-       *
+       foo.txt  my_project/
 ```
 This command can be used as a validation step before checking the source files
-into a version control system.  The command outputs non-zero exit code if any
+into a version control system. The command outputs non-zero exit code if any
 of the files would be formatted.
 
-### Basic options
+### Basic formatting options
 
-* `--check-only` -- Do not modify any file. Only report what changes need to be made.
-* `--follow-symlinks` -- Follow symbolic links when searching for files.
-* `--exclude <REGEX>` -- Regular expression that specifies which files should be excluded.
-* `--new-line-marker <MARKER>` -- Specifies what new line marker to use. `<MARKER>` must be one
-of the following:
+* `--add-new-line-marker-at-end-of-file` -- Add missing new line marker at end of each file.
+* `--remove-new-line-marker-from-end-of-file` -- Remove all new line marker(s) from the end of each file.
+This option is ignored when `--add-new-line-marker-at-end-of-file` is used.
+Empty lines at the end of the file are removed. 
+* `--normalize-new-line-markers` -- Make new line markers consistent in each file 
+by replacing `\\r\\n`, `\\n`, and `\r` with a consistent new line marker. 
+* `--remove-trailing-whitespace` -- Remove whitespace at the end of each line.
+* `--remove-trailing-empty-lines` -- Remove empty lines at the end of each file.
+* `--new-line-marker=MARKER` -- This option specifies what new line marker to use.
+`MARKER` must be one of the following:
   * `auto` -- Use new line marker that is the most common in each individual file.
   If no new line marker is present in the file, Linux `\n` is used.
+  This is the default option.
   * `linux` -- Use Linux new line marker `\\n`.
   * `mac` -- Use Mac new line marker `\\r`.
   * `windows` -- Use Windows new line marker `\\r\\n`.
-* `--normalize-new-line-markers` -- Make all new line markers a consistent.
-* `--add-new-line-marker-at-end-of-file` -- Add missing new line marker at end of each file.
-* `--remove-new-line-marker-from-end-of-file` -- Remove new line markers from the end of each file.
-* `--remove-trailing-whitespace` -- Remove whitespace at the end of each line.
-* `--remove-trailing-empty-lines` -- Remove empty lines at the end of each file.
 
-### Handling empty files
+Note that input files can contain an arbitrary mix of new line markers `\n`,
+`\r`, `\r\n` even within the same file. The option `--new-line-marker`
+specifies the character that should be in the formatted file. 
+
+An opinionated combination of options is:
+```shell
+python whitespace_format.py \
+       --new-line-marker=linux \
+       --add-new-line-marker-at-end-of-file \
+       --normalize-new-line-markers \
+       --remove-trailing-whitespace \
+       --remove-trailing-empty-lines \
+       foo.txt  my_project/
+```
+This should work well for common programming languages (e.g. Python, Java, C/C++, JavaScript)
+and common text file formats (CSV, LaTeX, JSON, YAML, HTML, MarkDown).
+
+### Common
+
+* `--check-only` -- Do not format files. Only report which files would be formatted.
+* `--follow-symlinks` -- Follow symbolic links when searching for files.
+* `--exclude=REGEX` -- Regular expression that specifies which files should be excluded.
+* `--verbose` -- Print more messages than normally.
+* `--quiet` -- Do not print any messages, except for errors when reading or writing files.
+
+### Empty files
 
 There are separate options for handling empty files and files consisting of
 whitespace characters only:
 
-* `--normalize-empty-files MODE`
-* `--normalize-whitespace-only-files MODE`
+* `--normalize-empty-files=MODE`
+* `--normalize-whitespace-only-files=MODE`
 
 where `MODE` is one of the following:
 
-* `ignore` -- Leave the file as is.
+* `ignore` -- Leave the file as is. This is the default option.
 * `empty` -- Replace the file with an empty file.
 * `one-line` -- Replace each file with a file consisting of a single new line marker.
 
-Depending on the mode, an empty file or whitespace-only file will be either
+Depending on the mode, an empty file or a whitespace-only file will be either
 ignored, replaced by a zero-byte file, or replaced by a file consisting of
 single end of line marker.
 
 If `--normalize-whitespace-only-files` is set to value other than `ignore`, it
-overrides `--normalize-empty-files setting` so that formatting is idempotent,
-i.e., running the same settings multiple times does not change the result.
+overrides `--normalize-empty-files setting`. This behavior exists so that
+formatting is [idempotent](https://en.wikipedia.org/wiki/Idempotence). That is,
+running the program multiple times does not change the result. (Otherwise, 
+consecutive runs with the combination 
+`--normalize-whitespace-only-files=empty` and `--normalize-empty-files=one-line`
+would keep switching content of empty files back and forth.)
 
+### Special characters
 
-### Handling special characters
+* `--replace-tabs-with-spaces=N` -- Replace tabs with spaces.
+Where is `N` is the number of spaces. If `N` is negative, tabs are not replaced.
+Default value is `-1`.
 
-Tabs can be replaced with spaces by passing the options
-`--replace-tabs-with-spaces N` where is `N` is the number of spaces. If `N` is
-negative, tabs are not replaced.
-
-Non-standard whitespace characters (`\v` and `\f`) can be replaced by spaces or
-removed with the option `--normalize-non-standard-whitespace MODE` where `MODE`
-either `replace`, `remove`, or `ignore`.
+* `--normalize-non-standard-whitespace=MODE` -- Replace or remove 
+non-standard whitespace characters (`\v` and `\f`). `MODE` must be one of the following:
+  * `ignore` -- Leave `\v` and `f` as is. This is the default option.
+  * `replace` -- Replace any occurrence of `\v` or `\f` with a single space.
+  * `remove` -- Remove all occurrences of `\v` and `\f`
 
 
 ## MacOS development setup

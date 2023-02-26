@@ -7,7 +7,7 @@ Date: 2023
 
 Usage:
 
-   whitespace_format.py [OPTIONS] [FILES ...]
+   python whitespace_format.py [OPTIONS] [FILES ...]
 """
 
 import argparse
@@ -347,12 +347,15 @@ def reformat_file(file_name: str, parsed_arguments: argparse.Namespace) -> bool:
                 parsed_arguments,
             )
             for change in file_content_tracker.changes:
-                color_print(f"   [BOLD][BLUE]↳ [WHITE]{change.check_only}[RESET_ALL]", parsed_arguments)
+                color_print(
+                    f"   [BOLD][BLUE]↳ [WHITE]{change.check_only}[RESET_ALL]", parsed_arguments
+                )
         else:
             if parsed_arguments.verbose:
                 color_print(
-                    f"[GREEN]✔[RESET_ALL] [WHITE]{file_name} [BLUE]would be left unchanged[RESET_ALL]",
-                    parsed_arguments
+                    f"[GREEN]✔[RESET_ALL] [WHITE]{file_name} "
+                    f"[BLUE]would be left unchanged[RESET_ALL]",
+                    parsed_arguments,
                 )
     else:
         if is_changed:
@@ -449,21 +452,21 @@ def parse_command_line() -> argparse.Namespace:
     )
     parser.add_argument(
         "--check-only",
-        help="Do NOT format files. Only report which files would be formatted.",
+        help="Do not format files. Only report which files would be formatted.",
         required=False,
         action="store_true",
         default=False,
     )
     parser.add_argument(
         "--verbose",
-        help="Print more messages.",
+        help="Print more messages than normally.",
         required=False,
         action="store_true",
         default=False,
     )
     parser.add_argument(
         "--quiet",
-        help="Print more messages.",
+        help="Do not print any messages, except for errors when reading or writing files.",
         required=False,
         action="store_true",
         default=False,
@@ -575,7 +578,7 @@ def parse_command_line() -> argparse.Namespace:
     parser.add_argument(
         "--normalize-non-standard-whitespace",
         help=(
-            "Normalize '\\v' and '\\f' from each file. "
+            "Replace or remove non-standard whitespace characters '\\v' and '\\f' in each file. "
             "ignore: Leave '\\v' and '\\f' as is. "
             "remove: Remove all occurrences of '\\v' and '\\f'. "
             "replace: Replace each occurrence of '\\v' and '\\f' with a single space. "
