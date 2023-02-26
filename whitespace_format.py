@@ -320,6 +320,7 @@ def reformat_file(file_name: str, parsed_arguments: argparse.Namespace) -> bool:
 
 def reformat_files(file_names: List[str], parsed_arguments: argparse.Namespace):
     """Reformats multiple files."""
+    color_print(f"Processing {len(file_names)} file(s)...", parsed_arguments)
     num_changed_files = 0
     for file_name in file_names:
         is_formatted = reformat_file(file_name, parsed_arguments)
@@ -352,7 +353,7 @@ def reformat_files(file_names: List[str], parsed_arguments: argparse.Namespace):
             )
         else:
             color_print(
-                f"[WHITE]{len(file_names)} [BLUE]file(s) left unchanged[RESET_ALL].",
+                f"[WHITE]{len(file_names)} [BLUE]file(s) left unchanged.[RESET_ALL]",
                 parsed_arguments,
             )
 
