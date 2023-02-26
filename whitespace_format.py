@@ -53,14 +53,14 @@ COLORS = {
 }
 
 
-def color_print(message: str, color_output: bool) -> str:
+def color_print(message: str, color_output: bool):
     """Creates a color message."""
     for color, code in COLORS.items():
         if color_output:
             message = message.replace(f"[{color}]", code)
         else:
             message = message.replace(f"[{color}]", "")
-    return message
+    print(message)
 
 
 def die(error_code: int, message: str = ""):
@@ -198,7 +198,7 @@ class FileContentTracker:
     def format(self, change: str, function: Callable[..., str], *args):
         """Applies a change to the content of the file."""
         previous_content = self.file_content
-        self.file_content = function(file_content=self.file_content, *args)
+        self.file_content = function(self.file_content, *args)
         if previous_content != self.file_content:
             self.changes.append(change)
 
@@ -293,7 +293,7 @@ def reformat_file(file_name: str, parsed_argument: argparse.Namespace) -> bool:
     if parsed_argument.check_only:
         if is_changed:
             color_print(
-                f"[RED]✘ needs to be formatted '{file_name}'[RESET_ALL]", parsed_argument.color
+                f"[RED]✘ '{file_name}' needs to be formatted [RESET_ALL]", parsed_argument.color
             )
             for change in file_content_tracker.changes:
                 color_print(f"[RED] → {change}[RESET_ALL]", parsed_argument.color)
