@@ -14,6 +14,7 @@ import argparse
 import pathlib
 import re
 import sys
+from typing import Callable
 from typing import List
 
 # Regular expression that does NOT match any string.
@@ -24,6 +25,42 @@ NEW_LINE_MARKERS = {
     "windows": "\r\n",
     "mac": "\r",
 }
+
+COLORS = {
+    "RESET_ALL": "\033[0m",
+    "BOLD": "\033[1m",
+    "DIM": "\033[2m",
+    "UNDERLINE": "\033[4m",
+    "BLINK": "\033[5m",
+    "REVERSE": "\033[7m",
+    "HIDDEN": "\033[8m",
+    "BLACK": "\033[30m",
+    "RED": "\033[31m",
+    "GREEN": "\033[32m",
+    "YELLOW": "\033[33m",
+    "BLUE": "\033[34m",
+    "MAGENTA": "\033[35m",
+    "CYAN": "\033[36m",
+    "LIGHT_GRAY": "\033[37m",
+    "DARK_GRAY": "\033[90m",
+    "LIGHT_RED": "\033[91m",
+    "LIGHT_GREEN": "\033[92m",
+    "LIGHT_YELLOW": "\033[93m",
+    "LIGHT_BLUE": "\033[94m",
+    "LIGHT_MAGENTA": "\033[95m",
+    "LIGHT_CYAN": "\033[96m",
+    "WHITE": "\033[97m",
+}
+
+
+def color_print(message: str, color_output: bool) -> str:
+    """Creates a color message."""
+    for color, code in COLORS.items():
+        if color_output:
+            message = message.replace(f"[{color}]", code)
+        else:
+            message = message.replace(f"[{color}]", "")
+    return message
 
 
 def die(error_code: int, message: str = ""):
@@ -93,6 +130,11 @@ def remove_trailing_whitespace(file_content: str) -> str:
     return file_content
 
 
+def remove_all_new_line_marker_from_end_of_file(file_content: str) -> str:
+    """Removes all new line markers from the end of the file."""
+    return file_content.rstrip("\n\r")
+
+
 def remove_new_line_marker_from_end_of_file(file_content: str) -> str:
     """Removes the last new line marker from the last line."""
     if file_content.endswith("\r\n"):
@@ -144,92 +186,166 @@ def replace_tabs_with_spaces(file_content: str, num_spaces: int) -> str:
     return file_content.replace("\t", num_spaces * " ")
 
 
-def format_file_content(file_content: str, parsed_arguments: argparse.Namespace) -> str:
+class FileContentTracker:
+    """Tracks changes of the content of a file as it undergoes formatting."""
+
+    def __init__(self, file_content: str):
+        """Initializes an instance of the file content tracker."""
+        self.initial_content = file_content
+        self.file_content = file_content
+        self.changes: List[str] = []
+
+    def format(self, change: str, function: Callable[..., str], *args):
+        """Applies a change to the content of the file."""
+        previous_content = self.file_content
+        self.file_content = function(file_content=self.file_content, *args)
+        if previous_content != self.file_content:
+            self.changes.append(change)
+
+    def is_changed(self) -> bool:
+        """Determines if the file content has changed."""
+        return self.file_content != self.initial_content
+
+
+def format_file_content(
+    file_content_tracker: FileContentTracker, parsed_arguments: argparse.Namespace
+) -> str:
     """Formats the content of file represented as a string."""
     new_line_marker = NEW_LINE_MARKERS.get(
-        parsed_arguments.new_line_marker, guess_new_line_marker(file_content)
+        parsed_arguments.new_line_marker,
+        guess_new_line_marker(file_content_tracker.initial_content),
     )
 
-    if is_whitespace_only(file_content):
-        if not file_content:
-            file_content = normalize_empty_file(
-                file_content, parsed_arguments.normalize_empty_files, new_line_marker
+    if is_whitespace_only(file_content_tracker.initial_content):
+        messages = {
+            "ignore": "",
+            "empty": "File must be replaced with an empty file.",
+            "one-line": f"File must be replaced with a single-line empty line {repr(new_line_marker)}.",
+        }
+        if not file_content_tracker.initial_content:
+            file_content_tracker.format(
+                messages[parsed_arguments.normalize_empty_files],
+                normalize_empty_file,
+                parsed_arguments.normalize_empty_files,
+                new_line_marker,
             )
-        file_content = normalize_empty_file(
-            file_content, parsed_arguments.normalize_whitespace_only_files, new_line_marker
-        )
+        else:
+            file_content_tracker.format(
+                messages[parsed_arguments.normalize_whitespace_only_files],
+                parsed_arguments.normalize_whitespace_only_files,
+                new_line_marker,
+            )
 
     else:
         if parsed_arguments.remove_trailing_whitespace:
-            file_content = remove_trailing_whitespace(file_content)
+            file_content_tracker.format(
+                "Trailing whitespace needs to be removed.", remove_trailing_whitespace
+            )
 
         if parsed_arguments.remove_trailing_empty_lines:
-            file_content = remove_trailing_empty_lines(file_content)
+            file_content_tracker.format(
+                "Trailing empty lines need to be removed.", remove_trailing_empty_lines
+            )
 
-        file_content = replace_tabs_with_spaces(
-            file_content, parsed_arguments.replace_tabs_with_spaces
+        file_content_tracker.format(
+            "Tabs need to be replaced with spaces.",
+            replace_tabs_with_spaces,
+            parsed_arguments.replace_tabs_with_spaces,
         )
 
-        file_content = normalize_non_standard_whitespace(
-            file_content, parsed_arguments.normalize_non_standard_whitespace
+        file_content_tracker.format(
+            "Non-standard whitespace characters need to be removed or replaced.",
+            normalize_non_standard_whitespace,
+            parsed_arguments.normalize_non_standard_whitespace,
         )
 
         if parsed_arguments.normalize_new_line_markers:
-            file_content = normalize_new_line_markers(file_content, new_line_marker)
+            file_content_tracker.format(
+                f"New line marker(s) need to be replaced with {repr(new_line_marker)}.",
+                normalize_new_line_markers,
+                new_line_marker,
+            )
 
         if parsed_arguments.add_new_line_marker_at_end_of_file:
-            file_content = add_new_line_marker_at_end_of_file(file_content, new_line_marker)
+            file_content_tracker.format(
+                f"New line marker needs to be added to the end of the file, "
+                f"or replaced with {repr(new_line_marker)}.",
+                add_new_line_marker_at_end_of_file,
+                new_line_marker,
+            )
         elif parsed_arguments.remove_new_line_marker_from_end_of_file:
-            file_content = remove_new_line_marker_from_end_of_file(file_content)
+            file_content_tracker.format(
+                f"New line marker(s) need to removed from end of the file.",
+                remove_all_new_line_marker_from_end_of_file,
+            )
 
-    return file_content
+    return file_content_tracker.file_content
 
 
 def reformat_file(file_name: str, parsed_argument: argparse.Namespace) -> bool:
     """Reformats a file."""
-    print(f"Processing file '{file_name}'...")
     file_content = read_file_content(file_name)
-    formatted_file_content = format_file_content(file_content, parsed_argument)
-    is_formatted = formatted_file_content != file_content
+    file_content_tracker = FileContentTracker(file_content)
+    format_file_content(file_content_tracker, parsed_argument)
+    is_changed = file_content_tracker.is_changed()
     if parsed_argument.check_only:
-        if is_formatted:
-            print(f"✘ would reformat '{file_name}'")
+        if is_changed:
+            color_print(
+                f"[RED]✘ needs to be formatted '{file_name}'[RESET_ALL]", parsed_argument.color
+            )
+            for change in file_content_tracker.changes:
+                color_print(f"[RED] → {change}[RESET_ALL]", parsed_argument.color)
         else:
-            print(f"✔ '{file_name}' would be left unchanged")
+            color_print(
+                f"[GREEN]✔[RESET_ALL] '{file_name}' would be left unchanged", parsed_argument.color
+            )
     else:
-        if is_formatted:
-            print(f"✘ reformatted '{file_name}'")
-            write_file(file_name, formatted_file_content)
+        color_print(f"Processing file '{file_name}'...", parsed_argument.color)
+        if is_changed:
+            color_print(f"[WHITE]Reformatted '{file_name}'.[RESET_ALL]", parsed_argument.color)
+            write_file(file_name, file_content_tracker.file_content)
         else:
-            print(f"✔ '{file_name}' left unchanged.")
-    return is_formatted
+            color_print(f"'{file_name}' left unchanged.", parsed_argument.color)
+    return is_changed
 
 
 def reformat_files(file_names: List[str], parsed_arguments: argparse.Namespace):
     """Reformats multiple files."""
-    num_format_files = 0
+    num_changed_files = 0
     for file_name in file_names:
         is_formatted = reformat_file(file_name, parsed_arguments)
         if is_formatted:
-            num_format_files += 1
+            num_changed_files += 1
 
     if parsed_arguments.check_only:
-        if num_format_files:
-            print(
-                f"{num_format_files} files would be formatted, "
-                f"{len(file_names) - num_format_files} file would be left unchanged."
+        if num_changed_files > 0:
+            color_print(
+                f"[BOLD][WHITE]{num_changed_files} "
+                f"[BLUE]files would be changed,[RESET_ALL] "
+                f"[WHITE]{len(file_names) - num_changed_files} "
+                f"[BLUE]file would be left unchanged.[RESET_ALL]",
+                parsed_arguments.color,
             )
             die(1)
         else:
-            print(f"{len(file_names)} file would be left unchanged.")
+            color_print(
+                f"[WHITE]{len(file_names)} " f"[BLUE]file would be left unchanged.[RESET_ALL]",
+                parsed_arguments.color,
+            )
     else:
-        if num_format_files:
-            print(
-                f"{num_format_files} formatted, "
-                f"{len(file_names) - num_format_files} left unchanged."
+        if num_changed_files > 0:
+            color_print(
+                f"[BOLD][WHITE]{num_changed_files} "
+                f"[BLUE]files changed,[RESET_ALL] "
+                f"[WHITE]{len(file_names) - num_changed_files} "
+                f"[BLUE]files left unchanged.[RESET_ALL]",
+                parsed_arguments.color,
             )
         else:
-            print(f"{len(file_names)} left unchanged.")
+            color_print(
+                f"[WHITE]{len(file_names)} [BLUE]files left unchanged[RESET_ALL].",
+                parsed_arguments.color,
+            )
 
 
 def find_all_files_recursively(file_name: str, follow_symlinks: bool) -> List[str]:
@@ -281,6 +397,13 @@ def parse_command_line() -> argparse.Namespace:
         default=False,
     )
     parser.add_argument(
+        "--color",
+        help="Print messages in color.",
+        required=False,
+        action="store_true",
+        default=False,
+    )
+    parser.add_argument(
         "--follow-symlinks",
         help="Follow symlinks when looking for files. By default this option is turned off.",
         required=False,
@@ -303,7 +426,7 @@ def parse_command_line() -> argparse.Namespace:
     parser.add_argument(
         "--new-line-marker",
         help=(
-            "Specifies what marker to use. "
+            "Specifies what new line marker to use. "
             "auto: Use new line marker that is the most common in each individual file. "
             "If no new line marker is present in the file, Linux '\\n' is used."
             "linux: Use Linux new line marker '\\n'. "

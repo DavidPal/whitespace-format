@@ -4,7 +4,7 @@
 
 Beautifier of source code files and text files. Its main features are:
 
-* Add new line marker at the file if it is missing.
+* Add a new line marker at the end of the file if it is missing.
 * Make new line markers consistent (Linux `\n`, Windows `\r\n`, Mac `\r`).
 * Remove empty lines at the end of the file.
 * Remove whitespace at the end of each line.
@@ -24,28 +24,42 @@ Currently, the tool supports only UTF-8 encoding (which includes ASCII).
 A sample command that formats source code files:
 ```
 python whitespace_format.py \
-       --exclude ".git/|.idea/" \
-       --normalize-new-line-markers auto \
-       --normalize-new-line-marker-at-end-of-file auto \
-       --remove-trailing-empty-lines \
-       --remove-trailing-whitespace \
+       --exclude ".git/|.idea/|.pyc$" \
+       --new-line-marker linux \
+       --normalize-new-line-markers \
        *
 ```
 
 If you want only know if any changes **would be** made, add `--check-only` option:
 ```
 python whitespace_format.py \
-       --exclude ".git/|.idea/" \
+       --exclude ".git/|.idea/|.pyc$" \
        --check-only \
-       --normalize-new-line-markers auto \
-       --normalize-new-line-marker-at-end-of-file auto \
-       --remove-trailing-empty-lines \
-       --remove-trailing-whitespace \
+       --new-line-marker linux \
+       --normalize-new-line-markers \
        *
 ```
-This command could be used as validation step before checking the source files
+This command can be used as a validation step before checking the source files
 into a version control system.  The command outputs non-zero exit code if any
 of the files would be formatted.
+
+### Basic options
+
+* `--check-only` -- Do not modify any file. Only report what changes need to be made.
+* `--follow-symlinks` -- Follow symbolic links when searching for files.
+* `--exclude` -- A regular expression that specifies which files should be excluded.
+* `--new-line-marker <MARKER>` -- Specifies what new line marker to use. `<MARKER>` must be one
+of the following:
+  * `auto` -- Use new line marker that is the most common in each individual file. 
+  If no new line marker is present in the file, Linux `\n` is used.
+  * `linux` -- Use Linux new line marker `\\n`.
+  * `mac` -- Use Mac new line marker `\\r`.
+  * `windows` -- Use Windows new line marker `\\r\\n`.
+* `--normalize-new-line-markers` -- Make all new line markers a consistent.
+* `--add-new-line-marker-at-end-of-file` -- Add missing new line marker at end of each file.
+* `--remove-new-line-marker-from-end-of-file` -- Remove new line markers from the end of each file.
+* `--remove-trailing-whitespace` -- Remove whitespace at the end of each line.
+* `--remove-trailing-empty-lines` -- Remove empty lines at the end of each file.
 
 ### Handling empty files
 
@@ -55,14 +69,15 @@ whitespace characters only:
 * `--normalize-empty-files MODE`
 * `--normalize-whitespace-only-files MODE`
 
-These files can be replaced by zero-byte files, or files consisting of single
-end of line marker, depending on the `MODE`:
+where `MODE` is one of the following:
 
 * `ignore` -- Leave the file as is.
 * `empty` -- Replace the file with an empty file.
-* `one-line-linux` -- Replace each file with a file consisting of single byte `\n`.
-* `one-line-mac` -- Replace each file with a file consisting of single byte `\r`.
-* `one-line-windows` -- Replace each file with a file consisting of two bytes `\r\n`.
+* `one-line` -- Replace each file with a file consisting of a single new line marker.
+
+Depending on the mode, an empty file or whitespace-only file will be either
+ignored, replaced by a zero-byte file, or replaced by a file consisting of
+single end of line marker.
 
 If `--normalize-whitespace-only-files` is set to value other than `ignore`, it
 overrides `--normalize-empty-files setting` so that formatting is idempotent,
