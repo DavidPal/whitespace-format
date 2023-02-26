@@ -1,7 +1,7 @@
 """Unit tests for whitespace_format module."""
 
-import unittest
 import re
+import unittest
 
 import whitespace_format
 
