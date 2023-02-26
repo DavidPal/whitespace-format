@@ -8,7 +8,7 @@ import whitespace_format
 
 def extract_version_from_pyproject():
     """Extracts version from pyproject.toml file."""
-    with open("pyproject.toml", "r") as file:
+    with open("pyproject.toml", "r", encoding="utf-8") as file:
         lines = file.readlines()
 
     for line in lines:
