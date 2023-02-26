@@ -47,7 +47,7 @@ of the files would be formatted.
 
 * `--check-only` -- Do not modify any file. Only report what changes need to be made.
 * `--follow-symlinks` -- Follow symbolic links when searching for files.
-* `--exclude` -- A regular expression that specifies which files should be excluded.
+* `--exclude <REGEX>` -- Regular expression that specifies which files should be excluded.
 * `--new-line-marker <MARKER>` -- Specifies what new line marker to use. `<MARKER>` must be one
 of the following:
   * `auto` -- Use new line marker that is the most common in each individual file. 

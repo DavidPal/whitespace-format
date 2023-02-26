@@ -58,7 +58,7 @@ def color_print(message: str, parsed_arguments: argparse.Namespace):
     if parsed_arguments.quiet:
         return
     for color, code in COLORS.items():
-        if parsed_arguments.color_output:
+        if parsed_arguments.color:
             message = message.replace(f"[{color}]", code)
         else:
             message = message.replace(f"[{color}]", "")
@@ -387,7 +387,7 @@ def find_files_to_process(file_names: List[str], parsed_arguments: argparse.Name
         for expanded_file_name in find_all_files_recursively(
             file_name, parsed_arguments.follow_symlinks
         )
-        if not re.match(parsed_arguments.exclude, expanded_file_name)
+        if not re.search(parsed_arguments.exclude, expanded_file_name)
     ]
 
 
