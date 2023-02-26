@@ -2,35 +2,43 @@
 
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/DavidPal/whitespace-format/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/DavidPal/whitespace-format/tree/main)
 
-Beautifier of source code files and text files.
-
-The motivation for this tool is to normalize source code files and text files
-before checking them into a version control system.
+Linter and formatter for source code files and text files.
 
 The main features are:
 
+* Auto-detection of new line markers (Linux `\n`, Windows `\r\r`, Mac `\r`).
 * Add a new line marker at the end of the file if it is missing.
-* Make new line markers consistent (Linux `\n`, Windows `\r\n`, Mac `\r`).
+* Make new line markers consistent.
 * Remove empty lines at the end of the file.
 * Remove whitespace at the end of each line.
 * Replace tabs with spaces.
 * Remove/replace non-standard whitespace characters.
-* Auto-detection of line endings.
+
+The motivation for this tool is to normalize source code files and text files
+before checking them into a version control system.
 
 Technically, the tool supports only UTF-8 encoding. However, many encodings are
 valid UTF-8 sequences and the tool processes only `\x20` (space), `\n`, `\f`,
 `\v`, `\t` characters. As a result, the tool should work for many other
 encodings (e.g. ASCII, ISO-8859-1, CP1250).
 
+## Installation
+
+```shell
+pip install whitespace-format
+```
+
+Installation requires Python 3.7.5 or higher.
+
 ## Usage
 
 A sample command that formats source code files:
 ```shell
-python whitespace_format.py \
-       --exclude ".git/|.idea/|.pyc$" \
-       --new-line-marker linux \
-       --normalize-new-line-markers \
-       foo.txt  my_project/
+whitespace-format \
+    --exclude ".git/|.idea/|.pyc$" \
+    --new-line-marker linux \
+    --normalize-new-line-markers \
+    foo.txt  my_project/
 ```
 The command above formats `foo.txt` and all files contained `my_project/` and
 its subdirectories. Files that contain `.git/` or `.idea/` in their (relative)
@@ -40,12 +48,12 @@ excluded.
 
 If you want only know if any changes **would be** made, add `--check-only` option:
 ```shell
-python whitespace_format.py \
-       --exclude ".git/|.idea/|.pyc$" \
-       --check-only \
-       --new-line-marker linux \
-       --normalize-new-line-markers \
-       foo.txt  my_project/
+whitespace-format \
+    --exclude ".git/|.idea/|.pyc$" \
+    --check-only \
+    --new-line-marker linux \
+    --normalize-new-line-markers \
+    foo.txt  my_project/
 ```
 This command can be used as a validation step before checking the source files
 into a version control system. The command outputs non-zero exit code if any
@@ -76,13 +84,13 @@ specifies the character that should be in the formatted file.
 
 An opinionated combination of options is:
 ```shell
-python whitespace_format.py \
-       --new-line-marker=linux \
-       --add-new-line-marker-at-end-of-file \
-       --normalize-new-line-markers \
-       --remove-trailing-whitespace \
-       --remove-trailing-empty-lines \
-       foo.txt  my_project/
+whitespace-format \
+    --new-line-marker=linux \
+    --add-new-line-marker-at-end-of-file \
+    --normalize-new-line-markers \
+    --remove-trailing-whitespace \
+    --remove-trailing-empty-lines \
+    foo.txt  my_project/
 ```
 This should work well for common programming languages (e.g. Python, Java, C/C++, JavaScript)
 and common text file formats (CSV, LaTeX, JSON, YAML, HTML, MarkDown).
@@ -133,6 +141,9 @@ non-standard whitespace characters (`\v` and `\f`). `MODE` must be one of the fo
   * `replace` -- Replace any occurrence of `\v` or `\f` with a single space.
   * `remove` -- Remove all occurrences of `\v` and `\f`
 
+## License
+
+MIT
 
 ## MacOS development setup
 

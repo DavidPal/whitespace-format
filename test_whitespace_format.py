@@ -1,12 +1,30 @@
 """Unit tests for whitespace_format module."""
 
 import unittest
+import re
 
 import whitespace_format
 
 
+def extract_version_from_pyproject():
+    """Extracts version from pyproject.toml file."""
+    with open("pyproject.toml", "r") as file:
+        lines = file.readlines()
+
+    for line in lines:
+        match = re.match(r"^version\s+=\s+\"(.*)\"$", line)
+        if match:
+            return match.group(1)
+
+    return None
+
+
 class TestWhitespaceFormat(unittest.TestCase):
     """Unit tests for whitespace_format module."""
+
+    def test_check_version(self):
+        """Verify that version numbers are the same in all places."""
+        self.assertEqual(whitespace_format.VERSION, extract_version_from_pyproject())
 
     def test_guess_new_line_marker(self):
         """Tests guess_new_line_marker() function."""

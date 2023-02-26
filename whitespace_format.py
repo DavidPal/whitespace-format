@@ -18,6 +18,8 @@ import sys
 from typing import Callable
 from typing import List
 
+VERSION = "0.0.1"
+
 # Regular expression that does NOT match any string.
 UNMATCHABLE_REGEX = "$."
 
@@ -446,8 +448,10 @@ def find_files_to_process(file_names: List[str], parsed_arguments: argparse.Name
 def parse_command_line() -> argparse.Namespace:
     """Parses command line arguments."""
     parser = argparse.ArgumentParser(
-        description="Formats whitespace in text files",
+        prog="whitespace-format",
+        description="Linter and formatter for source code files and text files",
         allow_abbrev=False,
+        add_help=True,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
