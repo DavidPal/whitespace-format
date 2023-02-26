@@ -56,9 +56,9 @@ of the files would be formatted.
 * `--add-new-line-marker-at-end-of-file` -- Add missing new line marker at end of each file.
 * `--remove-new-line-marker-from-end-of-file` -- Remove all new line marker(s) from the end of each file.
 This option is ignored when `--add-new-line-marker-at-end-of-file` is used.
-Empty lines at the end of the file are removed. 
-* `--normalize-new-line-markers` -- Make new line markers consistent in each file 
-by replacing `\\r\\n`, `\\n`, and `\r` with a consistent new line marker. 
+Empty lines at the end of the file are removed.
+* `--normalize-new-line-markers` -- Make new line markers consistent in each file
+by replacing `\\r\\n`, `\\n`, and `\r` with a consistent new line marker.
 * `--remove-trailing-whitespace` -- Remove whitespace at the end of each line.
 * `--remove-trailing-empty-lines` -- Remove empty lines at the end of each file.
 * `--new-line-marker=MARKER` -- This option specifies what new line marker to use.
@@ -72,7 +72,7 @@ by replacing `\\r\\n`, `\\n`, and `\r` with a consistent new line marker.
 
 Note that input files can contain an arbitrary mix of new line markers `\n`,
 `\r`, `\r\n` even within the same file. The option `--new-line-marker`
-specifies the character that should be in the formatted file. 
+specifies the character that should be in the formatted file.
 
 An opinionated combination of options is:
 ```shell
@@ -116,8 +116,8 @@ single end of line marker.
 If `--normalize-whitespace-only-files` is set to value other than `ignore`, it
 overrides `--normalize-empty-files setting`. This behavior exists so that
 formatting is [idempotent](https://en.wikipedia.org/wiki/Idempotence). That is,
-running the program multiple times does not change the result. (Otherwise, 
-consecutive runs with the combination 
+running the program multiple times does not change the result. (Otherwise,
+consecutive runs with the combination
 `--normalize-whitespace-only-files=empty` and `--normalize-empty-files=one-line`
 would keep switching content of empty files back and forth.)
 
@@ -127,7 +127,7 @@ would keep switching content of empty files back and forth.)
 Where is `N` is the number of spaces. If `N` is negative, tabs are not replaced.
 Default value is `-1`.
 
-* `--normalize-non-standard-whitespace=MODE` -- Replace or remove 
+* `--normalize-non-standard-whitespace=MODE` -- Replace or remove
 non-standard whitespace characters (`\v` and `\f`). `MODE` must be one of the following:
   * `ignore` -- Leave `\v` and `f` as is. This is the default option.
   * `replace` -- Replace any occurrence of `\v` or `\f` with a single space.
