@@ -2,7 +2,12 @@
 
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/DavidPal/whitespace-format/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/DavidPal/whitespace-format/tree/main)
 
-Beautifier of source code files and text files. Its main features are:
+Beautifier of source code files and text files.
+
+The motivation for this tool is to normalize source code files and text files
+before checking them into a version control system.
+
+The main features are:
 
 * Add a new line marker at the end of the file if it is missing.
 * Make new line markers consistent (Linux `\n`, Windows `\r\n`, Mac `\r`).
@@ -12,13 +17,10 @@ Beautifier of source code files and text files. Its main features are:
 * Remove/replace non-standard whitespace characters.
 * Auto-detection of line endings.
 
-The motivation for this tool is to normalize source code files and text files
-before checking them into a version control system.
-
 Technically, the tool supports only UTF-8 encoding. However, many encodings are
-valid UTF-8 sequences and the tool processes only ` `, `\n`, `\f`, `\v`, `\t`
-characters. As a result, the tool should work for many other encodings (e.g.
-ASCII, ISO-8859-1, CP1250).
+valid UTF-8 sequences and the tool processes only `\x20` (space), `\n`, `\f`,
+`\v`, `\t` characters. As a result, the tool should work for many other
+encodings (e.g. ASCII, ISO-8859-1, CP1250).
 
 ## Usage
 
