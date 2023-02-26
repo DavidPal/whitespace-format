@@ -50,7 +50,7 @@ of the files would be formatted.
 * `--exclude <REGEX>` -- Regular expression that specifies which files should be excluded.
 * `--new-line-marker <MARKER>` -- Specifies what new line marker to use. `<MARKER>` must be one
 of the following:
-  * `auto` -- Use new line marker that is the most common in each individual file. 
+  * `auto` -- Use new line marker that is the most common in each individual file.
   If no new line marker is present in the file, Linux `\n` is used.
   * `linux` -- Use Linux new line marker `\\n`.
   * `mac` -- Use Mac new line marker `\\r`.
