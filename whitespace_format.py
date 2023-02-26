@@ -75,10 +75,10 @@ def die(error_code: int, message: str = ""):
     sys.exit(error_code)
 
 
-def read_file_content(file_name: str) -> str:
+def read_file_content(file_name: str, encoding: str) -> str:
     """Reads content of a file."""
     try:
-        with open(file_name, "r", encoding="utf-8") as file:
+        with open(file_name, "r", encoding=encoding) as file:
             return file.read()
     except IOError as exception:
         die(2, f"Cannot read file '{file_name}': {exception}")
@@ -87,10 +87,10 @@ def read_file_content(file_name: str) -> str:
     return ""
 
 
-def write_file(file_name: str, file_content: str):
+def write_file(file_name: str, file_content: str, encoding: str):
     """Writes data to a file."""
     try:
-        with open(file_name, "w", encoding="utf-8") as file:
+        with open(file_name, "w", encoding=encoding) as file:
             file.write(file_content)
     except IOError as exception:
         die(4, f"Cannot write to file '{file_name}': {exception}")
@@ -335,7 +335,7 @@ def format_file_content(
 
 def reformat_file(file_name: str, parsed_arguments: argparse.Namespace) -> bool:
     """Reformats a file."""
-    file_content = read_file_content(file_name)
+    file_content = read_file_content(file_name, parsed_arguments.encoding)
     file_content_tracker = FileContentTracker(file_content)
     format_file_content(file_content_tracker, parsed_arguments)
     is_changed = file_content_tracker.is_changed()
@@ -364,7 +364,7 @@ def reformat_file(file_name: str, parsed_arguments: argparse.Namespace) -> bool:
             color_print(f"[WHITE]Reformatted [BOLD]{file_name}[RESET_ALL]", parsed_arguments)
             for change in file_content_tracker.changes:
                 color_print(f"   [BOLD][BLUE]↳ [WHITE]{change.change}[RESET_ALL]", parsed_arguments)
-            write_file(file_name, file_content_tracker.file_content)
+            write_file(file_name, file_content_tracker.file_content, parsed_arguments.encoding)
         else:
             if parsed_arguments.verbose:
                 color_print(f"[WHITE]{file_name} [BLUE]left unchanged[RESET_ALL]", parsed_arguments)
@@ -462,6 +462,17 @@ def parse_command_line() -> argparse.Namespace:
         default=False,
     )
     parser.add_argument(
+        "--encoding",
+        help=(
+            "Text encoding for both reading and writing files. Default encoding is utf-8. "
+            "List of supported encodings can be found at "
+            "https://docs.python.org/3/library/codecs.html#standard-encodings"
+        ),
+        required=False,
+        default="utf-8",
+        type=str,
+    )
+    parser.add_argument(
         "--verbose",
         help="Print more messages than normally.",
         required=False,
@@ -492,11 +503,11 @@ def parse_command_line() -> argparse.Namespace:
     parser.add_argument(
         "--exclude",
         help=(
-            "Regular expression that specifies which files or directories to exclude. "
-            "The matching is done on the path of the file. "
-            "Example #1: --exclude='(.jpeg|.png)$' excludes files "
+            "Regular expression that specifies which files to exclude. "
+            "The regular expression is evaluated on the path of each file. "
+            "Example #1: --exclude=\"(.jpeg|.png)$\" excludes files "
             "with '.jpeg' or '.png' extension. "
-            "Example #2: --exclude='.git/' excludes all files in the git directory. "
+            "Example #2: --exclude=\".git/\" excludes all files in the '.git' directory. "
         ),
         required=False,
         type=str,
