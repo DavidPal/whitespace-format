@@ -1,4 +1,4 @@
-.PHONY: black-check black-format pylint flake8 isort-check isort-format mypy test coverage clean install-python create-environment delete-environment install-dependencies build-package
+.PHONY: black-check black-format pylint flake8 isort-check isort-format mypy test coverage clean install-python create-environment delete-environment install-dependencies build-package publish-to-pypi publish-to-test-pypi
 
 PYTHON_ENVIRONMENT = "whitespace_format"
 PYTHON_VERSION = "3.7.5"
@@ -70,3 +70,11 @@ install-dependencies:
 build-package:
 	# Build a wheel package.
 	poetry build
+
+publish-to-pypi:
+	# Publish package to PyPI.
+	poetry publish
+
+publish-to-test-pypi:
+	# Publish package to Test-PyPI.
+	poetry publish -r test-pypi
