@@ -220,7 +220,9 @@ def format_file_content(
         messages = {
             "ignore": "",
             "empty": "File must be replaced with an empty file.",
-            "one-line": f"File must be replaced with a single-line empty line {repr(new_line_marker)}.",
+            "one-line": (
+                f"File must be replaced with a single-line empty line {repr(new_line_marker)}."
+            ),
         }
         if not file_content_tracker.initial_content:
             file_content_tracker.format(
@@ -275,7 +277,7 @@ def format_file_content(
             )
         elif parsed_arguments.remove_new_line_marker_from_end_of_file:
             file_content_tracker.format(
-                f"New line marker(s) need to removed from end of the file.",
+                "New line marker(s) need to removed from end of the file.",
                 remove_all_new_line_marker_from_end_of_file,
             )
 
