@@ -45,6 +45,10 @@ jobs:
           command: make pylint
 
       - run:
+          name: Check type hints with mypy
+          command: make mypy
+
+      - run:
           name: Run unit tests
           command: make test
 
