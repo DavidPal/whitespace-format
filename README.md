@@ -86,7 +86,7 @@ by replacing `\\r\\n`, `\\n`, and `\r` with a consistent new line marker.
   * `linux` -- Use Linux new line marker `\\n`.
   * `mac` -- Use Mac new line marker `\\r`.
   * `windows` -- Use Windows new line marker `\\r\\n`.
-* `--encoding` -- Text encoding for both reading and writing files. Default encoding is `utf-8`. 
+* `--encoding` -- Text encoding for both reading and writing files. Default encoding is `utf-8`.
 List of supported encodings can be found at
 https://docs.python.org/3/library/codecs.html#standard-encodings
 

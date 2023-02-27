@@ -1,4 +1,4 @@
-.PHONY: black-check black-format pylint flake8 isort-check isort-format mypy test coverage clean install-python create-environment delete-environment install-dependencies build-package publish-to-pypi publish-to-test-pypi
+.PHONY: black-check black-format pydocstyle pylint flake8 isort-check isort-format mypy test coverage clean install-python create-environment delete-environment install-dependencies build-package publish-to-pypi publish-to-test-pypi
 
 PYTHON_ENVIRONMENT = "whitespace_format"
 PYTHON_VERSION = "3.7.5"
@@ -11,6 +11,10 @@ black-check:
 black-format:
 	# Reformat code.
 	black --exclude "_pb2.py|_rpc.py|_twirp.py" $(SOURCE_FILES)
+
+pydocstyle:
+	# Check docstrings
+	python -m pydocstyle --verbose --explain --source --count $(SOURCE_FILES)
 
 pylint:
 	# Static code analysis.
