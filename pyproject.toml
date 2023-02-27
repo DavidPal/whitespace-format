@@ -14,7 +14,7 @@ classifiers = [
 ]
 
 [tool.poetry.scripts]
-whitespace-format = 'whitespace_format:main'
+whitespace-format = "whitespace_format:main"
 
 [tool.poetry.dependencies]
 python = "^3.7.5"
