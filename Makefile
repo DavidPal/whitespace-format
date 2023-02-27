@@ -4,6 +4,22 @@ PYTHON_ENVIRONMENT = "whitespace_format"
 PYTHON_VERSION = "3.7.5"
 SOURCE_FILES = *.py
 
+whitespace-format-check:
+	# Check whitespace formatting.
+	whitespace-format --check-only --color --new-line-marker linux \
+			--add-new-line-marker-at-end-of-file --remove-trailing-whitespace \
+			--remove-trailing-empty-lines \
+			--normalize-non-standard-whitespace replace \
+			--exclude ".pyc"  *
+
+whitespace-format:
+	# Reformat code.
+	whitespace-format --color --new-line-marker linux \
+			--add-new-line-marker-at-end-of-file --remove-trailing-whitespace \
+			--remove-trailing-empty-lines \
+			--normalize-non-standard-whitespace replace \
+			--exclude ".pyc"  *
+
 black-check:
 	# Check code formatting.
 	black --diff --check --color --exclude "_pb2.py|_rpc.py|_twirp.py" $(SOURCE_FILES)
