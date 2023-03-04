@@ -1,5 +1,6 @@
 """Unit tests for whitespace_format module."""
 
+import argparse
 import re
 import unittest
 
@@ -360,6 +361,48 @@ class TestWhitespaceFormat(unittest.TestCase):
             [".circleci/config.yml"],
             whitespace_format.find_all_files_recursively(".circleci/", True),
         )
+
+    def test_format_file_content_1(self):
+        """Tests format_file_content() function."""
+        file_content_tracker = whitespace_format.FileContentTracker("")
+        whitespace_format.format_file_content(
+            file_content_tracker,
+            argparse.Namespace(
+                new_line_marker="auto",
+                normalize_empty_files="ignore",
+            ),
+        )
+        self.assertEqual("", file_content_tracker.file_content)
+
+    def test_format_file_content_2(self):
+        """Tests format_file_content() function."""
+        file_content_tracker = whitespace_format.FileContentTracker(" \n \n \r \r\n \r\n \t \v \f ")
+        whitespace_format.format_file_content(
+            file_content_tracker,
+            argparse.Namespace(
+                new_line_marker="auto",
+                normalize_empty_files="ignore",
+                normalize_whitespace_only_files="empty",
+            ),
+        )
+        self.assertEqual("", file_content_tracker.file_content)
+
+    def test_format_file_content_3(self):
+        """Tests format_file_content() function."""
+        file_content_tracker = whitespace_format.FileContentTracker("hello\r\nworld   ")
+        whitespace_format.format_file_content(
+            file_content_tracker,
+            argparse.Namespace(
+                new_line_marker="linux",
+                add_new_line_marker_at_end_of_file=True,
+                remove_trailing_whitespace=True,
+                remove_trailing_empty_lines=True,
+                replace_tabs_with_spaces=-1,
+                normalize_non_standard_whitespace="ignore",
+                normalize_new_line_markers=True,
+            ),
+        )
+        self.assertEqual("hello\nworld\n", file_content_tracker.file_content)
 
 
 if __name__ == "__main__":

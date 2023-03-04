@@ -126,12 +126,11 @@ Depending on the mode, an empty file or a whitespace-only file will be either
 ignored, replaced by a zero-byte file, or replaced by a file consisting of
 single end of line marker.
 
-If `--normalize-whitespace-only-files` is set to value other than `ignore`, it
-overrides `--normalize-empty-files setting`. This behavior exists so that
-formatting is idempotent. (Otherwise, consecutive runs with the combination
-`--normalize-whitespace-only-files=empty` and
-`--normalize-empty-files=one-line` would keep switching content of empty files
-back and forth.)
+If `--normalize-whitespace-only-files` is set to `empty`,
+`--normalize-empty-files setting` set to `empty` as well. In other words,
+combination `--normalize-whitespace-only-files=empty` and
+`--normalize-empty-files=one-line` is not allowed, since it would lead to
+behavior that is not idempotent.
 
 ### Special characters
 

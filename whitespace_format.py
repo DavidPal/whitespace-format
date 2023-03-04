@@ -18,7 +18,7 @@ import sys
 from typing import Callable
 from typing import List
 
-VERSION = "0.0.1"
+VERSION = "0.0.2"
 
 # Regular expression that does NOT match any string.
 UNMATCHABLE_REGEX = "$."
@@ -221,8 +221,9 @@ class FileContentTracker:
 
 
 def format_file_content(
-    file_content_tracker: FileContentTracker, parsed_arguments: argparse.Namespace
-) -> str:
+    file_content_tracker: FileContentTracker,
+    parsed_arguments: argparse.Namespace,
+):
     """Formats the content of file represented as a string."""
     new_line_marker = NEW_LINE_MARKERS.get(
         parsed_arguments.new_line_marker,
@@ -255,6 +256,7 @@ def format_file_content(
         else:
             file_content_tracker.format(
                 changes[parsed_arguments.normalize_whitespace_only_files],
+                normalize_empty_file,
                 parsed_arguments.normalize_whitespace_only_files,
                 new_line_marker,
             )
@@ -330,8 +332,6 @@ def format_file_content(
                 remove_all_new_line_marker_from_end_of_file,
             )
 
-    return file_content_tracker.file_content
-
 
 def reformat_file(file_name: str, parsed_arguments: argparse.Namespace) -> bool:
     """Reformats a file."""
@@ -381,34 +381,23 @@ def reformat_files(file_names: List[str], parsed_arguments: argparse.Namespace):
             num_changed_files += 1
 
     if parsed_arguments.check_only:
+        message = ""
         if num_changed_files > 0:
-            color_print(
-                f"[BOLD][WHITE]{num_changed_files} "
-                f"[BLUE]file(s) need to be formatted,[RESET_ALL] "
-                f"[WHITE]{len(file_names) - num_changed_files} "
-                f"[BLUE]file(s) would be left unchanged.[RESET_ALL]",
-                parsed_arguments,
-            )
+            message += f"[BOLD][BLUE]{num_changed_files} file(s) "
+            message += "[WHITE]need to be formatted,[RESET_ALL] "
+        message += f"[BLUE]{len(file_names) - num_changed_files} file(s) "
+        message += "[WHITE]would be left unchanged.[RESET_ALL]"
+        color_print(message, parsed_arguments)
+        if num_changed_files > 0:
             die(1)
-        else:
-            color_print(
-                f"[WHITE]{len(file_names)} " f"[BLUE]file(s) would be left unchanged.[RESET_ALL]",
-                parsed_arguments,
-            )
     else:
+        message = ""
         if num_changed_files > 0:
-            color_print(
-                f"[BOLD][WHITE]{num_changed_files} "
-                f"[BLUE]file(s) changed,[RESET_ALL] "
-                f"[WHITE]{len(file_names) - num_changed_files} "
-                f"[BLUE]file(s) left unchanged.[RESET_ALL]",
-                parsed_arguments,
-            )
-        else:
-            color_print(
-                f"[WHITE]{len(file_names)} [BLUE]file(s) left unchanged.[RESET_ALL]",
-                parsed_arguments,
-            )
+            message += f"[BOLD][BLUE]{num_changed_files} file(s) "
+            message += "[WHITE]changed,[RESET_ALL] "
+        message += f"[BLUE]{len(file_names) - num_changed_files} files(s) "
+        message += "[WHITE]left unchanged.[RESET_ALL]"
+        color_print(message, parsed_arguments)
 
 
 def find_all_files_recursively(file_name: str, follow_symlinks: bool) -> List[str]:
@@ -619,7 +608,7 @@ def parse_command_line() -> argparse.Namespace:
     parsed_arguments = parser.parse_args()
 
     # Fix command line arguments.
-    if parsed_arguments.normalize_whitespace_only_files != "ignore":
+    if parsed_arguments.normalize_whitespace_only_files == "empty":
         parsed_arguments.normalize_empty_files = parsed_arguments.normalize_whitespace_only_files
 
     if parsed_arguments.verbose:
