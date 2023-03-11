@@ -2,7 +2,7 @@
 
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/DavidPal/whitespace-format/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/DavidPal/whitespace-format/tree/main)
 
-![GitHub Action](https://github.com/github/docs/actions/workflows/build.yaml/badge.svg)
+![GitHub Action](https://github.com/DavidPal/whitespace-format/actions/workflows/build.yaml/badge.svg)
 
 Linter and formatter for source code files and text files.
 
