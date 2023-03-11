@@ -15,5 +15,7 @@ jobs:
       - name: List files in the repository
         run: |
           ls ${{ github.workspace }}
-      - run: make test
+      - run: |
+          cd ${{ github.workspace }}
+          make clean isort-check black-check test coverage
       - run: echo "🍏 This job's status is ${{ job.status }}."
