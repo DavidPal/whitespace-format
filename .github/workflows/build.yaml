@@ -18,7 +18,8 @@ jobs:
           python --version
       - name: Lint and test code
         run: |
-          pip --verbose install poetry==1.3.2
+          pip install --upgrade pip
+          pip --verbose install poetry==1.4.0
           poetry config virtualenvs.create false
           cd ${{ github.workspace }}
           make install-dependencies
