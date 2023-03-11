@@ -1,6 +1,10 @@
 name: Build, lint and test
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
-on: [push]
+run-name: Build, lint and test triggered by ${{ github.actor }}
+
+on:
+  pull_request:
+  push:
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -42,6 +46,6 @@ jobs:
 
       - name: Lint and test code
         run: |
-          make clean whitespace-format-check isort-check black-check flake8 pylint mypy test coverage
+          make clean whitespace-format-check isort-check black-check pydocstyle flake8 pylint mypy test coverage
 
       - run: echo "This job's status is ${{ job.status }}."

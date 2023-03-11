@@ -2,6 +2,8 @@
 
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/DavidPal/whitespace-format/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/DavidPal/whitespace-format/tree/main)
 
+![GitHub Action](https://github.com/github/docs/actions/workflows/build.yaml/badge.svg)
+
 Linter and formatter for source code files and text files.
 
 The purpose of this tool is to normalize source code files (e.g. Python, Java,
