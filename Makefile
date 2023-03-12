@@ -12,7 +12,7 @@ whitespace-format-check:
 			--remove-trailing-empty-lines \
 			--normalize-non-standard-whitespace replace \
 			--normalize-whitespace-only-files empty \
-			--exclude ".pyc$$"  *
+			--exclude ".pyc$$"  * .circleci/ .github/
 
 whitespace-format:
 	# Reformat code.
@@ -22,7 +22,7 @@ whitespace-format:
 			--remove-trailing-empty-lines \
 			--normalize-non-standard-whitespace replace \
 			--normalize-whitespace-only-files empty \
-			--exclude ".pyc$$"  *
+			--exclude ".pyc$$"  * .circleci/ .github/
 
 black-check:
 	# Check code formatting.
