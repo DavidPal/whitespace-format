@@ -6,23 +6,23 @@ SOURCE_FILES = *.py
 
 whitespace-format-check:
 	# Check whitespace formatting.
-	whitespace-format --check-only --color --new-line-marker linux \
+	whitespace-format --check-only --color --new-line-marker linux --verbose \
 			--add-new-line-marker-at-end-of-file \
 			--remove-trailing-whitespace \
 			--remove-trailing-empty-lines \
 			--normalize-non-standard-whitespace replace \
 			--normalize-whitespace-only-files empty \
-			--exclude ".pyc$$"  *
+			--exclude "\.pyc$$|\.git/|\.idea/"  .
 
 whitespace-format:
 	# Reformat code.
-	whitespace-format --color --new-line-marker linux \
+	whitespace-format --color --new-line-marker linux --verbose \
 			--add-new-line-marker-at-end-of-file \
 			--remove-trailing-whitespace \
 			--remove-trailing-empty-lines \
 			--normalize-non-standard-whitespace replace \
 			--normalize-whitespace-only-files empty \
-			--exclude ".pyc$$"  *
+			--exclude "\.pyc$$|^\.git/|^\.idea/"  .
 
 black-check:
 	# Check code formatting.
