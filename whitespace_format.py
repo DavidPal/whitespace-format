@@ -18,7 +18,7 @@ import sys
 from typing import Callable
 from typing import List
 
-VERSION = "0.0.2"
+VERSION = "0.0.3"
 
 # Regular expression that does NOT match any string.
 UNMATCHABLE_REGEX = "$."
