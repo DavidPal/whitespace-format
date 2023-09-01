@@ -21,14 +21,14 @@ python = "^3.7.2"
 
 [tool.poetry.dev-dependencies]
 black = "^23.3.0"
-coverage = "^7.2.4"
+coverage = "^7.2.7"
 flake8 = "^5.0.4"
 flake8-absolute-import = "^1.0.0.1"
 isort = {extras = ["colors"], version = "^5.11.5"}
-mypy = "^1.2.0"
+mypy = "^1.4.1"
 pydocstyle = {extras = ["toml"], version = "^6.3.0"}
-pytest = "^7.3.1"
-pylint = "^2.16.3"
+pytest = "^7.4.0"
+pylint = "^2.17.5"
 pylint-quotes = "^0.2.3"
 
 [build-system]
