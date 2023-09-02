@@ -196,7 +196,7 @@ class TestWhitespaceFormat(unittest.TestCase):
             "", whitespace_format.remove_all_new_line_marker_from_end_of_file("\r\r\n\n")
         )
         self.assertEqual(
-            "", whitespace_format.remove_all_new_line_marker_from_end_of_file("\n\n\n\n")
+            "", whitespace_format.remove_all_new_line_marker_from_end_of_file("\r\r\r\r")
         )
 
     def test_remove_new_line_marker_from_end_of_file(self):
@@ -223,7 +223,7 @@ class TestWhitespaceFormat(unittest.TestCase):
         self.assertEqual(" \n", whitespace_format.remove_new_line_marker_from_end_of_file(" \n\r"))
 
     def test_normalize_empty_file(self):
-        """Tests fix_normalize_empty_file() function."""
+        """Tests normalize_empty_file() function."""
         self.assertEqual("", whitespace_format.normalize_empty_file("", "ignore", "\n"))
         self.assertEqual("", whitespace_format.normalize_empty_file("", "empty", "\n"))
         self.assertEqual("\n", whitespace_format.normalize_empty_file("", "one-line", "\n"))
@@ -236,8 +236,8 @@ class TestWhitespaceFormat(unittest.TestCase):
         self.assertEqual("\r", whitespace_format.normalize_empty_file(" \t ", "one-line", "\r"))
         self.assertEqual("\r\n", whitespace_format.normalize_empty_file(" \t ", "one-line", "\r\n"))
 
-    def test_add_new_line_marker_at_end_of_fil(self):
-        """Tests add_new_line_marker_at_end_of_fil() function."""
+    def test_add_new_line_marker_at_end_of_file(self):
+        """Tests add_new_line_marker_at_end_of_file() function."""
         self.assertEqual("\n", whitespace_format.add_new_line_marker_at_end_of_file("", "\n"))
         self.assertEqual("  \n", whitespace_format.add_new_line_marker_at_end_of_file("  ", "\n"))
         self.assertEqual(
