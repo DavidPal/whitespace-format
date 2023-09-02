@@ -179,7 +179,7 @@ def remove_trailing_whitespace(lines: List[Line]) -> List[Line]:
     """Removes trailing whitespace from every line."""
     return [
         Line(
-            re.sub(r"[ \n\r\t\f\v]*$", "\n", line.content),
+            re.sub(r"[ \n\r\t\f\v]*$", "", line.content),
             line.end_of_line_marker,
         )
         for line in lines
@@ -197,7 +197,7 @@ def normalize_new_line_markers(lines: List[Line], new_end_of_line_marker: str) -
     ]
 
 
-def add_new_line_marker_at_end_of_file(
+def add_end_of_line_marker_at_end_of_file(
     lines: List[Line], new_end_of_line_marker: str
 ) -> List[Line]:
     """Adds new end-of-line marker to the end of file if it is missing."""
