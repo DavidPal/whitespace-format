@@ -443,41 +443,41 @@ class TestWhitespaceFormat(unittest.TestCase):
 
     def test_remove_all_new_line_marker_from_end_of_file(self):
         """Tests remove_all_new_line_marker_from_end_of_file() function."""
-        self.assertListEqual([], whitespace_format2.remove_all_new_line_marker_from_end_of_file([]))
+        self.assertListEqual([], whitespace_format2.remove_all_end_of_line_markers_from_end_of_file([]))
         self.assertListEqual(
             [Line("  ", "")],
-            whitespace_format2.remove_all_new_line_marker_from_end_of_file([Line("  ", "")]),
+            whitespace_format2.remove_all_end_of_line_markers_from_end_of_file([Line("  ", "")]),
         )
         self.assertListEqual(
             [Line("", "\n"), Line("hello", "")],
-            whitespace_format2.remove_all_new_line_marker_from_end_of_file(
+            whitespace_format2.remove_all_end_of_line_markers_from_end_of_file(
                 [Line("", "\n"), Line("hello", "\n"), Line("", "\n")]
             ),
         )
         self.assertListEqual(
-            [], whitespace_format2.remove_all_new_line_marker_from_end_of_file([Line("", "\n")])
+            [], whitespace_format2.remove_all_end_of_line_markers_from_end_of_file([Line("", "\n")])
         )
         self.assertListEqual(
             [],
-            whitespace_format2.remove_all_new_line_marker_from_end_of_file(
+            whitespace_format2.remove_all_end_of_line_markers_from_end_of_file(
                 [Line("", "\n"), Line("", "\n"), Line("", "\n"), Line("", "\n")]
             ),
         )
         self.assertListEqual(
             [],
-            whitespace_format2.remove_all_new_line_marker_from_end_of_file(
+            whitespace_format2.remove_all_end_of_line_markers_from_end_of_file(
                 [Line("", "\n"), Line("", "\n"), Line("", "\r"), Line("", "\r")]
             ),
         )
         self.assertListEqual(
             [],
-            whitespace_format2.remove_all_new_line_marker_from_end_of_file(
+            whitespace_format2.remove_all_end_of_line_markers_from_end_of_file(
                 [Line("", "\r"), Line("", "\r\n"), Line("", "\n")]
             ),
         )
         self.assertListEqual(
             [],
-            whitespace_format2.remove_all_new_line_marker_from_end_of_file(
+            whitespace_format2.remove_all_end_of_line_markers_from_end_of_file(
                 [Line("", "\r"), Line("", "\r"), Line("", "\r"), Line("", "\r")]
             ),
         )
@@ -782,7 +782,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                 normalize_empty_files="ignore",
             ),
         )
-        self.assertEqual("", file_content_tracker.file_content)
+        self.assertEqual("", file_content_tracker.lines)
 
     def test_format_file_content_2(self):
         """Tests format_file_content() function."""
@@ -795,7 +795,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                 normalize_whitespace_only_files="empty",
             ),
         )
-        self.assertEqual("", file_content_tracker.file_content)
+        self.assertEqual("", file_content_tracker.lines)
 
     def test_format_file_content_3(self):
         """Tests format_file_content() function."""
@@ -812,7 +812,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                 normalize_new_line_markers=True,
             ),
         )
-        self.assertEqual("hello\nworld\n", file_content_tracker.file_content)
+        self.assertEqual("hello\nworld\n", file_content_tracker.lines)
 
 
 if __name__ == "__main__":
