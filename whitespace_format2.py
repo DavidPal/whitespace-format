@@ -291,6 +291,15 @@ class ChangeDescription:
     change: str
 
 
+@dataclasses.dataclass
+class LineChange:
+    """Description of a change on a particular line."""
+
+    check_only: str
+    change: str
+    line_number: int
+
+
 class FileContentTracker:
     """Tracks changes of the content of a file as it undergoes formatting."""
 
@@ -298,14 +307,16 @@ class FileContentTracker:
         """Initializes an instance of the file content tracker."""
         self.initial_lines = lines
         self.lines = copy.deepcopy(lines)
-        self.changes: List[ChangeDescription] = []
+        self.line_changes: List[LineChange] = []
 
     def format(self, change: ChangeDescription, function: Callable[..., List[Line]], *args):
         """Applies a change to the content of the file."""
         previous_content = self.lines
         self.lines = function(self.lines, *args)
         if previous_content != self.lines:
-            self.changes.append(change)
+            line_numbers = compute_difference(previous_content, self.lines)
+            for line_number in line_numbers:
+                self.line_changes.append(LineChange(change.check_only, change.change, line_number))
 
     def is_changed(self) -> bool:
         """Determines if the file content has changed."""
@@ -357,8 +368,8 @@ def format_file_content(
         if parsed_arguments.remove_trailing_whitespace:
             file_content_tracker.format(
                 ChangeDescription(
-                    check_only="Whitespace at the end of line(s) needs to be removed.",
-                    change="Whitespace at the end of line(s) was removed.",
+                    check_only="Whitespace at the end of line needs to be removed.",
+                    change="Whitespace at the end of line was removed.",
                 ),
                 remove_trailing_whitespace,
             )
@@ -441,9 +452,11 @@ def reformat_file(file_name: str, parsed_arguments: argparse.Namespace) -> bool:
                 f"[RED]needs to be formatted[RESET_ALL]",
                 parsed_arguments,
             )
-            for change in file_content_tracker.changes:
+            for line_change in file_content_tracker.line_changes:
                 color_print(
-                    f"   [BOLD][BLUE]↳ [WHITE]{change.check_only}[RESET_ALL]", parsed_arguments
+                    f"   [BOLD][BLUE]↳ line {line_change.line_number + 1}: "
+                    f"[WHITE]{line_change.check_only}[RESET_ALL]",
+                    parsed_arguments,
                 )
         else:
             if parsed_arguments.verbose:
@@ -455,8 +468,12 @@ def reformat_file(file_name: str, parsed_arguments: argparse.Namespace) -> bool:
     else:
         if is_changed:
             color_print(f"[WHITE]Reformatted [BOLD]{file_name}[RESET_ALL]", parsed_arguments)
-            for change in file_content_tracker.changes:
-                color_print(f"   [BOLD][BLUE]↳ [WHITE]{change.change}[RESET_ALL]", parsed_arguments)
+            for line_change in file_content_tracker.line_changes:
+                color_print(
+                    f"   [BOLD][BLUE]↳ line {line_change.line_number + 1}: "
+                    f"[WHITE]{line_change.change}[RESET_ALL]",
+                    parsed_arguments,
+                )
             write_file(
                 file_name, concatenate_lines(file_content_tracker.lines), parsed_arguments.encoding
             )
