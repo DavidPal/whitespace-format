@@ -12,7 +12,7 @@ MarkDown, LaTeX) before checking them into a version control system.
 
 The features include:
 
-* Auto-detection of new line markers (Linux `\n`, Windows `\r\r`, Mac `\r`).
+* Auto-detection of new line markers (Linux `\n`, Windows `\r\n`, Mac `\r`).
 * Add a new line marker at the end of the file if it is missing.
 * Make new line markers consistent.
 * Remove empty lines at the end of the file.

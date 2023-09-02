@@ -10,8 +10,6 @@ Usage:
    python whitespace_format.py [OPTIONS] [FILES ...]
 """
 
-# pylint: disable=duplicate-code
-
 from __future__ import annotations
 
 import argparse
