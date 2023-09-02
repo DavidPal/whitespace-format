@@ -353,9 +353,7 @@ class TestWhitespaceFormat(unittest.TestCase):
     def test_remove_trailing_whitespace(self):
         """Tests remove_trailing_empty_lines() function."""
         self.assertListEqual([], whitespace_format2.remove_trailing_whitespace([]))
-        self.assertListEqual(
-            [], whitespace_format2.remove_trailing_whitespace([Line("    ", "")])
-        )
+        self.assertListEqual([], whitespace_format2.remove_trailing_whitespace([Line("    ", "")]))
         self.assertListEqual(
             [], whitespace_format2.remove_trailing_whitespace([Line(" \t \v \f ", "")])
         )
