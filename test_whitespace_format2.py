@@ -593,86 +593,183 @@ class TestWhitespaceFormat(unittest.TestCase):
             whitespace_format2.add_end_of_line_marker_at_end_of_file([Line("hello", "\r\n")], "\r"),
         )
 
-    def test_normalize_new_line_markers(self):
-        """Tests normalize_new_line_markers() function."""
-        self.assertEqual("", whitespace_format.normalize_new_line_markers("", "\n"))
-        self.assertEqual("  ", whitespace_format.normalize_new_line_markers("  ", "\n"))
-        self.assertEqual("\n\n\n\n", whitespace_format.normalize_new_line_markers("\n\n\r\r", "\n"))
-        self.assertEqual(
-            "hello\nworld\n",
-            whitespace_format.normalize_new_line_markers("hello\nworld\r", "\n"),
+    def test_normalize_end_of_line_markers(self):
+        """Tests normalize_end_of_line_markers() function."""
+        self.assertListEqual([], whitespace_format2.normalize_end_of_line_markers([], "\n"))
+        self.assertListEqual(
+            [Line("  ", "")],
+            whitespace_format2.normalize_end_of_line_markers([Line("  ", "")], "\n"),
         )
-        self.assertEqual(
-            "\n\n\n\n\n\n",
-            whitespace_format.normalize_new_line_markers("\r\r\r\n\r\n\n\n", "\n"),
+        self.assertListEqual(
+            [Line("", "\n"), Line("", "\n"), Line("", "\n"), Line("", "\n")],
+            whitespace_format2.normalize_end_of_line_markers(
+                [Line("", "\n"), Line("", "\n"), Line("", "\r"), Line("", "\r")], "\n"
+            ),
+        )
+        self.assertListEqual(
+            [Line("hello", "\n"), Line("world", "\n")],
+            whitespace_format2.normalize_end_of_line_markers(
+                [Line("hello", "\n"), Line("world", "\r")], "\n"
+            ),
+        )
+        self.assertListEqual(
+            [
+                Line("", "\n"),
+                Line("", "\n"),
+                Line("", "\n"),
+                Line("", "\n"),
+                Line("", "\n"),
+                Line("", "\n"),
+            ],
+            whitespace_format2.normalize_end_of_line_markers(
+                [
+                    Line("", "\r"),
+                    Line("", "\r"),
+                    Line("", "\r\n"),
+                    Line("", "\r\n"),
+                    Line("", "\n"),
+                    Line("", "\n"),
+                ],
+                "\n",
+            ),
         )
 
-        self.assertEqual("", whitespace_format.normalize_new_line_markers("", "\r"))
-        self.assertEqual("  ", whitespace_format.normalize_new_line_markers("  ", "\r"))
-        self.assertEqual("\r\r\r\r", whitespace_format.normalize_new_line_markers("\n\n\r\r", "\r"))
-        self.assertEqual(
-            "hello\rworld\r",
-            whitespace_format.normalize_new_line_markers("hello\nworld\r", "\r"),
+        self.assertListEqual([], whitespace_format2.normalize_end_of_line_markers([], "\r"))
+        self.assertListEqual(
+            [Line("  ", "")],
+            whitespace_format2.normalize_end_of_line_markers([Line("  ", "")], "\r"),
         )
-        self.assertEqual(
-            "\r\r\r\r\r\r",
-            whitespace_format.normalize_new_line_markers("\r\r\r\n\r\n\n\n", "\r"),
+        self.assertListEqual(
+            [Line("", "\r"), Line("", "\r"), Line("", "\r"), Line("", "\r")],
+            whitespace_format2.normalize_end_of_line_markers(
+                [Line("", "\n"), Line("", "\n"), Line("", "\r"), Line("", "\r")], "\r"
+            ),
+        )
+        self.assertListEqual(
+            [Line("hello", "\r"), Line("world", "\r")],
+            whitespace_format2.normalize_end_of_line_markers(
+                [Line("hello", "\n"), Line("world", "\r")], "\r"
+            ),
+        )
+        self.assertListEqual(
+            [
+                Line("", "\r"),
+                Line("", "\r"),
+                Line("", "\r"),
+                Line("", "\r"),
+                Line("", "\r"),
+                Line("", "\r"),
+            ],
+            whitespace_format2.normalize_end_of_line_markers(
+                [
+                    Line("", "\r"),
+                    Line("", "\r"),
+                    Line("", "\r\n"),
+                    Line("", "\r\n"),
+                    Line("", "\n"),
+                    Line("", "\n"),
+                ],
+                "\r",
+            ),
         )
 
-        self.assertEqual("", whitespace_format.normalize_new_line_markers("", "\r\n"))
-        self.assertEqual("  ", whitespace_format.normalize_new_line_markers("  ", "\r\n"))
-        self.assertEqual(
-            "\r\n\r\n\r\n\r\n",
-            whitespace_format.normalize_new_line_markers("\n\n\r\r", "\r\n"),
+        self.assertListEqual([], whitespace_format2.normalize_end_of_line_markers([], "\r\n"))
+        self.assertListEqual(
+            [Line("  ", "")],
+            whitespace_format2.normalize_end_of_line_markers([Line("  ", "")], "\r\n"),
         )
-        self.assertEqual(
-            "hello\r\nworld\r\n",
-            whitespace_format.normalize_new_line_markers("hello\nworld\r", "\r\n"),
+        self.assertListEqual(
+            [Line("", "\r\n"), Line("", "\r\n"), Line("", "\r\n"), Line("", "\r\n")],
+            whitespace_format2.normalize_end_of_line_markers(
+                [Line("", "\n"), Line("", "\n"), Line("", "\r"), Line("", "\r")], "\r\n"
+            ),
         )
-        self.assertEqual(
-            "\r\n\r\n\r\n\r\n\r\n\r\n",
-            whitespace_format.normalize_new_line_markers("\r\r\r\n\r\n\n\n", "\r\n"),
+        self.assertListEqual(
+            [Line("hello", "\r\n"), Line("world", "\r\n")],
+            whitespace_format2.normalize_end_of_line_markers(
+                [Line("hello", "\n"), Line("world", "\r")], "\r\n"
+            ),
+        )
+        self.assertListEqual(
+            [
+                Line("", "\r\n"),
+                Line("", "\r\n"),
+                Line("", "\r\n"),
+                Line("", "\r\n"),
+                Line("", "\r\n"),
+                Line("", "\r\n"),
+            ],
+            whitespace_format2.normalize_end_of_line_markers(
+                [
+                    Line("", "\r"),
+                    Line("", "\r"),
+                    Line("", "\r\n"),
+                    Line("", "\r\n"),
+                    Line("", "\n"),
+                    Line("", "\n"),
+                ],
+                "\r\n",
+            ),
         )
 
     def test_normalize_non_standard_whitespace(self):
         """Tests remove_non_standard_whitespace() function."""
-        self.assertEqual("", whitespace_format.normalize_non_standard_whitespace("", "ignore"))
-        self.assertEqual("  ", whitespace_format.normalize_non_standard_whitespace("  ", "ignore"))
-        self.assertEqual(
-            "hello", whitespace_format.normalize_non_standard_whitespace("hello", "ignore")
+        self.assertListEqual([], whitespace_format2.normalize_non_standard_whitespace([], "ignore"))
+        self.assertListEqual(
+            [Line("  ", "")],
+            whitespace_format2.normalize_non_standard_whitespace([Line("  ", "")], "ignore"),
         )
-        self.assertEqual(
-            "\v\f\t  \n",
-            whitespace_format.normalize_non_standard_whitespace("\v\f\t  \n", "ignore"),
+        self.assertListEqual(
+            [Line("hello", "")],
+            whitespace_format2.normalize_non_standard_whitespace([Line("hello", "")], "ignore"),
         )
-
-        self.assertEqual("", whitespace_format.normalize_non_standard_whitespace("", "remove"))
-        self.assertEqual("  ", whitespace_format.normalize_non_standard_whitespace("  ", "remove"))
-        self.assertEqual(
-            "hello", whitespace_format.normalize_non_standard_whitespace("hello", "remove")
-        )
-        self.assertEqual(
-            "\t  \n", whitespace_format.normalize_non_standard_whitespace("\v\f\t  \n", "remove")
+        self.assertListEqual(
+            [Line("\v\f\t  ", "\n")],
+            whitespace_format2.normalize_non_standard_whitespace(
+                [Line("\v\f\t  ", "\n")], "ignore"
+            ),
         )
 
-        self.assertEqual("", whitespace_format.normalize_non_standard_whitespace("", "replace"))
-        self.assertEqual("  ", whitespace_format.normalize_non_standard_whitespace("  ", "replace"))
-        self.assertEqual(
-            "hello", whitespace_format.normalize_non_standard_whitespace("hello", "replace")
+        self.assertListEqual([], whitespace_format2.normalize_non_standard_whitespace([], "remove"))
+        self.assertListEqual(
+            [Line("  ", "")],
+            whitespace_format2.normalize_non_standard_whitespace([Line("  ", "")], "remove"),
         )
-        self.assertEqual(
-            "  \t  \n", whitespace_format.normalize_non_standard_whitespace("\v\f\t  \n", "replace")
+        self.assertListEqual(
+            [Line("hello", "")],
+            whitespace_format2.normalize_non_standard_whitespace([Line("hello", "")], "remove"),
+        )
+        self.assertListEqual(
+            [Line("\t  ", "\n")],
+            whitespace_format2.normalize_non_standard_whitespace(
+                [Line("\v\f\t  ", "\n")], "remove"
+            ),
+        )
+
+        self.assertListEqual(
+            [], whitespace_format2.normalize_non_standard_whitespace([], "replace")
+        )
+        self.assertListEqual(
+            [Line("  ", "")],
+            whitespace_format2.normalize_non_standard_whitespace([Line("  ", "")], "replace"),
+        )
+        self.assertListEqual(
+            [Line("hello", "")], whitespace_format2.normalize_non_standard_whitespace([Line("hello", "")], "replace")
+        )
+        self.assertListEqual(
+            [Line("  \t  ", "\n")],
+            whitespace_format2.normalize_non_standard_whitespace([Line("\v\f\t  ", "\n")], "replace"),
         )
 
     def test_find_all_files_recursively(self):
         """Tests find_all_files_recursively() function."""
         self.assertEqual(
             [".circleci/config.yml"],
-            whitespace_format.find_all_files_recursively(".circleci", False),
+            whitespace_format2.find_all_files_recursively(".circleci", False),
         )
         self.assertEqual(
             [".circleci/config.yml"],
-            whitespace_format.find_all_files_recursively(".circleci/", True),
+            whitespace_format2.find_all_files_recursively(".circleci/", True),
         )
 
     def test_format_file_content_1(self):

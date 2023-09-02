@@ -15,9 +15,9 @@ from __future__ import annotations
 import argparse
 import copy
 import dataclasses
+import pathlib
 import re
 import sys
-from typing import Dict
 from typing import List
 
 VERSION = "0.0.3"
@@ -192,8 +192,8 @@ def remove_trailing_whitespace(lines: List[Line]) -> List[Line]:
     return remove_dummy_lines(lines)
 
 
-def normalize_new_line_markers(lines: List[Line], new_end_of_line_marker: str) -> List[Line]:
-    """Replaces end-of-line marker in all lines with a new marker.
+def normalize_end_of_line_markers(lines: List[Line], new_end_of_line_marker: str) -> List[Line]:
+    """Replaces end-of-line marker in all lines with a new end-of-line marker.
 
     Lines without end-of-line markers (i.e. possibly the last line) are left unchanged.
     """
@@ -275,3 +275,231 @@ def compute_difference(original_lines: List[Line], new_lines: List[Line]) -> Lis
     if len(original_lines) != len(new_lines):
         line_numbers.append(min(len(original_lines), len(new_lines)))
     return line_numbers
+
+
+def find_all_files_recursively(file_name: str, follow_symlinks: bool) -> List[str]:
+    """Finds files in directories recursively."""
+    if (not follow_symlinks) and pathlib.Path(file_name).is_symlink():
+        return []
+
+    if pathlib.Path(file_name).is_file():
+        return [file_name]
+
+    if pathlib.Path(file_name).is_dir():
+        return [
+            expanded_file_name
+            for inner_file in sorted(pathlib.Path(file_name).iterdir())
+            for expanded_file_name in find_all_files_recursively(str(inner_file), follow_symlinks)
+        ]
+
+    return []
+
+
+def find_files_to_process(file_names: List[str], parsed_arguments: argparse.Namespace) -> List[str]:
+    """Finds files that need to be processed.
+
+    The function excludes files that match the regular expression specified
+    by the --exclude command line option.
+    """
+    return [
+        expanded_file_name
+        for file_name in file_names
+        for expanded_file_name in find_all_files_recursively(
+            file_name, parsed_arguments.follow_symlinks
+        )
+        if not re.search(parsed_arguments.exclude, expanded_file_name)
+    ]
+
+
+def parse_command_line() -> argparse.Namespace:
+    """Parses command line arguments."""
+    parser = argparse.ArgumentParser(
+        prog="whitespace-format",
+        description="Linter and formatter for source code files and text files",
+        allow_abbrev=False,
+        add_help=True,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument(
+        "--check-only",
+        help="Do not format files. Only report which files would be formatted.",
+        required=False,
+        action="store_true",
+        default=False,
+    )
+    parser.add_argument(
+        "--encoding",
+        help=(
+            "Text encoding for both reading and writing files. Default encoding is utf-8. "
+            "List of supported encodings can be found at "
+            "https://docs.python.org/3/library/codecs.html#standard-encodings"
+        ),
+        required=False,
+        default="utf-8",
+        type=str,
+    )
+    parser.add_argument(
+        "--verbose",
+        help="Print more messages than normally.",
+        required=False,
+        action="store_true",
+        default=False,
+    )
+    parser.add_argument(
+        "--quiet",
+        help="Do not print any messages, except for errors when reading or writing files.",
+        required=False,
+        action="store_true",
+        default=False,
+    )
+    parser.add_argument(
+        "--color",
+        help="Print messages in color.",
+        required=False,
+        action="store_true",
+        default=False,
+    )
+    parser.add_argument(
+        "--follow-symlinks",
+        help="Follow symlinks when looking for files. By default this option is turned off.",
+        required=False,
+        action="store_true",
+        default=False,
+    )
+    parser.add_argument(
+        "--exclude",
+        help=(
+            "Regular expression that specifies which files to exclude. "
+            "The regular expression is evaluated on the path of each file. "
+            "Example #1: --exclude=\"(.jpeg|.png)$\" excludes files "
+            "with '.jpeg' or '.png' extension. "
+            "Example #2: --exclude=\".git/\" excludes all files in the '.git' directory. "
+        ),
+        required=False,
+        type=str,
+        default=UNMATCHABLE_REGEX,
+    )
+    parser.add_argument(
+        "--new-line-marker",
+        help=(
+            "Specifies what new line marker to use. "
+            "auto: Use new line marker that is the most common in each individual file. "
+            "If no new line marker is present in the file, Linux '\\n' is used."
+            "linux: Use Linux new line marker '\\n'. "
+            "mac: Use Mac new line marker '\\r'. "
+            "windows: Use Windows new line marker '\\r\\n'. "
+        ),
+    )
+    parser.add_argument(
+        "--normalize-new-line-markers",
+        help=(
+            "Make new line markers consistent in each file "
+            "by replacing '\\r\\n', '\\n', and `\\r` with a consistent new line marker. "
+        ),
+        required=False,
+        default=False,
+        action="store_true",
+    )
+    parser.add_argument(
+        "--normalize-empty-files",
+        help=(
+            "Replace files of zero length. "
+            "ignore: Leave empty files as is. "
+            "empty: Same as ignore. "
+            "one-line: Replace the file with a single empty line with an end of line marker. "
+            "If --whitespace-only-files is set to value other than 'ignore', "
+            "it overrides --empty-files setting. "
+        ),
+        required=False,
+        default="ignore",
+        choices=["ignore", "empty", "one-line"],
+    )
+    parser.add_argument(
+        "--normalize-whitespace-only-files",
+        help=(
+            "Replace files consisting of whitespace only. "
+            "ignore: Leave empty files as is. "
+            "empty: Replace each file with an empty file. "
+            "one-line: Replace the file with a single empty line with an end of line marker. "
+            "If --normalize-whitespace-only-files is set to value other than 'ignore', "
+            "it overrides --normalize-empty-files setting. "
+        ),
+        required=False,
+        default="ignore",
+        choices=["ignore", "empty", "one-line"],
+    )
+    parser.add_argument(
+        "--add-new-line-marker-at-end-of-file",
+        help="Add missing new line marker at end of each file.",
+        required=False,
+        default=False,
+        action="store_true",
+    )
+    parser.add_argument(
+        "--remove-new-line-marker-from-end-of-file",
+        help="Remove new line markers from the end of each file.",
+        required=False,
+        default=False,
+        action="store_true",
+    )
+    parser.add_argument(
+        "--remove-trailing-whitespace",
+        help="Remove whitespace at the end of each line.",
+        required=False,
+        default=False,
+        action="store_true",
+    )
+    parser.add_argument(
+        "--remove-trailing-empty-lines",
+        help="Remove empty lines at the end of each file.",
+        required=False,
+        default=False,
+        action="store_true",
+    )
+    parser.add_argument(
+        "--normalize-non-standard-whitespace",
+        help=(
+            "Replace or remove non-standard whitespace characters '\\v' and '\\f' in each file. "
+            "ignore: Leave '\\v' and '\\f' as is. "
+            "remove: Remove all occurrences of '\\v' and '\\f'. "
+            "replace: Replace each occurrence of '\\v' and '\\f' with a single space. "
+        ),
+        required=False,
+        default="ignore",
+        type=str,
+        choices=["ignore", "remove", "replace"],
+    )
+    parser.add_argument(
+        "--replace-tabs-with-spaces",
+        help=(
+            "Replace tabs with spaces. "
+            "The parameter specifies number of spaces to use. "
+            "If the parameter is negative, tabs are not replaced."
+        ),
+        required=False,
+        default=-1,
+        type=int,
+    )
+    parser.add_argument("input_files", help="List of input files", nargs="+", default=[], type=str)
+
+    parsed_arguments = parser.parse_args()
+
+    # Fix command line arguments.
+    if parsed_arguments.normalize_whitespace_only_files == "empty":
+        parsed_arguments.normalize_empty_files = parsed_arguments.normalize_whitespace_only_files
+
+    if parsed_arguments.verbose:
+        parsed_arguments.quiet = False
+
+    return parsed_arguments
+
+
+def main():
+    """Formats white space in text files."""
+    parsed_arguments = parse_command_line()
+    file_names = find_files_to_process(parsed_arguments.input_files, parsed_arguments)
+    reformat_files(file_names, parsed_arguments)
+
+
+if __name__ == "__main__":
+    main()
