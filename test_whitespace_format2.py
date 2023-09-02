@@ -194,56 +194,161 @@ class TestWhitespaceFormat(unittest.TestCase):
         """Tests remove_trailing_empty_lines() function."""
         self.assertListEqual([], whitespace_format2.remove_trailing_empty_lines([]))
         self.assertListEqual(
-            [Line("hello")], whitespace_format2.remove_trailing_empty_lines([Line("hello", "")])
+            [Line("hello", "")], whitespace_format2.remove_trailing_empty_lines([Line("hello", "")])
         )
 
-        self.assertEqual("\n", whitespace_format2.remove_trailing_empty_lines([Line("", "\n")]))
-        self.assertEqual(
-            "\n", whitespace_format2.remove_trailing_empty_lines([Line("", "\n"), Line("", "\n")])
+        self.assertListEqual(
+            [Line("", "\n")], whitespace_format2.remove_trailing_empty_lines([Line("", "\n")])
         )
-        self.assertEqual("\n", whitespace_format2.remove_trailing_empty_lines("\n\n\n"))
-        self.assertEqual("\n", whitespace_format2.remove_trailing_empty_lines("\n\n\n\n"))
-
-        self.assertEqual("hello\n", whitespace_format2.remove_trailing_empty_lines("hello\n"))
-        self.assertEqual("hello\n", whitespace_format2.remove_trailing_empty_lines("hello\n\n"))
-        self.assertEqual("hello\n", whitespace_format2.remove_trailing_empty_lines("hello\n\n\n"))
-        self.assertEqual("hello\n", whitespace_format2.remove_trailing_empty_lines("hello\n\n\n\n"))
-
-        self.assertEqual("\r", whitespace_format2.remove_trailing_empty_lines("\r"))
-        self.assertEqual("\r", whitespace_format2.remove_trailing_empty_lines("\r\r"))
-        self.assertEqual("\r", whitespace_format2.remove_trailing_empty_lines("\r\r\r"))
-        self.assertEqual("\r", whitespace_format2.remove_trailing_empty_lines("\r\r\r\r"))
-
-        self.assertEqual("hello\r", whitespace_format2.remove_trailing_empty_lines("hello\r"))
-        self.assertEqual("hello\r", whitespace_format2.remove_trailing_empty_lines("hello\r\r"))
-        self.assertEqual("hello\r", whitespace_format2.remove_trailing_empty_lines("hello\r\r\r"))
-        self.assertEqual("hello\r", whitespace_format2.remove_trailing_empty_lines("hello\r\r\r\r"))
-
-        self.assertEqual("\r\n", whitespace_format2.remove_trailing_empty_lines("\r\n"))
-        self.assertEqual("\r\n", whitespace_format2.remove_trailing_empty_lines("\r\n\r\n"))
-        self.assertEqual("\r\n", whitespace_format2.remove_trailing_empty_lines("\r\n\r\n\r\n"))
-        self.assertEqual("\r\n", whitespace_format2.remove_trailing_empty_lines("\r\n\r\n\r\n\r\n"))
-
-        self.assertEqual("hello\r\n", whitespace_format2.remove_trailing_empty_lines("hello\r\n"))
-        self.assertEqual(
-            "hello\r\n", whitespace_format2.remove_trailing_empty_lines("hello\r\n\r\n")
+        self.assertListEqual(
+            [Line("", "\n")],
+            whitespace_format2.remove_trailing_empty_lines([Line("", "\n"), Line("", "\n")]),
         )
-        self.assertEqual(
-            "hello\r\n", whitespace_format2.remove_trailing_empty_lines("hello\r\n\r\n\r\n")
+        self.assertListEqual(
+            [Line("", "\n")],
+            whitespace_format2.remove_trailing_empty_lines(
+                [Line("", "\n"), Line("", "\n"), Line("", "\n")]
+            ),
         )
-        self.assertEqual(
-            "hello\r\n", whitespace_format2.remove_trailing_empty_lines("hello\r\n\r\n\r\n\r\n")
+        self.assertListEqual(
+            [Line("", "\n")],
+            whitespace_format2.remove_trailing_empty_lines(
+                [Line("", "\n"), Line("", "\n"), Line("", "\n"), Line("", "\n")]
+            ),
         )
 
-        self.assertEqual("\n", whitespace_format2.remove_trailing_empty_lines("\n\r"))
-        self.assertEqual("\n", whitespace_format2.remove_trailing_empty_lines("\n\r\r"))
-        self.assertEqual("\n", whitespace_format2.remove_trailing_empty_lines("\n\r\r\r"))
-        self.assertEqual("\n", whitespace_format2.remove_trailing_empty_lines("\n\r\r\r\r"))
+        self.assertListEqual(
+            [Line("hello", "\n")],
+            whitespace_format2.remove_trailing_empty_lines([Line("hello", "\n")]),
+        )
+        self.assertListEqual(
+            [Line("hello", "\n")],
+            whitespace_format2.remove_trailing_empty_lines([Line("hello", "\n"), Line("", "\n")]),
+        )
+        self.assertListEqual(
+            [Line("hello", "\n")],
+            whitespace_format2.remove_trailing_empty_lines(
+                [Line("hello", "\n"), Line("", "\n"), Line("", "\n")]
+            ),
+        )
 
-        self.assertEqual("\r\n", whitespace_format2.remove_trailing_empty_lines("\r\n\r"))
-        self.assertEqual("\r\n", whitespace_format2.remove_trailing_empty_lines("\r\n\r\r"))
-        self.assertEqual("\r\n", whitespace_format2.remove_trailing_empty_lines("\r\n\r\r\r"))
-        self.assertEqual("\r\n", whitespace_format2.remove_trailing_empty_lines("\r\n\r\r\r\r"))
+        self.assertListEqual(
+            [Line("", "\r")], whitespace_format2.remove_trailing_empty_lines([Line("", "\r")])
+        )
+        self.assertListEqual(
+            [Line("", "\r")],
+            whitespace_format2.remove_trailing_empty_lines([Line("", "\r"), Line("", "\r")]),
+        )
+        self.assertListEqual(
+            [Line("", "\r")],
+            whitespace_format2.remove_trailing_empty_lines(
+                [Line("", "\r"), Line("", "\r"), Line("", "\r")]
+            ),
+        )
+        self.assertListEqual(
+            [Line("", "\r")],
+            whitespace_format2.remove_trailing_empty_lines(
+                [Line("", "\r"), Line("", "\r"), Line("", "\r"), Line("", "\r")]
+            ),
+        )
+
+        self.assertListEqual(
+            [Line("hello", "\r")],
+            whitespace_format2.remove_trailing_empty_lines([Line("hello", "\r")]),
+        )
+        self.assertListEqual(
+            [Line("hello", "\r")],
+            whitespace_format2.remove_trailing_empty_lines([Line("hello", "\r"), Line("", "\r")]),
+        )
+        self.assertListEqual(
+            [Line("hello", "\r")],
+            whitespace_format2.remove_trailing_empty_lines(
+                [Line("hello", "\r"), Line("", "\r"), Line("", "\r")]
+            ),
+        )
+
+        self.assertListEqual(
+            [Line("", "\r\n")], whitespace_format2.remove_trailing_empty_lines([Line("", "\r\n")])
+        )
+        self.assertListEqual(
+            [Line("", "\r\n")],
+            whitespace_format2.remove_trailing_empty_lines([Line("", "\r\n"), Line("", "\r\n")]),
+        )
+        self.assertListEqual(
+            [Line("", "\r\n")],
+            whitespace_format2.remove_trailing_empty_lines(
+                [Line("", "\r\n"), Line("", "\r\n"), Line("", "\r\n")]
+            ),
+        )
+        self.assertListEqual(
+            [Line("", "\r\n")],
+            whitespace_format2.remove_trailing_empty_lines(
+                [Line("", "\r\n"), Line("", "\r\n"), Line("", "\r\n"), Line("", "\r\n")]
+            ),
+        )
+
+        self.assertListEqual(
+            [Line("hello", "\r\n")],
+            whitespace_format2.remove_trailing_empty_lines([Line("hello", "\r\n")]),
+        )
+        self.assertListEqual(
+            [Line("hello", "\r\n")],
+            whitespace_format2.remove_trailing_empty_lines(
+                [Line("hello", "\r\n"), Line("", "\r\n")]
+            ),
+        )
+        self.assertListEqual(
+            [Line("hello", "\r\n")],
+            whitespace_format2.remove_trailing_empty_lines(
+                [Line("hello", "\r\n"), Line("", "\r\n"), Line("", "\r\n")]
+            ),
+        )
+
+        self.assertListEqual(
+            [Line("", "\n")],
+            whitespace_format2.remove_trailing_empty_lines([Line("", "\n"), Line("", "\r")]),
+        )
+        self.assertListEqual(
+            [Line("", "\n")],
+            whitespace_format2.remove_trailing_empty_lines(
+                [Line("", "\n"), Line("", "\r"), Line("", "\r")]
+            ),
+        )
+        self.assertListEqual(
+            [Line("", "\n")],
+            whitespace_format2.remove_trailing_empty_lines(
+                [Line("", "\n"), Line("", "\r"), Line("", "\r"), Line("", "\r")]
+            ),
+        )
+        self.assertListEqual(
+            [Line("", "\n")],
+            whitespace_format2.remove_trailing_empty_lines(
+                [Line("", "\n"), Line("", "\r"), Line("", "\r"), Line("", "\r"), Line("", "\r")]
+            ),
+        )
+
+        self.assertListEqual(
+            [Line("", "\r\n")],
+            whitespace_format2.remove_trailing_empty_lines([Line("", "\r\n"), Line("", "\r")]),
+        )
+        self.assertListEqual(
+            [Line("", "\r\n")],
+            whitespace_format2.remove_trailing_empty_lines(
+                [Line("", "\r\n"), Line("", "\r"), Line("", "\r")]
+            ),
+        )
+        self.assertListEqual(
+            [Line("", "\r\n")],
+            whitespace_format2.remove_trailing_empty_lines(
+                [Line("", "\r\n"), Line("", "\r"), Line("", "\r"), Line("", "\r")]
+            ),
+        )
+        self.assertListEqual(
+            [Line("", "\r\n")],
+            whitespace_format2.remove_trailing_empty_lines(
+                [Line("", "\r\n"), Line("", "\r"), Line("", "\r"), Line("", "\r"), Line("", "\r")]
+            ),
+        )
 
     def test_remove_trailing_whitespace(self):
         """Tests remove_trailing_empty_lines() function."""

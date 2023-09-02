@@ -162,12 +162,17 @@ def guess_end_of_line_marker(lines: List[Line]) -> str:
 
 
 def remove_trailing_empty_lines(lines: List[Line]) -> List[Line]:
-    """Removes trailing empty lines."""
+    """Removes trailing empty lines.
+
+    If there are no lines, empty list is returned.
+    If all lines are empty, the first line is kept.
+    """
     num_empty_trailing_lines = 0
-    while num_empty_trailing_lines <= len(lines):
-        if not lines[-num_empty_trailing_lines - 1].content:
-            num_empty_trailing_lines += 1
-    return copy.deepcopy(lines[:-num_empty_trailing_lines])
+    while (num_empty_trailing_lines < len(lines) - 1) and (
+        not lines[-num_empty_trailing_lines - 1].content
+    ):
+        num_empty_trailing_lines += 1
+    return copy.deepcopy(lines[: len(lines) - num_empty_trailing_lines])
 
 
 def remove_trailing_whitespace(lines: List[Line]) -> List[Line]:
