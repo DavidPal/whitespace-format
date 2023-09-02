@@ -10,22 +10,28 @@ Usage:
    python whitespace_format.py [OPTIONS] [FILES ...]
 """
 
+# pylint: disable=duplicate-code
+
+from __future__ import annotations
+
 import argparse
+import copy
 import dataclasses
 import pathlib
 import re
 import sys
 from typing import Callable
+from typing import Dict
 from typing import List
 
-VERSION = "0.0.3"
+VERSION = "0.0.4"
 
 # Regular expression that does NOT match any string.
 UNMATCHABLE_REGEX = "$."
 
-NEW_LINE_MARKERS = {
-    "linux": "\n",
+END_OF_LINE_MARKERS = {
     "windows": "\r\n",
+    "linux": "\n",
     "mac": "\r",
 }
 
@@ -96,99 +102,185 @@ def write_file(file_name: str, file_content: str, encoding: str):
         die(4, f"Cannot write to file '{file_name}': {exception}")
 
 
-def guess_new_line_marker(file_content: str) -> str:
-    """Guesses newline character for a file.
+@dataclasses.dataclass
+class Line:
+    """Line of a text file.
 
-    The guess is based on the counts of "\n", "\r" and "\rn" in the file.
+    The line is split into two parts:
+        1) Content
+        2) End of line marker ("\n", or "\r", or "\r\n")
     """
-    windows_count = file_content.count("\r\n")
-    linux_count = file_content.count("\n") - windows_count
-    mac_count = file_content.count("\r") - windows_count
 
-    # Pick the new line marker with the highest count.
-    # Break ties according to the ordering: Linux > Windows > Mac.
-    _, _, new_line_marker_guess = max(
-        (linux_count, 3, "\n"),
-        (windows_count, 2, "\r\n"),
-        (mac_count, 1, "\r"),
-    )
+    content: str
+    end_of_line_marker: str
 
-    return new_line_marker_guess
+    @staticmethod
+    def create_from_string(line: str) -> Line:
+        """Creates a line from a string.
 
-
-def remove_trailing_empty_lines(file_content: str) -> str:
-    """Removes trailing empty lines."""
-    reduced_file_content = file_content.rstrip("\r\n")
-    i = len(reduced_file_content)
-    if i >= len(file_content) - 1:
-        return file_content
-    if file_content[i : i + 2] == "\r\n":
-        return file_content[: i + 2]
-    return file_content[: i + 1]
+        The function splits the input into content and end_of_line_marker.
+        """
+        for end_of_line_marker in ["\r\n", "\n", "\r"]:
+            if line.endswith(end_of_line_marker):
+                return Line(line[: -len(end_of_line_marker)], end_of_line_marker)
+        return Line(line, "")
 
 
-def remove_trailing_whitespace(file_content: str) -> str:
+def split_lines(text: str) -> List[Line]:
+    """Splits a string into lines."""
+    lines: List[Line] = []
+    current_line = ""
+    for i, char in enumerate(text):
+        current_line += char
+        if (char == "\n") or (
+            (char == "\r") and ((i >= len(text) - 1) or (not text[i + 1] == "\n"))
+        ):
+            lines.append(Line.create_from_string(current_line))
+            current_line = ""
+
+    if current_line:
+        lines.append(Line.create_from_string(current_line))
+
+    return lines
+
+
+def concatenate_lines(lines: List[Line]) -> str:
+    """Concatenates a list of lines into a single string including end-of-line markers."""
+    return "".join(line.content + line.end_of_line_marker for line in lines)
+
+
+def guess_end_of_line_marker(lines: List[Line]) -> str:
+    """Guesses the end of line marker.
+
+    The function returns the most common end-of-line marker.
+    Ties are broken in order Linux "\n", Mac "\r", Windows "\r\n".
+    If no end-of-line marker is present, default to the Linux "\n" end-of-line marker.
+    """
+    counts: Dict[str, int] = {"\n": 0, "\r": 0, "\r\n": 0}
+    for line in lines:
+        if line.end_of_line_marker in counts:
+            counts[line.end_of_line_marker] += 1
+    max_count = max(counts.values())
+    for end_of_line_marker, count in counts.items():
+        if count == max_count:
+            return end_of_line_marker
+    return "\n"  # This return statement is never executed.
+
+
+def remove_trailing_empty_lines(lines: List[Line]) -> List[Line]:
+    """Removes trailing empty lines.
+
+    If there are no lines, empty list is returned.
+    If all lines are empty, the first line is kept.
+    """
+    num_empty_trailing_lines = 0
+    while (num_empty_trailing_lines < len(lines) - 1) and (
+        not lines[-num_empty_trailing_lines - 1].content
+    ):
+        num_empty_trailing_lines += 1
+    return copy.deepcopy(lines[: len(lines) - num_empty_trailing_lines])
+
+
+def remove_dummy_lines(lines: List[Line]) -> List[Line]:
+    """Remove empty lines that also have empty end-of-line markers."""
+    return [line for line in lines if line.content or line.end_of_line_marker]
+
+
+def remove_trailing_whitespace(lines: List[Line]) -> List[Line]:
     """Removes trailing whitespace from every line."""
-    file_content = re.sub(r"[ \t\f\v]*\n", "\n", file_content)
-    file_content = re.sub(r"[ \t\f\v]*\r", "\r", file_content)
-    file_content = re.sub(r"[ \t\f\v]*$", "", file_content)
-    return file_content
+    lines = [
+        Line(
+            re.sub(r"[ \n\r\t\f\v]*$", "", line.content),
+            line.end_of_line_marker,
+        )
+        for line in lines
+    ]
+    return remove_dummy_lines(lines)
 
 
-def remove_all_new_line_marker_from_end_of_file(file_content: str) -> str:
-    """Removes all new line markers from the end of the file."""
-    return file_content.rstrip("\n\r")
+def normalize_end_of_line_markers(lines: List[Line], new_end_of_line_marker: str) -> List[Line]:
+    """Replaces end-of-line marker in all lines with a new end-of-line marker.
+
+    Lines without end-of-line markers (i.e. possibly the last line) are left unchanged.
+    """
+    return [
+        Line(line.content, new_end_of_line_marker) if line.end_of_line_marker else line
+        for line in lines
+    ]
 
 
-def remove_new_line_marker_from_end_of_file(file_content: str) -> str:
-    """Removes the last new line marker from the last line."""
-    if file_content.endswith("\r\n"):
-        return file_content[:-2]
-    if file_content.endswith("\n") or file_content.endswith("\r"):
-        return file_content[:-1]
-    return file_content
+def remove_all_end_of_line_markers_from_end_of_file(lines: List[Line]) -> List[Line]:
+    """Removes all end-of-line markers from the end of the file."""
+    lines = remove_trailing_empty_lines(lines)
+    if not lines:
+        return []
+    lines[-1] = Line(lines[-1].content, "")
+    return remove_dummy_lines(lines)
 
 
-def add_new_line_marker_at_end_of_file(file_content: str, new_line_marker: str) -> str:
-    """Adds new line marker to the end of file if it is missing."""
-    return remove_new_line_marker_from_end_of_file(file_content) + new_line_marker
+def add_end_of_line_marker_at_end_of_file(
+    lines: List[Line], new_end_of_line_marker: str
+) -> List[Line]:
+    """Adds new end-of-line marker to the end of file if it is missing."""
+    if not lines:
+        return [Line("", new_end_of_line_marker)]
+    lines = copy.deepcopy(lines)
+    lines[-1] = Line(lines[-1].content, new_end_of_line_marker)
+    return lines
 
 
-def normalize_new_line_markers(file_content: str, new_line_marker: str) -> str:
-    """Fixes line endings."""
-    file_content = file_content.replace("\r\n", "\n")
-    file_content = file_content.replace("\r", "\n")
-    return file_content.replace("\n", new_line_marker)
-
-
-def normalize_empty_file(file_content: str, mode: str, new_line_marker: str) -> str:
+def normalize_empty_file(lines: List[Line], mode: str, new_end_of_line_marker: str) -> List[Line]:
     """Replaces file with an empty file."""
     if mode == "empty":
-        return ""
+        return []
     if mode == "one-line":
-        return new_line_marker
-    return file_content
+        return [Line("", new_end_of_line_marker)]
+    return copy.deepcopy(lines)
 
 
-def is_whitespace_only(file_content: str) -> bool:
+def is_whitespace_only(lines: List[Line]) -> bool:
     """Determines if file consists only of whitespace."""
-    return not file_content.strip(" \n\r\t\v\f")
+    for line in lines:
+        if line.content.strip(" \n\r\t\v\f"):
+            return False
+    return True
 
 
-def normalize_non_standard_whitespace(file_content: str, mode: str) -> str:
+def normalize_non_standard_whitespace(lines: List[Line], mode: str) -> List[Line]:
     """Removes non-standard whitespace characters."""
     if mode == "ignore":
-        return file_content
+        return copy.deepcopy(lines)
     if mode == "replace":
-        return file_content.translate(str.maketrans("\v\f", "  ", ""))
-    return file_content.translate(str.maketrans("", "", "\v\f"))
+        return [
+            Line(line.content.translate(str.maketrans("\v\f", "  ", "")), line.end_of_line_marker)
+            for line in lines
+        ]
+    return [
+        Line(line.content.translate(str.maketrans("", "", "\v\f")), line.end_of_line_marker)
+        for line in lines
+    ]
 
 
-def replace_tabs_with_spaces(file_content: str, num_spaces: int) -> str:
+def replace_tabs_with_spaces(lines: List[Line], num_spaces: int) -> List[Line]:
     """Replaces tabs with spaces."""
     if num_spaces < 0:
-        return file_content
-    return file_content.replace("\t", num_spaces * " ")
+        return copy.deepcopy(lines)
+    return [
+        Line(line.content.replace("\t", num_spaces * " "), line.end_of_line_marker)
+        for line in lines
+    ]
+
+
+def compute_difference(original_lines: List[Line], new_lines: List[Line]) -> List[int]:
+    """Computes the indices of lines that differ."""
+    line_numbers = [
+        line_number
+        for line_number, (original_line, new_line) in enumerate(zip(original_lines, new_lines))
+        if not original_line == new_line
+    ]
+    if len(original_lines) != len(new_lines):
+        line_numbers.append(min(len(original_lines), len(new_lines)))
+    return line_numbers
 
 
 @dataclasses.dataclass
@@ -199,25 +291,36 @@ class ChangeDescription:
     change: str
 
 
+@dataclasses.dataclass
+class LineChange:
+    """Description of a change on a particular line."""
+
+    check_only: str
+    change: str
+    line_number: int
+
+
 class FileContentTracker:
     """Tracks changes of the content of a file as it undergoes formatting."""
 
-    def __init__(self, file_content: str):
+    def __init__(self, lines: List[Line]):
         """Initializes an instance of the file content tracker."""
-        self.initial_content = file_content
-        self.file_content = file_content
-        self.changes: List[ChangeDescription] = []
+        self.initial_lines = lines
+        self.lines = copy.deepcopy(lines)
+        self.line_changes: List[LineChange] = []
 
-    def format(self, change: ChangeDescription, function: Callable[..., str], *args):
+    def format(self, change: ChangeDescription, function: Callable[..., List[Line]], *args):
         """Applies a change to the content of the file."""
-        previous_content = self.file_content
-        self.file_content = function(self.file_content, *args)
-        if previous_content != self.file_content:
-            self.changes.append(change)
+        previous_content = self.lines
+        self.lines = function(self.lines, *args)
+        if previous_content != self.lines:
+            line_numbers = compute_difference(previous_content, self.lines)
+            for line_number in line_numbers:
+                self.line_changes.append(LineChange(change.check_only, change.change, line_number))
 
     def is_changed(self) -> bool:
         """Determines if the file content has changed."""
-        return self.file_content != self.initial_content
+        return self.lines != self.initial_lines
 
 
 def format_file_content(
@@ -225,12 +328,12 @@ def format_file_content(
     parsed_arguments: argparse.Namespace,
 ):
     """Formats the content of file represented as a string."""
-    new_line_marker = NEW_LINE_MARKERS.get(
+    new_line_marker = END_OF_LINE_MARKERS.get(
         parsed_arguments.new_line_marker,
-        guess_new_line_marker(file_content_tracker.initial_content),
+        guess_end_of_line_marker(file_content_tracker.initial_lines),
     )
 
-    if is_whitespace_only(file_content_tracker.initial_content):
+    if is_whitespace_only(file_content_tracker.initial_lines):
         changes = {
             "ignore": ChangeDescription("", ""),
             "empty": ChangeDescription(
@@ -246,7 +349,7 @@ def format_file_content(
                 ),
             ),
         }
-        if not file_content_tracker.initial_content:
+        if not file_content_tracker.initial_lines:
             file_content_tracker.format(
                 changes[parsed_arguments.normalize_empty_files],
                 normalize_empty_file,
@@ -265,8 +368,8 @@ def format_file_content(
         if parsed_arguments.remove_trailing_whitespace:
             file_content_tracker.format(
                 ChangeDescription(
-                    check_only="Whitespace at the end of line(s) needs to be removed.",
-                    change="Whitespace at the end of line(s) was removed.",
+                    check_only="Whitespace at the end of line needs to be removed.",
+                    change="Whitespace at the end of line was removed.",
                 ),
                 remove_trailing_whitespace,
             )
@@ -308,7 +411,7 @@ def format_file_content(
                     ),
                     change=f"New line marker(s) were replaced with {repr(new_line_marker)}.",
                 ),
-                normalize_new_line_markers,
+                normalize_end_of_line_markers,
                 new_line_marker,
             )
 
@@ -320,7 +423,7 @@ def format_file_content(
                     change=f"New line marker was added to the end of the file, "
                     f"or replaced with {repr(new_line_marker)}.",
                 ),
-                add_new_line_marker_at_end_of_file,
+                add_end_of_line_marker_at_end_of_file,
                 new_line_marker,
             )
         elif parsed_arguments.remove_new_line_marker_from_end_of_file:
@@ -329,14 +432,15 @@ def format_file_content(
                     check_only="New line marker(s) need to removed from the end of the file.",
                     change="New line marker(s) were removed from the end of the file.",
                 ),
-                remove_all_new_line_marker_from_end_of_file,
+                remove_all_end_of_line_markers_from_end_of_file,
             )
 
 
 def reformat_file(file_name: str, parsed_arguments: argparse.Namespace) -> bool:
     """Reformats a file."""
     file_content = read_file_content(file_name, parsed_arguments.encoding)
-    file_content_tracker = FileContentTracker(file_content)
+    lines = split_lines(file_content)
+    file_content_tracker = FileContentTracker(lines)
     format_file_content(file_content_tracker, parsed_arguments)
     is_changed = file_content_tracker.is_changed()
     if parsed_arguments.verbose:
@@ -348,9 +452,11 @@ def reformat_file(file_name: str, parsed_arguments: argparse.Namespace) -> bool:
                 f"[RED]needs to be formatted[RESET_ALL]",
                 parsed_arguments,
             )
-            for change in file_content_tracker.changes:
+            for line_change in file_content_tracker.line_changes:
                 color_print(
-                    f"   [BOLD][BLUE]↳ [WHITE]{change.check_only}[RESET_ALL]", parsed_arguments
+                    f"   [BOLD][BLUE]↳ line {line_change.line_number + 1}: "
+                    f"[WHITE]{line_change.check_only}[RESET_ALL]",
+                    parsed_arguments,
                 )
         else:
             if parsed_arguments.verbose:
@@ -362,9 +468,15 @@ def reformat_file(file_name: str, parsed_arguments: argparse.Namespace) -> bool:
     else:
         if is_changed:
             color_print(f"[WHITE]Reformatted [BOLD]{file_name}[RESET_ALL]", parsed_arguments)
-            for change in file_content_tracker.changes:
-                color_print(f"   [BOLD][BLUE]↳ [WHITE]{change.change}[RESET_ALL]", parsed_arguments)
-            write_file(file_name, file_content_tracker.file_content, parsed_arguments.encoding)
+            for line_change in file_content_tracker.line_changes:
+                color_print(
+                    f"   [BOLD][BLUE]↳ line {line_change.line_number + 1}: "
+                    f"[WHITE]{line_change.change}[RESET_ALL]",
+                    parsed_arguments,
+                )
+            write_file(
+                file_name, concatenate_lines(file_content_tracker.lines), parsed_arguments.encoding
+            )
         else:
             if parsed_arguments.verbose:
                 color_print(f"[WHITE]{file_name} [BLUE]left unchanged[RESET_ALL]", parsed_arguments)
