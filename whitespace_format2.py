@@ -10,6 +10,8 @@ Usage:
    python whitespace_format.py [OPTIONS] [FILES ...]
 """
 
+# pylint: disable=duplicate-code
+
 from __future__ import annotations
 
 import argparse
@@ -158,8 +160,9 @@ def guess_end_of_line_marker(lines: List[Line]) -> str:
     for line in lines:
         if line.end_of_line_marker in counts:
             counts[line.end_of_line_marker] += 1
-    for end_of_line_marker in counts:
-        if counts[end_of_line_marker] == max(counts.values()):
+    max_count = max(counts.values())
+    for end_of_line_marker, count in counts.items():
+        if count == max_count:
             return end_of_line_marker
     return "\n"  # This return statement is never executed.
 
@@ -316,7 +319,7 @@ def format_file_content(
     """Formats the content of file represented as a string."""
     new_line_marker = END_OF_LINE_MARKERS.get(
         parsed_arguments.new_line_marker,
-        guess_end_of_line_marker(file_content_tracker.initial_lines)
+        guess_end_of_line_marker(file_content_tracker.initial_lines),
     )
 
     if is_whitespace_only(file_content_tracker.initial_lines):
@@ -454,7 +457,9 @@ def reformat_file(file_name: str, parsed_arguments: argparse.Namespace) -> bool:
             color_print(f"[WHITE]Reformatted [BOLD]{file_name}[RESET_ALL]", parsed_arguments)
             for change in file_content_tracker.changes:
                 color_print(f"   [BOLD][BLUE]↳ [WHITE]{change.change}[RESET_ALL]", parsed_arguments)
-            write_file(file_name, concatenate_lines(file_content_tracker.lines), parsed_arguments.encoding)
+            write_file(
+                file_name, concatenate_lines(file_content_tracker.lines), parsed_arguments.encoding
+            )
         else:
             if parsed_arguments.verbose:
                 color_print(f"[WHITE]{file_name} [BLUE]left unchanged[RESET_ALL]", parsed_arguments)

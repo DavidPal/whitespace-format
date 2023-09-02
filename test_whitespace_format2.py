@@ -1,5 +1,7 @@
 """Unit tests for whitespace_format module."""
 
+# pylint: disable=duplicate-code
+
 import argparse
 import re
 import unittest
@@ -443,7 +445,9 @@ class TestWhitespaceFormat(unittest.TestCase):
 
     def test_remove_all_new_line_marker_from_end_of_file(self):
         """Tests remove_all_new_line_marker_from_end_of_file() function."""
-        self.assertListEqual([], whitespace_format2.remove_all_end_of_line_markers_from_end_of_file([]))
+        self.assertListEqual(
+            [], whitespace_format2.remove_all_end_of_line_markers_from_end_of_file([])
+        )
         self.assertListEqual(
             [Line("  ", "")],
             whitespace_format2.remove_all_end_of_line_markers_from_end_of_file([Line("  ", "")]),
@@ -754,11 +758,14 @@ class TestWhitespaceFormat(unittest.TestCase):
             whitespace_format2.normalize_non_standard_whitespace([Line("  ", "")], "replace"),
         )
         self.assertListEqual(
-            [Line("hello", "")], whitespace_format2.normalize_non_standard_whitespace([Line("hello", "")], "replace")
+            [Line("hello", "")],
+            whitespace_format2.normalize_non_standard_whitespace([Line("hello", "")], "replace"),
         )
         self.assertListEqual(
             [Line("  \t  ", "\n")],
-            whitespace_format2.normalize_non_standard_whitespace([Line("\v\f\t  ", "\n")], "replace"),
+            whitespace_format2.normalize_non_standard_whitespace(
+                [Line("\v\f\t  ", "\n")], "replace"
+            ),
         )
 
     def test_find_all_files_recursively(self):
@@ -774,20 +781,29 @@ class TestWhitespaceFormat(unittest.TestCase):
 
     def test_format_file_content_1(self):
         """Tests format_file_content() function."""
-        file_content_tracker = whitespace_format.FileContentTracker("")
-        whitespace_format.format_file_content(
+        file_content_tracker = whitespace_format2.FileContentTracker([])
+        whitespace_format2.format_file_content(
             file_content_tracker,
             argparse.Namespace(
                 new_line_marker="auto",
                 normalize_empty_files="ignore",
             ),
         )
-        self.assertEqual("", file_content_tracker.lines)
+        self.assertListEqual([], file_content_tracker.lines)
 
     def test_format_file_content_2(self):
         """Tests format_file_content() function."""
-        file_content_tracker = whitespace_format.FileContentTracker(" \n \n \r \r\n \r\n \t \v \f ")
-        whitespace_format.format_file_content(
+        file_content_tracker = whitespace_format2.FileContentTracker(
+            [
+                Line(" ", "\n"),
+                Line(" ", "\n"),
+                Line(" ", "\r"),
+                Line(" ", "\r\n"),
+                Line(" ", "\r\n"),
+                Line(" \t \v \f ", ""),
+            ]
+        )
+        whitespace_format2.format_file_content(
             file_content_tracker,
             argparse.Namespace(
                 new_line_marker="auto",
@@ -795,12 +811,14 @@ class TestWhitespaceFormat(unittest.TestCase):
                 normalize_whitespace_only_files="empty",
             ),
         )
-        self.assertEqual("", file_content_tracker.lines)
+        self.assertListEqual([], file_content_tracker.lines)
 
     def test_format_file_content_3(self):
         """Tests format_file_content() function."""
-        file_content_tracker = whitespace_format.FileContentTracker("hello\r\nworld   ")
-        whitespace_format.format_file_content(
+        file_content_tracker = whitespace_format2.FileContentTracker(
+            [Line("hello", "\r\n"), Line("world   ", "")]
+        )
+        whitespace_format2.format_file_content(
             file_content_tracker,
             argparse.Namespace(
                 new_line_marker="linux",
@@ -812,7 +830,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                 normalize_new_line_markers=True,
             ),
         )
-        self.assertEqual("hello\nworld\n", file_content_tracker.lines)
+        self.assertListEqual([Line("hello", "\n"), Line("world", "\n")], file_content_tracker.lines)
 
 
 if __name__ == "__main__":
