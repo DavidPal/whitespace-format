@@ -354,10 +354,10 @@ class TestWhitespaceFormat(unittest.TestCase):
         """Tests remove_trailing_empty_lines() function."""
         self.assertListEqual([], whitespace_format2.remove_trailing_whitespace([]))
         self.assertListEqual(
-            [Line("", "")], whitespace_format2.remove_trailing_whitespace([Line("    ", "")])
+            [], whitespace_format2.remove_trailing_whitespace([Line("    ", "")])
         )
         self.assertListEqual(
-            [Line("", "")], whitespace_format2.remove_trailing_whitespace([Line(" \t \v \f ", "")])
+            [], whitespace_format2.remove_trailing_whitespace([Line(" \t \v \f ", "")])
         )
 
         self.assertListEqual(
@@ -374,128 +374,221 @@ class TestWhitespaceFormat(unittest.TestCase):
         )
 
         self.assertListEqual(
-            [Line("\t\v\f hello", "\n"), Line("", "")],
-            whitespace_format2.remove_trailing_whitespace([Line("\t\v\f hello  ", "\n"), Line(" \t\v\f ", "")]),
+            [Line("\t\v\f hello", "\n")],
+            whitespace_format2.remove_trailing_whitespace(
+                [Line("\t\v\f hello  ", "\n"), Line(" \t\v\f ", "")]
+            ),
         )
         self.assertListEqual(
-            [Line("\t\v\f hello", "\r"), Line("", "")],
-            whitespace_format2.remove_trailing_whitespace([Line("\t\v\f hello  ", "\r"), Line(" \t\v\f ", "")]),
+            [Line("\t\v\f hello", "\r")],
+            whitespace_format2.remove_trailing_whitespace(
+                [Line("\t\v\f hello  ", "\r"), Line(" \t\v\f ", "")]
+            ),
         )
         self.assertListEqual(
-            [Line("\t\v\f hello", "\r\n"), Line("", "")],
-            whitespace_format2.remove_trailing_whitespace([Line("\t\v\f hello  ", "\r\n"), Line(" \t\v\f ", "")]),
+            [Line("\t\v\f hello", "\r\n")],
+            whitespace_format2.remove_trailing_whitespace(
+                [Line("\t\v\f hello  ", "\r\n"), Line(" \t\v\f ", "")]
+            ),
         )
 
         self.assertListEqual(
             [Line(" line1", "\n"), Line("  line2", "")],
-            whitespace_format2.remove_trailing_whitespace([Line(" line1  ", "\n"), Line("  line2    ", "")]),
+            whitespace_format2.remove_trailing_whitespace(
+                [Line(" line1  ", "\n"), Line("  line2    ", "")]
+            ),
         )
         self.assertListEqual(
             [Line(" line1", "\r"), Line("  line2", "")],
-            whitespace_format2.remove_trailing_whitespace([Line(" line1  ", "\r"), Line("  line2    ", "")]),
+            whitespace_format2.remove_trailing_whitespace(
+                [Line(" line1  ", "\r"), Line("  line2    ", "")]
+            ),
         )
         self.assertListEqual(
             [Line(" line1", "\r\n"), Line("  line2", "")],
-            whitespace_format2.remove_trailing_whitespace([Line(" line1  ", "\r\n"), Line("  line2    ", "")]),
+            whitespace_format2.remove_trailing_whitespace(
+                [Line(" line1  ", "\r\n"), Line("  line2    ", "")]
+            ),
         )
 
         self.assertListEqual(
             [Line(" line1", "\n"), Line("  line2", "\n")],
-            whitespace_format2.remove_trailing_whitespace([Line(" line1  ", "\n"), Line("  line2  ", "\n")]),
+            whitespace_format2.remove_trailing_whitespace(
+                [Line(" line1  ", "\n"), Line("  line2  ", "\n")]
+            ),
         )
         self.assertListEqual(
             [Line(" line1", "\r"), Line("  line2", "\r")],
-            whitespace_format2.remove_trailing_whitespace([Line(" line1  ", "\r"), Line("  line2  ", "\r")]),
+            whitespace_format2.remove_trailing_whitespace(
+                [Line(" line1  ", "\r"), Line("  line2  ", "\r")]
+            ),
         )
         self.assertListEqual(
             [Line(" line1", "\r\n"), Line("  line2", "\r\n")],
-            whitespace_format2.remove_trailing_whitespace([Line(" line1  ", "\r\n"), Line("  line2  ", "\r\n")]),
+            whitespace_format2.remove_trailing_whitespace(
+                [Line(" line1  ", "\r\n"), Line("  line2  ", "\r\n")]
+            ),
         )
 
         self.assertListEqual(
             [Line(" line1", "\n"), Line("  line2", "\r")],
-            whitespace_format2.remove_trailing_whitespace([Line(" line1  ", "\n"), Line("  line2  ", "\r")]),
+            whitespace_format2.remove_trailing_whitespace(
+                [Line(" line1  ", "\n"), Line("  line2  ", "\r")]
+            ),
         )
         self.assertListEqual(
             [Line(" line1", "\r"), Line("  line2", "\n")],
-            whitespace_format2.remove_trailing_whitespace([Line(" line1  ", "\r"), Line("  line2  ", "\n")]),
+            whitespace_format2.remove_trailing_whitespace(
+                [Line(" line1  ", "\r"), Line("  line2  ", "\n")]
+            ),
         )
 
-    def test_remove_new_line_marker_from_end_of_file(self):
-        """Tests remove_new_line_marker_from_end_of_file() function."""
-        self.assertEqual("", whitespace_format.remove_new_line_marker_from_end_of_file(""))
-        self.assertEqual(
-            "hello", whitespace_format.remove_new_line_marker_from_end_of_file("hello")
+    def test_remove_all_new_line_marker_from_end_of_file(self):
+        """Tests remove_all_new_line_marker_from_end_of_file() function."""
+        self.assertListEqual([], whitespace_format2.remove_all_new_line_marker_from_end_of_file([]))
+        self.assertListEqual(
+            [Line("  ", "")],
+            whitespace_format2.remove_all_new_line_marker_from_end_of_file([Line("  ", "")]),
         )
-        self.assertEqual(
-            "hello", whitespace_format.remove_new_line_marker_from_end_of_file("hello\n")
+        self.assertListEqual(
+            [Line("", "\n"), Line("hello", "")],
+            whitespace_format2.remove_all_new_line_marker_from_end_of_file(
+                [Line("", "\n"), Line("hello", "\n"), Line("", "\n")]
+            ),
         )
-        self.assertEqual(
-            "hello", whitespace_format.remove_new_line_marker_from_end_of_file("hello\r")
+        self.assertListEqual(
+            [], whitespace_format2.remove_all_new_line_marker_from_end_of_file([Line("", "\n")])
         )
-        self.assertEqual(
-            "hello", whitespace_format.remove_new_line_marker_from_end_of_file("hello\r\n")
+        self.assertListEqual(
+            [],
+            whitespace_format2.remove_all_new_line_marker_from_end_of_file(
+                [Line("", "\n"), Line("", "\n"), Line("", "\n"), Line("", "\n")]
+            ),
         )
-        self.assertEqual(
-            "hello\n", whitespace_format.remove_new_line_marker_from_end_of_file("hello\n\r")
+        self.assertListEqual(
+            [],
+            whitespace_format2.remove_all_new_line_marker_from_end_of_file(
+                [Line("", "\n"), Line("", "\n"), Line("", "\r"), Line("", "\r")]
+            ),
         )
-        self.assertEqual(" ", whitespace_format.remove_new_line_marker_from_end_of_file(" \n"))
-        self.assertEqual(" ", whitespace_format.remove_new_line_marker_from_end_of_file(" \r"))
-        self.assertEqual(" ", whitespace_format.remove_new_line_marker_from_end_of_file(" \r\n"))
-        self.assertEqual(" \n", whitespace_format.remove_new_line_marker_from_end_of_file(" \n\r"))
+        self.assertListEqual(
+            [],
+            whitespace_format2.remove_all_new_line_marker_from_end_of_file(
+                [Line("", "\r"), Line("", "\r\n"), Line("", "\n")]
+            ),
+        )
+        self.assertListEqual(
+            [],
+            whitespace_format2.remove_all_new_line_marker_from_end_of_file(
+                [Line("", "\r"), Line("", "\r"), Line("", "\r"), Line("", "\r")]
+            ),
+        )
 
     def test_normalize_empty_file(self):
         """Tests normalize_empty_file() function."""
         self.assertListEqual([], whitespace_format2.normalize_empty_file([], "ignore", "\n"))
         self.assertListEqual([], whitespace_format2.normalize_empty_file([], "empty", "\n"))
-        self.assertListEqual([Line("", "\n")], whitespace_format2.normalize_empty_file([], "one-line", "\n"))
-        self.assertListEqual([Line("", "\r")], whitespace_format2.normalize_empty_file([], "one-line", "\r"))
-        self.assertListEqual([Line("", "\r\n")], whitespace_format2.normalize_empty_file([], "one-line", "\r\n"))
+        self.assertListEqual(
+            [Line("", "\n")], whitespace_format2.normalize_empty_file([], "one-line", "\n")
+        )
+        self.assertListEqual(
+            [Line("", "\r")], whitespace_format2.normalize_empty_file([], "one-line", "\r")
+        )
+        self.assertListEqual(
+            [Line("", "\r\n")], whitespace_format2.normalize_empty_file([], "one-line", "\r\n")
+        )
 
-        self.assertListEqual([Line(" \t ", "")], whitespace_format2.normalize_empty_file([Line(" \t ", "")], "ignore", "\n"))
-        self.assertListEqual([], whitespace_format2.normalize_empty_file([Line(" \t ", "")], "empty", "\n"))
-        self.assertListEqual([Line("", "\n")], whitespace_format2.normalize_empty_file([Line(" \t ", "")], "one-line", "\n"))
-        self.assertListEqual([Line("", "\r")], whitespace_format2.normalize_empty_file([Line(" \t ", "")], "one-line", "\r"))
-        self.assertListEqual([Line("", "\r\n")], whitespace_format2.normalize_empty_file([Line(" \t ", "")], "one-line", "\r\n"))
+        self.assertListEqual(
+            [Line(" \t ", "")],
+            whitespace_format2.normalize_empty_file([Line(" \t ", "")], "ignore", "\n"),
+        )
+        self.assertListEqual(
+            [], whitespace_format2.normalize_empty_file([Line(" \t ", "")], "empty", "\n")
+        )
+        self.assertListEqual(
+            [Line("", "\n")],
+            whitespace_format2.normalize_empty_file([Line(" \t ", "")], "one-line", "\n"),
+        )
+        self.assertListEqual(
+            [Line("", "\r")],
+            whitespace_format2.normalize_empty_file([Line(" \t ", "")], "one-line", "\r"),
+        )
+        self.assertListEqual(
+            [Line("", "\r\n")],
+            whitespace_format2.normalize_empty_file([Line(" \t ", "")], "one-line", "\r\n"),
+        )
 
     def test_add_end_of_line_marker_at_end_of_file(self):
         """Tests add_end_of_line_marker_at_end_of_file() function."""
-        self.assertListEqual([Line("", "\n")], whitespace_format2.add_end_of_line_marker_at_end_of_file([], "\n"))
-        self.assertListEqual([Line("  ", "\n")], whitespace_format2.add_end_of_line_marker_at_end_of_file([Line("  ", "")], "\n"))
+        self.assertListEqual(
+            [Line("", "\n")], whitespace_format2.add_end_of_line_marker_at_end_of_file([], "\n")
+        )
+        self.assertListEqual(
+            [Line("  ", "\n")],
+            whitespace_format2.add_end_of_line_marker_at_end_of_file([Line("  ", "")], "\n"),
+        )
         self.assertListEqual(
             [Line("hello", "\n")],
             whitespace_format2.add_end_of_line_marker_at_end_of_file([Line("hello", "")], "\n"),
         )
 
-        self.assertListEqual([Line("", "\n")], whitespace_format2.add_end_of_line_marker_at_end_of_file([Line("", "\n")], "\n"))
         self.assertListEqual(
-            [Line("", "\n"), Line("", "\n"), Line("", "\n")], whitespace_format2.add_end_of_line_marker_at_end_of_file([Line("", "\n"), Line("", "\n"), Line("", "\n")], "\n")
+            [Line("", "\n")],
+            whitespace_format2.add_end_of_line_marker_at_end_of_file([Line("", "\n")], "\n"),
         )
         self.assertListEqual(
-            [Line("", "\r"), Line("", "\n")], whitespace_format2.add_end_of_line_marker_at_end_of_file([Line("", "\r"), Line("", "\r\n")], "\n")
+            [Line("", "\n"), Line("", "\n"), Line("", "\n")],
+            whitespace_format2.add_end_of_line_marker_at_end_of_file(
+                [Line("", "\n"), Line("", "\n"), Line("", "\n")], "\n"
+            ),
         )
-        self.assertListEqual([Line("  ", "\n")], whitespace_format2.add_end_of_line_marker_at_end_of_file([Line("  ", "\n")], "\n"))
+        self.assertListEqual(
+            [Line("", "\r"), Line("", "\n")],
+            whitespace_format2.add_end_of_line_marker_at_end_of_file(
+                [Line("", "\r"), Line("", "\r\n")], "\n"
+            ),
+        )
+        self.assertListEqual(
+            [Line("  ", "\n")],
+            whitespace_format2.add_end_of_line_marker_at_end_of_file([Line("  ", "\n")], "\n"),
+        )
         self.assertListEqual(
             [Line("hello", "\n")],
             whitespace_format2.add_end_of_line_marker_at_end_of_file([Line("hello", "\n")], "\n"),
         )
 
-        self.assertListEqual([Line("", "\r")], whitespace_format2.add_end_of_line_marker_at_end_of_file([Line("", "\n")], "\r"))
         self.assertListEqual(
-            [Line("", "\n"), Line("", "\n"), Line("", "\r")], whitespace_format2.add_end_of_line_marker_at_end_of_file([Line("", "\n"), Line("", "\n"), Line("", "\n")], "\r")
+            [Line("", "\r")],
+            whitespace_format2.add_end_of_line_marker_at_end_of_file([Line("", "\n")], "\r"),
         )
         self.assertListEqual(
-            [Line("", "\r"), Line("", "\r")], whitespace_format2.add_end_of_line_marker_at_end_of_file([Line("", "\r"), Line("", "\r\n")], "\r")
+            [Line("", "\n"), Line("", "\n"), Line("", "\r")],
+            whitespace_format2.add_end_of_line_marker_at_end_of_file(
+                [Line("", "\n"), Line("", "\n"), Line("", "\n")], "\r"
+            ),
         )
-        self.assertListEqual([Line("  ", "\r")], whitespace_format2.add_end_of_line_marker_at_end_of_file([Line("  ", "\n")], "\r"))
+        self.assertListEqual(
+            [Line("", "\r"), Line("", "\r")],
+            whitespace_format2.add_end_of_line_marker_at_end_of_file(
+                [Line("", "\r"), Line("", "\r\n")], "\r"
+            ),
+        )
+        self.assertListEqual(
+            [Line("  ", "\r")],
+            whitespace_format2.add_end_of_line_marker_at_end_of_file([Line("  ", "\n")], "\r"),
+        )
         self.assertListEqual(
             [Line("hello", "\r")],
             whitespace_format2.add_end_of_line_marker_at_end_of_file([Line("hello", "\n")], "\r"),
         )
 
-        self.assertListEqual([Line("", "\r")], whitespace_format2.add_end_of_line_marker_at_end_of_file([Line("", "\r\n")], "\r"))
         self.assertListEqual(
-            [Line("  ", "\r")], whitespace_format2.add_end_of_line_marker_at_end_of_file([Line("  ", "\r\n")], "\r")
+            [Line("", "\r")],
+            whitespace_format2.add_end_of_line_marker_at_end_of_file([Line("", "\r\n")], "\r"),
+        )
+        self.assertListEqual(
+            [Line("  ", "\r")],
+            whitespace_format2.add_end_of_line_marker_at_end_of_file([Line("  ", "\r\n")], "\r"),
         )
         self.assertListEqual(
             [Line("hello", "\r")],

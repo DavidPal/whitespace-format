@@ -175,15 +175,21 @@ def remove_trailing_empty_lines(lines: List[Line]) -> List[Line]:
     return copy.deepcopy(lines[: len(lines) - num_empty_trailing_lines])
 
 
+def remove_dummy_lines(lines: List[Line]) -> List[Line]:
+    """Remove empty lines that also have empty end-of-line markers."""
+    return [line for line in lines if line.content or line.end_of_line_marker]
+
+
 def remove_trailing_whitespace(lines: List[Line]) -> List[Line]:
     """Removes trailing whitespace from every line."""
-    return [
+    lines = [
         Line(
             re.sub(r"[ \n\r\t\f\v]*$", "", line.content),
             line.end_of_line_marker,
         )
         for line in lines
     ]
+    return remove_dummy_lines(lines)
 
 
 def normalize_new_line_markers(lines: List[Line], new_end_of_line_marker: str) -> List[Line]:
@@ -195,6 +201,15 @@ def normalize_new_line_markers(lines: List[Line], new_end_of_line_marker: str) -
         Line(line.content, new_end_of_line_marker) if line.end_of_line_marker else line
         for line in lines
     ]
+
+
+def remove_all_new_line_marker_from_end_of_file(lines: List[Line]) -> List[Line]:
+    """Removes all new line markers from the end of the file."""
+    lines = remove_trailing_empty_lines(lines)
+    if not lines:
+        return []
+    lines[-1] = Line(lines[-1].content, "")
+    return remove_dummy_lines(lines)
 
 
 def add_end_of_line_marker_at_end_of_file(

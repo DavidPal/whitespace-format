@@ -196,7 +196,7 @@ class TestWhitespaceFormat(unittest.TestCase):
             "", whitespace_format.remove_all_new_line_marker_from_end_of_file("\r\r\n\n")
         )
         self.assertEqual(
-            "", whitespace_format.remove_all_new_line_marker_from_end_of_file("\n\n\n\n")
+            "", whitespace_format.remove_all_new_line_marker_from_end_of_file("\r\r\r\r")
         )
 
     def test_remove_new_line_marker_from_end_of_file(self):
