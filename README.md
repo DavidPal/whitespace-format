@@ -42,17 +42,18 @@ whitespace-format \
     --normalize-new-line-markers \
     foo.txt  my_project/
 ```
-The command above formats `foo.txt` and all files contained `my_project/` and
-its subdirectories. Files that contain `.git/` or `.idea/` in their (relative)
-path are excluded. For example, files in `my_project/.git/` and files in
-`my_project/.idea/` are excluded. Likewise, files ending with `*.pyc` are
-excluded.
+The command above formats `foo.txt` and all files contained in `my_project/`
+directory and its subdirectories. Files that contain `.git/` or `.idea/` in
+their (relative) path are excluded. For example, files in `my_project/.git/`
+and files in `my_project/.idea/` are excluded. Likewise, files ending with
+`*.pyc` are excluded.
 
-If you want only know if any changes **would be** made, add `--check-only` option:
+If you want to know only if any changes **would be** made, add `--check-only`
+option:
 ```shell
 whitespace-format \
-    --exclude ".git/|.idea/|.pyc$" \
     --check-only \
+    --exclude ".git/|.idea/|.pyc$" \
     --new-line-marker linux \
     --normalize-new-line-markers \
     foo.txt  my_project/
