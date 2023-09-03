@@ -77,7 +77,7 @@ The regular expression is evaluated on the path of each file.
 This option is ignored when `--add-new-line-marker-at-end-of-file` is used.
 Empty lines at the end of the file are removed.
 * `--normalize-new-line-markers` -- Make new line markers consistent in each file
-by replacing `\\r\\n`, `\\n`, and `\r` with a consistent new line marker.
+by replacing `\r\n`, `\n`, and `\r` with a consistent new line marker.
 * `--remove-trailing-whitespace` -- Remove whitespace at the end of each line.
 * `--remove-trailing-empty-lines` -- Remove empty lines at the end of each file.
 * `--new-line-marker=MARKER` -- This option specifies what new line marker to use.
@@ -85,9 +85,9 @@ by replacing `\\r\\n`, `\\n`, and `\r` with a consistent new line marker.
   * `auto` -- Use new line marker that is the most common in each individual file.
   If no new line marker is present in the file, Linux `\n` is used.
   This is the default option.
-  * `linux` -- Use Linux new line marker `\\n`.
-  * `mac` -- Use Mac new line marker `\\r`.
-  * `windows` -- Use Windows new line marker `\\r\\n`.
+  * `linux` -- Use Linux new line marker `\n`.
+  * `mac` -- Use Mac new line marker `\r`.
+  * `windows` -- Use Windows new line marker `\r\n`.
 * `--encoding` -- Text encoding for both reading and writing files. Default encoding is `utf-8`.
 List of supported encodings can be found at
 https://docs.python.org/3/library/codecs.html#standard-encodings
@@ -162,19 +162,19 @@ MIT
     brew install poetry
     ```
 
-3) Create Python virtual environment with the correct Python version:
-   ```shell
-   make install-python
-   make create-environment
-   ```
-
-4) Add the following lines to `.zshrc` or `.bash_profile` and restart the terminal:
+3) Add the following lines to `.zshrc` or `.bash_profile` and restart the terminal:
    ```shell
    # Pyenv settings
    export PYENV_ROOT="$HOME/.pyenv"
    export PATH="$PYENV_ROOT/bin:$PATH"
    eval "$(pyenv init --path)"
    eval "$(pyenv virtualenv-init -)"
+   ```
+
+4) Create Python virtual environment with the correct Python version:
+   ```shell
+   make install-python
+   make create-environment
    ```
 
 5) Install all dependencies
