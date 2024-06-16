@@ -122,6 +122,27 @@ class TestWhitespaceFormat(unittest.TestCase):
         """Verify that version numbers are the same in all places."""
         self.assertEqual(whitespace_format.VERSION, extract_version_from_pyproject())
 
+    def test_read_file_content_windows(self):
+        """Tests read_file_content() function."""
+        file_content = whitespace_format.read_file_content(
+            "test_data/windows-end-of-line-markers.txt", "utf-8"
+        )
+        self.assertEqual(file_content, file_content.strip() + "\r\n")
+
+    def test_read_file_content_linux(self):
+        """Tests read_file_content() function."""
+        file_content = whitespace_format.read_file_content(
+            "test_data/linux-end-of-line-markers.txt", "utf-8"
+        )
+        self.assertEqual(file_content, file_content.strip() + "\n")
+
+    def test_read_file_content_mac(self):
+        """Tests read_file_content() function."""
+        file_content = whitespace_format.read_file_content(
+            "test_data/mac-end-of-line-markers.txt", "utf-8"
+        )
+        self.assertEqual(file_content, file_content.strip() + "\r")
+
     def test_guess_new_end_of_line_marker(self):
         """Tests guess_new_end_of_line_marker() function."""
 

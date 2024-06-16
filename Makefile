@@ -4,25 +4,31 @@ PYTHON_ENVIRONMENT = "whitespace_format"
 PYTHON_VERSION = "3.7.5"
 SOURCE_FILES = *.py
 
+NON_TEXT_FILES_REGEX = "\.pyc$$|\.git/|\.idea/|test_data/"
+
 whitespace-format-check:
 	# Check whitespace formatting.
-	whitespace-format --check-only --color --new-line-marker linux --verbose \
+	whitespace-format --check-only --color --verbose \
+			--new-line-marker linux \
+			--normalize-new-line-markers \
 			--add-new-line-marker-at-end-of-file \
 			--remove-trailing-whitespace \
 			--remove-trailing-empty-lines \
 			--normalize-non-standard-whitespace replace \
 			--normalize-whitespace-only-files empty \
-			--exclude "\.pyc$$|\.git/|\.idea/"  .
+			--exclude $(NON_TEXT_FILES_REGEX)  .
 
 whitespace-format:
 	# Reformat code.
-	whitespace-format --color --new-line-marker linux --verbose \
+	whitespace-format --color --verbose \
+			--new-line-marker linux \
+			--normalize-new-line-markers \
 			--add-new-line-marker-at-end-of-file \
 			--remove-trailing-whitespace \
 			--remove-trailing-empty-lines \
 			--normalize-non-standard-whitespace replace \
 			--normalize-whitespace-only-files empty \
-			--exclude "\.pyc$$|^\.git/|^\.idea/"  .
+			--exclude $(NON_TEXT_FILES_REGEX)  .
 
 black-check:
 	# Check code formatting.
@@ -86,10 +92,12 @@ create-environment:
 delete-environment:
 	# Delete virtual environment.
 	pyenv virtualenv-delete $(PYTHON_ENVIRONMENT)
+	rm -rf .python-version
 
 install-dependencies:
 	# Install all dependencies.
 	poetry install --verbose
+	pyenv rehash
 
 build-package:
 	# Build a wheel package.
