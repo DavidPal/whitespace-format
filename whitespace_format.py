@@ -75,7 +75,7 @@ def color_print(message: str, parsed_arguments: argparse.Namespace):
 def string_to_hex(text: str) -> str:
     """Converts a string into a human-readable hexadecimal representation.
 
-    This function is for debugging purposes only. It used only during development.
+    This function is for debugging purposes only. It is used only during development.
     """
     return ":".join(f"{ord(character):02x}" for character in text)
 
@@ -134,7 +134,7 @@ class Line:
     def to_hex(self):
         """Returns a human-readable hexadecimal representation of the line.
 
-        This function is for debugging purposes only. It used only during development.
+        This function is for debugging purposes only. It is used only during development.
         """
         return f"({string_to_hex(self.content)}, {string_to_hex(self.end_of_line_marker)})"
 
