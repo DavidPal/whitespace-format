@@ -77,7 +77,7 @@ def string_to_hex(text: str) -> str:
 
     This function is for debugging purposes only. It used only during development.
     """
-    return ":".join("{:02x}".format(ord(character)) for character in text)
+    return ":".join(f"{ord(character):02x}" for character in text)
 
 
 def die(error_code: int, message: str = ""):

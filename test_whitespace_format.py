@@ -124,24 +124,24 @@ class TestWhitespaceFormat(unittest.TestCase):
 
     def test_read_file_content_windows(self):
         """Tests read_file_content() function."""
-        content = whitespace_format.read_file_content(
+        file_content = whitespace_format.read_file_content(
             "test_data/windows-end-of-line-markers.txt", "utf-8"
         )
-        self.assertEqual(content, content.strip() + "\r\n")
+        self.assertEqual(file_content, file_content.strip() + "\r\n")
 
     def test_read_file_content_linux(self):
         """Tests read_file_content() function."""
-        content = whitespace_format.read_file_content(
+        file_content = whitespace_format.read_file_content(
             "test_data/linux-end-of-line-markers.txt", "utf-8"
         )
-        self.assertEqual(content, content.strip() + "\n")
+        self.assertEqual(file_content, file_content.strip() + "\n")
 
     def test_read_file_content_mac(self):
         """Tests read_file_content() function."""
-        content = whitespace_format.read_file_content(
+        file_content = whitespace_format.read_file_content(
             "test_data/mac-end-of-line-markers.txt", "utf-8"
         )
-        self.assertEqual(content, content.strip() + "\r")
+        self.assertEqual(file_content, file_content.strip() + "\r")
 
     def test_guess_new_end_of_line_marker(self):
         """Tests guess_new_end_of_line_marker() function."""
