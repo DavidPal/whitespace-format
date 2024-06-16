@@ -42,7 +42,7 @@ jobs:
           pip install --upgrade pip
           pip --verbose install poetry==1.4.1
           poetry config virtualenvs.create false
-          make install-dependencies
+          poetry install --verbose
 
       - name: Lint and test code
         run: |
