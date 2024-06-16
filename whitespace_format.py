@@ -22,7 +22,7 @@ from typing import Callable
 from typing import Dict
 from typing import List
 
-VERSION = "0.0.4"
+VERSION = "0.0.5"
 
 # Regular expression that does NOT match any string.
 UNMATCHABLE_REGEX = "$."
@@ -72,6 +72,14 @@ def color_print(message: str, parsed_arguments: argparse.Namespace):
     print(message)
 
 
+def string_to_hex(text: str) -> str:
+    """Converts a string into a human-readable hexadecimal representation.
+
+    This function is for debugging purposes only. It used only during development.
+    """
+    return ":".join("{:02x}".format(ord(character)) for character in text)
+
+
 def die(error_code: int, message: str = ""):
     """Exits the script."""
     if message:
@@ -82,7 +90,7 @@ def die(error_code: int, message: str = ""):
 def read_file_content(file_name: str, encoding: str) -> str:
     """Reads content of a file."""
     try:
-        with open(file_name, "r", encoding=encoding) as file:
+        with open(file_name, "r", encoding=encoding, newline="") as file:
             return file.read()
     except IOError as exception:
         die(2, f"Cannot read file '{file_name}': {exception}")
@@ -122,6 +130,13 @@ class Line:
             if line.endswith(end_of_line_marker):
                 return Line(line[: -len(end_of_line_marker)], end_of_line_marker)
         return Line(line, "")
+
+    def to_hex(self):
+        """Returns a human-readable hexadecimal representation of the line.
+
+        This function is for debugging purposes only. It used only during development.
+        """
+        return f"({string_to_hex(self.content)}, {string_to_hex(self.end_of_line_marker)})"
 
 
 def split_lines(text: str) -> List[Line]:

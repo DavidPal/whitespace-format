@@ -4,7 +4,7 @@ PYTHON_ENVIRONMENT = "whitespace_format"
 PYTHON_VERSION = "3.7.5"
 SOURCE_FILES = *.py
 
-NON_TEXT_FILES_REGEX = "\.pyc$$|\.git/|\.idea/"
+NON_TEXT_FILES_REGEX = "\.pyc$$|\.git/|\.idea/|test_data/"
 
 whitespace-format-check:
 	# Check whitespace formatting.
@@ -92,10 +92,12 @@ create-environment:
 delete-environment:
 	# Delete virtual environment.
 	pyenv virtualenv-delete $(PYTHON_ENVIRONMENT)
+	rm -rf .python-version
 
 install-dependencies:
 	# Install all dependencies.
 	poetry install --verbose
+	pyenv rehash
 
 build-package:
 	# Build a wheel package.
