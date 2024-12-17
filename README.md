@@ -30,7 +30,7 @@ second time (with the same parameters) has no effect.
 pip install whitespace-format
 ```
 
-Installation requires Python 3.7.5 or higher.
+Installation requires Python 3.8.0 or higher.
 
 ## Usage
 

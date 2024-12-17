@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "whitespace-format"
-version = "0.0.5"
+version = "0.0.6"
 description = "Linter and formatter for source code files and text files"
 license = "MIT"
 authors = ["David Pal <davidko.pal@gmail.com>"]
@@ -17,7 +17,7 @@ classifiers = [
 whitespace-format = "whitespace_format:main"
 
 [tool.poetry.dependencies]
-python = "^3.7.2"
+python = "^3.8.0"
 
 [tool.poetry.dev-dependencies]
 black = "^23.3.0"

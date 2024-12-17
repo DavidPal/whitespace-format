@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
 
     steps:
       - name: Print information
@@ -40,7 +40,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip --verbose install poetry==1.4.1
+          pip --verbose install poetry==1.8.5
           poetry config virtualenvs.create false
           poetry install --verbose
 
