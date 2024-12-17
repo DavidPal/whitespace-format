@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build_and_test:
     docker:
-      - image: python:3.7-bullseye
+      - image: python:3.8-bullseye
 
     steps:
       - checkout
@@ -20,7 +20,7 @@ jobs:
       - run:
           name: Install poetry
           command: |
-            pip --verbose install poetry==1.4.1
+            pip --verbose install poetry==1.8.5
 
       - run:
           name: Install dependencies
