@@ -22,7 +22,7 @@ from typing import Callable
 from typing import Dict
 from typing import List
 
-VERSION = "0.0.5"
+VERSION = "0.0.6"
 
 # Regular expression that does NOT match any string.
 UNMATCHABLE_REGEX = "$."
