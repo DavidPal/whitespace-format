@@ -1,10 +1,10 @@
-.PHONY: whitespace-format-check whitespace-format black-check black-format pydocstyle pylint flake8 isort-check isort-format mypy test coverage clean install-python create-environment delete-environment install-dependencies build-package publish-to-pypi publish-to-test-pypi
+.PHONY: whitespace-format-check whitespace-format black-check black-format isort-check isort-format pydocstyle flake8 pylint mypy lint test coverage clean install-python create-environment delete-environment install-dependencies build-package publish-to-pypi publish-to-test-pypi
 
 PYTHON_ENVIRONMENT = "whitespace_format"
 PYTHON_VERSION = "3.8.0"
 SOURCE_FILES = *.py
 
-NON_TEXT_FILES_REGEX = "\.pyc$$|\.git/|\.idea/|test_data/"
+NON_TEXT_FILES_REGEX = "\.pyc$$|\.git/|\.idea/|test_data/|^\.coverage$$|^\.mypy_cache/|"
 
 whitespace-format-check:
 	# Check whitespace formatting.
@@ -38,18 +38,6 @@ black-format:
 	# Reformat code.
 	black --exclude "_pb2.py|_rpc.py|_twirp.py" $(SOURCE_FILES)
 
-pydocstyle:
-	# Check docstrings
-	python -m pydocstyle --verbose --explain --source --count $(SOURCE_FILES)
-
-pylint:
-	# Static code analysis.
-	pylint --output-format=colorized --ignore-patterns="_pb2.py,_rpc.py,_twirp.py" --rcfile=pylintrc $(SOURCE_FILES)
-
-flake8:
-	# Check PEP8 code style.
-	flake8 --color=always --exclude="*_pb2.py,*_rpc.py,*_twirp.py" $(SOURCE_FILES)
-
 isort-check:
 	# Check imports.
 	isort --check-only --diff --color --skip-glob="*_pb2.py" --skip-glob="*_rpc.py" --skip-glob="*_twirp.py" $(SOURCE_FILES)
@@ -58,9 +46,23 @@ isort-format:
 	# Format imports.
 	isort --color --skip-glob="*_pb2.py" --skip-glob="*_rpc.py" --skip-glob="*_twirp.py" $(SOURCE_FILES)
 
+pydocstyle:
+	# Check docstrings
+	python -m pydocstyle --verbose --explain --source --count $(SOURCE_FILES)
+
+flake8:
+	# Check PEP8 code style.
+	flake8 --color=always --exclude="*_pb2.py,*_rpc.py,*_twirp.py" $(SOURCE_FILES)
+
+pylint:
+	# Static code analysis.
+	pylint --output-format=colorized --ignore-patterns="_pb2.py,_rpc.py,_twirp.py" --rcfile=pylintrc $(SOURCE_FILES)
+
 mypy:
 	# Check type hints.
 	mypy --config-file "mypy.ini" --exclude ".*_pb2.py$$|.*_rpc.py$$|.*_twirp.py$$" $(SOURCE_FILES)
+
+lint: whitespace-format-check black-check isort-check pydocstyle flake8 pylint mypy
 
 test:
 	# Run unit tests.
