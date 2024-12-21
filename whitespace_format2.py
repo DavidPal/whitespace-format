@@ -494,7 +494,7 @@ def format_file_content(
         changes.append(Change(ChangeType.NEW_LINE_MARKER_REMOVED_FROM_END_OF_FILE, line_number))
         output = output[:last_end_of_line_excluding_eol_marker]
 
-    return output, []
+    return output, changes
 
 
 def reformat_file(file_name: str, parsed_arguments: argparse.Namespace) -> bool:
