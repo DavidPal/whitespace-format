@@ -18,9 +18,9 @@ import dataclasses
 import pathlib
 import re
 import sys
+from enum import Enum
 from typing import List
 from typing import Tuple
-from enum import Enum
 
 VERSION = "0.0.6"
 
