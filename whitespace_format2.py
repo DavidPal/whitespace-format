@@ -27,6 +27,23 @@ VERSION = "0.0.6"
 # Regular expression that does NOT match any string.
 UNMATCHABLE_REGEX = "$."
 
+# Whitespace characters
+CARRIAGE_RETURN = "\r"
+LINE_FEED = "\n"
+SPACE = " "
+TAB = "\t"
+VERTICAL_TAB = "\v"
+FORM_FEED = "\f"
+
+WHITESPACE_CHARACTERS = {
+    CARRIAGE_RETURN,
+    LINE_FEED,
+    SPACE,
+    TAB,
+    VERTICAL_TAB,
+    FORM_FEED,
+}
+
 END_OF_LINE_MARKERS = {
     "windows": "\r\n",
     "linux": "\n",
@@ -214,6 +231,46 @@ def write_file(file_name: str, file_content: str, encoding: str):
             file.write(file_content)
     except IOError as exception:
         die(4, f"Cannot write to file '{file_name}': {exception}")
+
+
+def is_file_whitespace(file_content: str) -> bool:
+    """Determines if a file consists of only whitespace characters."""
+    for char in file_content:
+        if char not in WHITESPACE_CHARACTERS:
+            return False
+    return True
+
+
+def find_most_common_new_line_marker(file_content: str) -> str:
+    """Finds the most common new line marker in a string.
+
+    The function returns the most common end-of-line marker.
+    Ties are broken in order Linux "\n", Mac "\r", Windows "\r\n".
+    If no end-of-line marker is present, default to the Linux "\n" end-of-line marker.
+    """
+    linux_count = 0
+    macos_count = 0
+    windows_count = 0
+    i = 0
+
+    while i < len(file_content):
+        if file_content[i] == CARRIAGE_RETURN:
+            if i < len(file_content) - 1 and file_content[i + 1] == LINE_FEED:
+                windows_count += 1
+                i += 1
+            else:
+                macos_count += 1
+        elif file_content[i] == LINE_FEED:
+            linux_count += 1
+        i += 1
+
+    if macos_count > windows_count and macos_count > linux_count:
+        return "\r"
+
+    if windows_count > linux_count:
+        return "\r\n"
+
+    return "\n"
 
 
 def format_file_content(
