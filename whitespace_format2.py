@@ -20,6 +20,7 @@ import re
 import sys
 from enum import Enum
 from typing import List
+from typing import Optional
 from typing import Tuple
 
 VERSION = "0.0.6"
@@ -44,7 +45,7 @@ WHITESPACE_CHARACTERS = {
     FORM_FEED,
 }
 
-END_OF_LINE_MARKERS = {
+NEW_LINE_MARKERS = {
     "windows": "\r\n",
     "linux": "\n",
     "mac": "\r",
@@ -123,8 +124,8 @@ class Change:
 
     change_type: ChangeType
     line_number: int
-    changed_from: str
-    changed_to: str
+    changed_from: Optional[str] = None
+    changed_to: Optional[str] = None
 
     def message(self, check_only: bool) -> str:
         """Returns a message describing the change."""
@@ -274,7 +275,7 @@ def find_most_common_new_line_marker(file_content: str) -> str:
 
 
 def format_file_content(
-    file_content: str, parsed_arguments: argparse.Namespace  # pylint: disable=unused-argument
+    file_content: str, parsed_arguments: argparse.Namespace
 ) -> Tuple[str, List[Change]]:
     """Applies a function to the content of a file.
 
@@ -285,8 +286,215 @@ def format_file_content(
     Returns:
         A pair consisting of the formatted file content and a list of changes.
     """
-    # TODO: Implement this function.
-    return "", []
+    output_new_line_marker = NEW_LINE_MARKERS.get(
+        parsed_arguments.new_line_marker,
+        find_most_common_new_line_marker(file_content),
+    )
+
+    # Handle empty file:
+    if not file_content:
+        if parsed_arguments.normalize_empty_files in ["ignore", "empty"]:
+            return "", []
+        if parsed_arguments.normalize_empty_files == "one-line":
+            return output_new_line_marker, [Change(ChangeType.REPLACED_EMPTY_FILE_WITH_ONE_LINE, 1)]
+
+    # Handle non-empty file consisting of whitespace only.
+    if is_file_whitespace(file_content):
+        if parsed_arguments.normalize_whitespace_only_files == "empty":
+            return "", [Change(ChangeType.REPLACED_WHITESPACE_ONLY_FILE_WITH_EMPTY_FILE, 1)]
+        if parsed_arguments.normalize_whitespace_only_files == "one-line":
+            if file_content == output_new_line_marker:
+                return file_content, []
+            return output_new_line_marker, [
+                Change(ChangeType.REPLACED_WHITESPACE_ONLY_FILE_WITH_ONE_LINE, 1)
+            ]
+        if parsed_arguments.normalize_whitespace_only_files == "ignore":
+            return file_content, []
+
+    # Index into the input buffer.
+    i = 0
+
+    # List of changes
+    changes: List[Change] = []
+
+    # Line number. It is incremented every time we encounter a new end of line marker.
+    line_number = 1
+
+    # Position one byte past the end of last line in the output buffer
+    # excluding the last end of line marker.
+    last_end_of_line_excluding_eol_marker = 0
+
+    # Position one byte past the end of last line in the output buffer
+    # including the last end of line marker.
+    last_end_of_line_including_eol_marker = 0
+
+    # Position one byte past the last non-whitespace character in the output buffer.
+    last_non_whitespace = 0
+
+    # Position one byte past the end of last non-empty line in the output buffer
+    # excluding the last end of line marker.
+    last_end_of_non_empty_line_excluding_eol_marker = 0
+
+    # Position one byte past the end of last non-empty line in the output buffer,
+    # including the last end of line marker.
+    last_end_of_non_empty_line_including_eol_marker = 0
+
+    # Line number of the last non-empty line.
+    last_non_empty_line_number = 0
+
+    # Formatted output
+    output = ""
+
+    while i < len(file_content):
+        if file_content[i] in [CARRIAGE_RETURN, LINE_FEED]:
+            # Parse the new line marker
+            new_line_marker = ""
+            if file_content[i] == LINE_FEED:
+                new_line_marker = LINE_FEED
+            elif i < len(file_content) - 1 and file_content[i + 1] == LINE_FEED:
+                new_line_marker = "\r\n"
+                # Windows new line marker consists of two bytes.
+                # Skip the extra byte.
+                i += 1
+            else:
+                new_line_marker = CARRIAGE_RETURN
+
+            # Remove trailing whitespace
+            if parsed_arguments.remove_trailing_whitespace and max(
+                last_non_whitespace, last_end_of_line_including_eol_marker
+            ) < len(output):
+                changes.append(
+                    Change(
+                        ChangeType.REMOVED_TRAILING_WHITESPACE,
+                        line_number,
+                    )
+                )
+                output = output[
+                    : max(
+                        last_non_whitespace,
+                        last_end_of_line_including_eol_marker,
+                    )
+                ]
+
+            # Determine if the last line is empty
+            is_empty_line: bool = last_end_of_line_including_eol_marker == len(output)
+
+            # Add new line marker
+            last_end_of_line_excluding_eol_marker = len(output)
+            if (
+                parsed_arguments.normalize_new_line_markers
+                and output_new_line_marker != new_line_marker
+            ):
+                changes.append(
+                    Change(
+                        ChangeType.REPLACED_NEW_LINE_MARKER,
+                        line_number,
+                        new_line_marker,
+                        output_new_line_marker,
+                    )
+                )
+                output += output_new_line_marker
+            else:
+                output += new_line_marker
+
+            last_end_of_line_including_eol_marker = len(output)
+
+            # Update position of last non-empty line.
+            if not is_empty_line:
+                last_end_of_non_empty_line_excluding_eol_marker = (
+                    last_end_of_line_excluding_eol_marker
+                )
+                last_end_of_non_empty_line_including_eol_marker = (
+                    last_end_of_line_including_eol_marker
+                )
+                last_non_empty_line_number = line_number
+
+            line_number += 1
+
+        elif file_content[i] == SPACE:
+            output += file_content[i]
+
+        elif file_content[i] == TAB:
+            if parsed_arguments.replace_tabs_with_spaces < 0:
+                output += file_content[i]
+            elif parsed_arguments.replace_tabs_with_spaces > 0:
+                changes.append(Change(ChangeType.REPLACED_TAB_WITH_SPACES, line_number))
+                output += SPACE * parsed_arguments.replace_tabs_with_spaces
+            else:
+                # Remove the tab character.
+                changes.append(Change(ChangeType.REMOVED_TAB, line_number))
+
+        elif file_content[i] in [VERTICAL_TAB, FORM_FEED]:
+            if parsed_arguments.normalize_non_standard_whitespace == "ignore":
+                output += file_content[i]
+            elif parsed_arguments.normalize_non_standard_whitespace == "replace":
+                output += SPACE
+                changes.append(
+                    Change(
+                        ChangeType.REPLACED_NONSTANDARD_WHITESPACE,
+                        line_number,
+                        file_content[i],
+                        SPACE,
+                    )
+                )
+            elif parsed_arguments.normalize_non_standard_whitespace == "remove":
+                changes.append(
+                    Change(
+                        ChangeType.REMOVED_NONSTANDARD_WHITESPACE, line_number, file_content[i], ""
+                    )
+                )
+            else:
+                raise ValueError("Unknown value of normalize_non_standard_whitespace")
+        else:
+            output += file_content[i]
+            last_non_whitespace = len(output)
+
+        # Move to the next character
+        i += 1
+
+    # Remove trailing whitespace from the last line.
+    if (
+        parsed_arguments.remove_trailing_whitespace
+        and last_end_of_line_including_eol_marker < len(output)
+        and last_non_whitespace < len(output)
+    ):
+        changes.append(Change(ChangeType.REMOVED_TRAILING_WHITESPACE, line_number))
+        output = output[:last_non_whitespace]
+
+    # Remove trailing empty lines.
+    if (
+        parsed_arguments.remove_trailing_empty_lines
+        and last_end_of_line_including_eol_marker == len(output)
+        and last_end_of_non_empty_line_including_eol_marker < len(output)
+    ):
+        line_number = last_non_empty_line_number + 1
+        last_end_of_line_excluding_eol_marker = last_end_of_non_empty_line_excluding_eol_marker
+        last_end_of_line_including_eol_marker = last_end_of_non_empty_line_including_eol_marker
+        changes.append(Change(ChangeType.REMOVED_EMPTY_LINES, line_number))
+        output = output[:last_end_of_non_empty_line_including_eol_marker]
+
+    # Add new line marker at the end of the file
+    if (
+        parsed_arguments.add_new_line_marker_at_end_of_file
+        and last_end_of_line_including_eol_marker < len(output)
+    ):
+        last_end_of_line_excluding_eol_marker = len(output)
+        changes.append(Change(ChangeType.NEW_LINE_MARKER_ADDED_TO_END_OF_FILE, line_number))
+        output += output_new_line_marker
+        last_end_of_line_including_eol_marker = len(output)
+        line_number += 1
+
+    # Remove new line marker from the end of the file
+    if (
+        parsed_arguments.remove_new_line_marker_from_end_of_file
+        and last_end_of_line_including_eol_marker == len(output)
+        and line_number >= 2
+    ):
+        line_number -= 1
+        changes.append(Change(ChangeType.NEW_LINE_MARKER_REMOVED_FROM_END_OF_FILE, line_number))
+        output = output[:last_end_of_line_excluding_eol_marker]
+
+    return output, []
 
 
 def reformat_file(file_name: str, parsed_arguments: argparse.Namespace) -> bool:
@@ -479,6 +687,9 @@ def parse_command_line() -> argparse.Namespace:
             "mac: Use Mac new line marker '\\r'. "
             "windows: Use Windows new line marker '\\r\\n'. "
         ),
+        type=str,
+        choices=["auto", "linux", "mac", "windows"],
+        default="auto",
     )
     parser.add_argument(
         "--normalize-new-line-markers",
