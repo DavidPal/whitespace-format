@@ -98,7 +98,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     new_line_marker="auto",
                     normalize_empty_files="ignore",
                     normalize_new_line_markers=False,
-                    normalize_whitespace_only_files=False,
+                    normalize_whitespace_only_files="ignore",
                     remove_empty_lines=False,
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
@@ -118,7 +118,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     new_line_marker="auto",
                     normalize_empty_files="ignore",
                     normalize_new_line_markers=False,
-                    normalize_whitespace_only_files=False,
+                    normalize_whitespace_only_files="ignore",
                     remove_empty_lines=False,
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
@@ -138,7 +138,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     new_line_marker="auto",
                     normalize_empty_files="empty",
                     normalize_new_line_markers=False,
-                    normalize_whitespace_only_files=False,
+                    normalize_whitespace_only_files="ignore",
                     remove_empty_lines=False,
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
@@ -168,7 +168,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     new_line_marker="auto",
                     normalize_empty_files="one-line",
                     normalize_new_line_markers=False,
-                    normalize_whitespace_only_files=False,
+                    normalize_whitespace_only_files="ignore",
                     remove_empty_lines=False,
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
@@ -198,7 +198,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     new_line_marker="linux",
                     normalize_empty_files="one-line",
                     normalize_new_line_markers=False,
-                    normalize_whitespace_only_files=False,
+                    normalize_whitespace_only_files="ignore",
                     remove_empty_lines=False,
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
@@ -228,7 +228,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     new_line_marker="windows",
                     normalize_empty_files="one-line",
                     normalize_new_line_markers=False,
-                    normalize_whitespace_only_files=False,
+                    normalize_whitespace_only_files="ignore",
                     remove_empty_lines=False,
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
@@ -258,7 +258,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     new_line_marker="mac",
                     normalize_empty_files="one-line",
                     normalize_new_line_markers=False,
-                    normalize_whitespace_only_files=False,
+                    normalize_whitespace_only_files="ignore",
                     remove_empty_lines=False,
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
@@ -399,9 +399,78 @@ class TestWhitespaceFormat(unittest.TestCase):
                 argparse.Namespace(
                     add_new_line_marker_at_end_of_file=True,
                     new_line_marker="auto",
-                    normalize_empty_files="one-line",
+                    normalize_empty_files="ignore",
                     normalize_new_line_markers=False,
-                    normalize_whitespace_only_files=False,
+                    normalize_whitespace_only_files="ignore",
+                    remove_empty_lines=False,
+                    remove_new_line_marker_from_end_of_file=False,
+                    remove_trailing_empty_lines=False,
+                    remove_trailing_whitespace=False,
+                ),
+            ),
+        )
+
+    def test_format_file_content__add_new_line_marker__linux(self):
+        """Tests format_file_content() function."""
+        self.assertEqual(
+            (
+                "hello\r\n\rworld  \n",
+                [Change(ChangeType.NEW_LINE_MARKER_ADDED_TO_END_OF_FILE, 3)],
+            ),
+            whitespace_format2.format_file_content(
+                "hello\r\n\rworld  ",
+                argparse.Namespace(
+                    add_new_line_marker_at_end_of_file=True,
+                    new_line_marker="linux",
+                    normalize_empty_files="ignore",
+                    normalize_new_line_markers=False,
+                    normalize_whitespace_only_files="ignore",
+                    remove_empty_lines=False,
+                    remove_new_line_marker_from_end_of_file=False,
+                    remove_trailing_empty_lines=False,
+                    remove_trailing_whitespace=False,
+                ),
+            ),
+        )
+
+    def test_format_file_content__add_new_line_marker__windows(self):
+        """Tests format_file_content() function."""
+        self.assertEqual(
+            (
+                "hello\r\n\rworld  \r\n",
+                [Change(ChangeType.NEW_LINE_MARKER_ADDED_TO_END_OF_FILE, 3)],
+            ),
+            whitespace_format2.format_file_content(
+                "hello\r\n\rworld  ",
+                argparse.Namespace(
+                    add_new_line_marker_at_end_of_file=True,
+                    new_line_marker="windows",
+                    normalize_empty_files="ignore",
+                    normalize_new_line_markers=False,
+                    normalize_whitespace_only_files="ignore",
+                    remove_empty_lines=False,
+                    remove_new_line_marker_from_end_of_file=False,
+                    remove_trailing_empty_lines=False,
+                    remove_trailing_whitespace=False,
+                ),
+            ),
+        )
+
+    def test_format_file_content__add_new_line_marker__mac(self):
+        """Tests format_file_content() function."""
+        self.assertEqual(
+            (
+                "hello\r\n\rworld  \r",
+                [Change(ChangeType.NEW_LINE_MARKER_ADDED_TO_END_OF_FILE, 3)],
+            ),
+            whitespace_format2.format_file_content(
+                "hello\r\n\rworld  ",
+                argparse.Namespace(
+                    add_new_line_marker_at_end_of_file=True,
+                    new_line_marker="mac",
+                    normalize_empty_files="ignore",
+                    normalize_new_line_markers=False,
+                    normalize_whitespace_only_files="ignore",
                     remove_empty_lines=False,
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
