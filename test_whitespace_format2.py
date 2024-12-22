@@ -102,6 +102,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
                     remove_trailing_whitespace=False,
+                    replace_tabs_with_spaces=-1,
                 ),
             ),
         )
@@ -121,6 +122,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
                     remove_trailing_whitespace=False,
+                    replace_tabs_with_spaces=-1,
                 ),
             ),
         )
@@ -140,6 +142,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
                     remove_trailing_whitespace=False,
+                    replace_tabs_with_spaces=-1,
                 ),
             ),
         )
@@ -169,6 +172,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
                     remove_trailing_whitespace=False,
+                    replace_tabs_with_spaces=-1,
                 ),
             ),
         )
@@ -198,6 +202,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
                     remove_trailing_whitespace=False,
+                    replace_tabs_with_spaces=-1,
                 ),
             ),
         )
@@ -227,6 +232,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
                     remove_trailing_whitespace=False,
+                    replace_tabs_with_spaces=-1,
                 ),
             ),
         )
@@ -256,6 +262,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
                     remove_trailing_whitespace=False,
+                    replace_tabs_with_spaces=-1,
                 ),
             ),
         )
@@ -275,6 +282,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
                     remove_trailing_whitespace=False,
+                    replace_tabs_with_spaces=-1,
                 ),
             ),
         )
@@ -294,6 +302,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
                     remove_trailing_whitespace=False,
+                    replace_tabs_with_spaces=-1,
                 ),
             ),
         )
@@ -313,6 +322,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
                     remove_trailing_whitespace=False,
+                    replace_tabs_with_spaces=-1,
                 ),
             ),
         )
@@ -332,6 +342,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
                     remove_trailing_whitespace=False,
+                    replace_tabs_with_spaces=-1,
                 ),
             ),
         )
@@ -351,6 +362,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
                     remove_trailing_whitespace=False,
+                    replace_tabs_with_spaces=-1,
                 ),
             ),
         )
@@ -370,6 +382,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
                     remove_trailing_whitespace=False,
+                    replace_tabs_with_spaces=-1,
                 ),
             ),
         )
@@ -392,6 +405,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
                     remove_trailing_whitespace=False,
+                    replace_tabs_with_spaces=-1,
                 ),
             ),
         )
@@ -414,6 +428,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
                     remove_trailing_whitespace=False,
+                    replace_tabs_with_spaces=-1,
                 ),
             ),
         )
@@ -436,6 +451,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
                     remove_trailing_whitespace=False,
+                    replace_tabs_with_spaces=-1,
                 ),
             ),
         )
@@ -458,6 +474,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
                     remove_trailing_whitespace=False,
+                    replace_tabs_with_spaces=-1,
                 ),
             ),
         )
@@ -480,6 +497,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     remove_new_line_marker_from_end_of_file=True,
                     remove_trailing_empty_lines=False,
                     remove_trailing_whitespace=False,
+                    replace_tabs_with_spaces=-1,
                 ),
             ),
         )
@@ -502,6 +520,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
                     remove_trailing_whitespace=False,
+                    replace_tabs_with_spaces=-1,
                 ),
             ),
         )
@@ -528,6 +547,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
                     remove_trailing_whitespace=False,
+                    replace_tabs_with_spaces=-1,
                 ),
             ),
         )
@@ -550,6 +570,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
                     remove_trailing_whitespace=False,
+                    replace_tabs_with_spaces=-1,
                 ),
             ),
         )
@@ -575,6 +596,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
                     remove_trailing_whitespace=False,
+                    replace_tabs_with_spaces=-1,
                 ),
             ),
         )
@@ -594,6 +616,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=True,
                     remove_trailing_whitespace=False,
+                    replace_tabs_with_spaces=-1,
                 ),
             ),
         )
@@ -613,6 +636,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
                     remove_trailing_whitespace=True,
+                    replace_tabs_with_spaces=-1,
                 ),
             ),
         )
@@ -632,6 +656,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
                     remove_trailing_whitespace=True,
+                    replace_tabs_with_spaces=-1,
                 ),
             ),
         )
