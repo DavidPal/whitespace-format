@@ -552,6 +552,29 @@ class TestWhitespaceFormat(unittest.TestCase):
             ),
         )
 
+    def test_format_file_content__normalize_new_line_markers__windows(self):
+        """Tests format_file_content() function."""
+        self.assertEqual(
+            (
+                "hello\r\n\r\nworld  \r\n",
+                [Change(ChangeType.REPLACED_NEW_LINE_MARKER, 2, "\r", "\r\n")],
+            ),
+            whitespace_format2.format_file_content(
+                "hello\r\n\rworld  \r\n",
+                argparse.Namespace(
+                    add_new_line_marker_at_end_of_file=False,
+                    new_line_marker="windows",
+                    normalize_empty_files="ignore",
+                    normalize_new_line_markers=True,
+                    normalize_whitespace_only_files="ignore",
+                    remove_empty_lines=False,
+                    remove_new_line_marker_from_end_of_file=False,
+                    remove_trailing_empty_lines=False,
+                    remove_trailing_whitespace=False,
+                ),
+            ),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
