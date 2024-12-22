@@ -108,7 +108,7 @@ class TestWhitespaceFormat(unittest.TestCase):
             ),
         )
 
-    def test_format_file_content__empty_file__ignore(self):
+    def test_format_file_content__normalize_empty_files__ignore(self):
         """Tests format_file_content() function."""
         self.assertEqual(
             ("", []),
@@ -129,7 +129,7 @@ class TestWhitespaceFormat(unittest.TestCase):
             ),
         )
 
-    def test_format_file_content__empty_file__empty(self):
+    def test_format_file_content__normalize_empty_files__empty(self):
         """Tests format_file_content() function."""
         self.assertEqual(
             ("", []),
@@ -150,7 +150,7 @@ class TestWhitespaceFormat(unittest.TestCase):
             ),
         )
 
-    def test_format_file_content__empty_file__one_line__auto(self):
+    def test_format_file_content__normalize_empty_files__one_line__auto(self):
         """Tests format_file_content() function."""
         self.assertEqual(
             (
@@ -181,7 +181,7 @@ class TestWhitespaceFormat(unittest.TestCase):
             ),
         )
 
-    def test_format_file_content__empty_file__one_line__linux(self):
+    def test_format_file_content__normalize_empty_files__one_line__linux(self):
         """Tests format_file_content() function."""
         self.assertEqual(
             (
@@ -212,7 +212,7 @@ class TestWhitespaceFormat(unittest.TestCase):
             ),
         )
 
-    def test_format_file_content__empty_file__one_line__windows(self):
+    def test_format_file_content__normalize_empty_files__one_line__windows(self):
         """Tests format_file_content() function."""
         self.assertEqual(
             (
@@ -243,7 +243,7 @@ class TestWhitespaceFormat(unittest.TestCase):
             ),
         )
 
-    def test_format_file_content__empty_file__one_line__mac(self):
+    def test_format_file_content__normalize_empty_files__one_line__mac(self):
         """Tests format_file_content() function."""
         self.assertEqual(
             (
