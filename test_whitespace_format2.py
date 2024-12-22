@@ -601,6 +601,25 @@ class TestWhitespaceFormat(unittest.TestCase):
             ),
         )
 
+    def test_format_file_content__remove_trailing_empty_lines(self):
+        """Tests format_file_content() function."""
+        self.assertEqual(
+            ("hello\r\n\rworld\r\n", [Change(ChangeType.REMOVED_EMPTY_LINES, 4)]),
+            whitespace_format2.format_file_content(
+                "hello\r\n\rworld\r\n\n\n\n\n\n",
+                argparse.Namespace(
+                    add_new_line_marker_at_end_of_file=False,
+                    new_line_marker="auto",
+                    normalize_empty_files="ignore",
+                    normalize_new_line_markers=False,
+                    normalize_whitespace_only_files="ignore",
+                    remove_new_line_marker_from_end_of_file=False,
+                    remove_trailing_empty_lines=True,
+                    remove_trailing_whitespace=False,
+                ),
+            ),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
