@@ -20,7 +20,6 @@ import re
 import sys
 from enum import Enum
 from typing import List
-from typing import Optional
 from typing import Tuple
 
 VERSION = "0.0.6"
@@ -77,15 +76,25 @@ COLORS = {
     "WHITE": "\033[97m",
 }
 
+ESCAPE_TRANSLATION_TABLE = str.maketrans(
+    {
+        CARRIAGE_RETURN: "\\r",
+        LINE_FEED: "\\n",
+        TAB: "\\t",
+        VERTICAL_TAB: "\\v",
+        FORM_FEED: "\\f",
+    }
+)
+
 
 class ChangeType(Enum):
     """Type of change that happened to a file."""
 
     # New line marker was added to the end of the file (because it was missing).
-    NEW_LINE_MARKER_ADDED_TO_END_OF_FILE = 1
+    ADDED_NEW_LINE_MARKER_TO_END_OF_FILE = 1
 
     # New line marker was removed from the end of the file.
-    NEW_LINE_MARKER_REMOVED_FROM_END_OF_FILE = 2
+    REMOVED_NEW_LINE_MARKER_FROM_END_OF_FILE = 2
 
     # New line marker was replaced by another one.
     REPLACED_NEW_LINE_MARKER = 3
@@ -124,23 +133,23 @@ class Change:
 
     change_type: ChangeType
     line_number: int
-    changed_from: Optional[str] = None
-    changed_to: Optional[str] = None
+    changed_from: str = ""
+    changed_to: str = ""
 
     def message(self, check_only: bool) -> str:
         """Returns a message describing the change."""
         check_only_word = "would be" if check_only else " "
 
-        if self.change_type == ChangeType.NEW_LINE_MARKER_ADDED_TO_END_OF_FILE:
+        if self.change_type == ChangeType.ADDED_NEW_LINE_MARKER_TO_END_OF_FILE:
             return f"New line marker{check_only_word}added to the end of the file."
 
-        if self.change_type == ChangeType.NEW_LINE_MARKER_REMOVED_FROM_END_OF_FILE:
+        if self.change_type == ChangeType.REMOVED_NEW_LINE_MARKER_FROM_END_OF_FILE:
             return f"New line marker{check_only_word}removed from the end of the file."
 
         if self.change_type == ChangeType.REPLACED_NEW_LINE_MARKER:
             return (
-                f"New line marker '{self.changed_from}'"
-                f"{check_only_word}replaced by '{self.changed_to}'."
+                f"New line marker '{escape_chars(self.changed_from)}'"
+                f"{check_only_word}replaced by '{escape_chars(self.changed_to)}'."
             )
 
         if self.change_type == ChangeType.REMOVED_TRAILING_WHITESPACE:
@@ -166,14 +175,12 @@ class Change:
 
         if self.change_type == ChangeType.REPLACED_NONSTANDARD_WHITESPACE:
             return (
-                f"Non-standard whitespace character '{self.changed_from}'"
+                f"Non-standard whitespace character '{escape_chars(self.changed_from)}'"
                 f"{check_only_word}replaced by a space."
             )
 
         if self.change_type == ChangeType.REMOVED_NONSTANDARD_WHITESPACE:
-            return (
-                f"Non-standard whitespace character '{self.changed_from}'{check_only_word}removed."
-            )
+            return f"Non-standard whitespace character '{escape_chars(self.changed_from)}'{check_only_word}removed."
 
         raise ValueError(f"Unknown change type: {self.change_type}")
 
@@ -196,6 +203,11 @@ def color_print(message: str, parsed_arguments: argparse.Namespace):
         else:
             message = message.replace(f"[{color}]", "")
     print(message)
+
+
+def escape_chars(text: str) -> str:
+    """Escapes special characters in a string."""
+    return text.translate(ESCAPE_TRANSLATION_TABLE)
 
 
 def string_to_hex(text: str) -> str:
@@ -479,7 +491,7 @@ def format_file_content(
         and last_end_of_line_including_eol_marker < len(output)
     ):
         last_end_of_line_excluding_eol_marker = len(output)
-        changes.append(Change(ChangeType.NEW_LINE_MARKER_ADDED_TO_END_OF_FILE, line_number))
+        changes.append(Change(ChangeType.ADDED_NEW_LINE_MARKER_TO_END_OF_FILE, line_number))
         output += output_new_line_marker
         last_end_of_line_including_eol_marker = len(output)
         line_number += 1
@@ -491,7 +503,7 @@ def format_file_content(
         and line_number >= 2
     ):
         line_number -= 1
-        changes.append(Change(ChangeType.NEW_LINE_MARKER_REMOVED_FROM_END_OF_FILE, line_number))
+        changes.append(Change(ChangeType.REMOVED_NEW_LINE_MARKER_FROM_END_OF_FILE, line_number))
         output = output[:last_end_of_line_excluding_eol_marker]
 
     return output, changes

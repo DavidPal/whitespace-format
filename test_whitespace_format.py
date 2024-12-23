@@ -30,6 +30,16 @@ class TestWhitespaceFormat(unittest.TestCase):
         """Verify that version numbers are the same in all places."""
         self.assertEqual(whitespace_format.VERSION, extract_version_from_pyproject())
 
+    def test_escape_chars(self):
+        """Tests escape_chars() function."""
+        self.assertEqual(whitespace_format.escape_chars(""), "")
+        self.assertEqual(whitespace_format.escape_chars("hello world"), "hello world")
+        self.assertEqual(whitespace_format.escape_chars("\r"), "\\r")
+        self.assertEqual(whitespace_format.escape_chars("\n"), "\\n")
+        self.assertEqual(whitespace_format.escape_chars("\t"), "\\t")
+        self.assertEqual(whitespace_format.escape_chars("\v"), "\\v")
+        self.assertEqual(whitespace_format.escape_chars("\f"), "\\f")
+
     def test_read_file_content_windows(self):
         """Tests read_file_content() function."""
         file_content = whitespace_format.read_file_content(
@@ -155,14 +165,7 @@ class TestWhitespaceFormat(unittest.TestCase):
         self.assertEqual(
             (
                 "\n",
-                [
-                    Change(
-                        ChangeType.REPLACED_EMPTY_FILE_WITH_ONE_LINE,
-                        1,
-                        changed_from=None,
-                        changed_to=None,
-                    )
-                ],
+                [Change(ChangeType.REPLACED_EMPTY_FILE_WITH_ONE_LINE, 1)],
             ),
             whitespace_format.format_file_content(
                 "",
@@ -186,14 +189,7 @@ class TestWhitespaceFormat(unittest.TestCase):
         self.assertEqual(
             (
                 "\n",
-                [
-                    Change(
-                        ChangeType.REPLACED_EMPTY_FILE_WITH_ONE_LINE,
-                        1,
-                        changed_from=None,
-                        changed_to=None,
-                    )
-                ],
+                [Change(ChangeType.REPLACED_EMPTY_FILE_WITH_ONE_LINE, 1)],
             ),
             whitespace_format.format_file_content(
                 "",
@@ -217,14 +213,7 @@ class TestWhitespaceFormat(unittest.TestCase):
         self.assertEqual(
             (
                 "\r\n",
-                [
-                    Change(
-                        ChangeType.REPLACED_EMPTY_FILE_WITH_ONE_LINE,
-                        1,
-                        changed_from=None,
-                        changed_to=None,
-                    )
-                ],
+                [Change(ChangeType.REPLACED_EMPTY_FILE_WITH_ONE_LINE, 1)],
             ),
             whitespace_format.format_file_content(
                 "",
@@ -248,14 +237,7 @@ class TestWhitespaceFormat(unittest.TestCase):
         self.assertEqual(
             (
                 "\r",
-                [
-                    Change(
-                        ChangeType.REPLACED_EMPTY_FILE_WITH_ONE_LINE,
-                        1,
-                        changed_from=None,
-                        changed_to=None,
-                    )
-                ],
+                [Change(ChangeType.REPLACED_EMPTY_FILE_WITH_ONE_LINE, 1)],
             ),
             whitespace_format.format_file_content(
                 "",
@@ -405,7 +387,7 @@ class TestWhitespaceFormat(unittest.TestCase):
         self.assertEqual(
             (
                 "hello\r\n\rworld  \r\n",
-                [Change(ChangeType.NEW_LINE_MARKER_ADDED_TO_END_OF_FILE, 3)],
+                [Change(ChangeType.ADDED_NEW_LINE_MARKER_TO_END_OF_FILE, 3)],
             ),
             whitespace_format.format_file_content(
                 "hello\r\n\rworld  ",
@@ -429,7 +411,7 @@ class TestWhitespaceFormat(unittest.TestCase):
         self.assertEqual(
             (
                 "hello\r\n\rworld  \n",
-                [Change(ChangeType.NEW_LINE_MARKER_ADDED_TO_END_OF_FILE, 3)],
+                [Change(ChangeType.ADDED_NEW_LINE_MARKER_TO_END_OF_FILE, 3)],
             ),
             whitespace_format.format_file_content(
                 "hello\r\n\rworld  ",
@@ -453,7 +435,7 @@ class TestWhitespaceFormat(unittest.TestCase):
         self.assertEqual(
             (
                 "hello\r\n\rworld  \r\n",
-                [Change(ChangeType.NEW_LINE_MARKER_ADDED_TO_END_OF_FILE, 3)],
+                [Change(ChangeType.ADDED_NEW_LINE_MARKER_TO_END_OF_FILE, 3)],
             ),
             whitespace_format.format_file_content(
                 "hello\r\n\rworld  ",
@@ -477,7 +459,7 @@ class TestWhitespaceFormat(unittest.TestCase):
         self.assertEqual(
             (
                 "hello\r\n\rworld  \r",
-                [Change(ChangeType.NEW_LINE_MARKER_ADDED_TO_END_OF_FILE, 3)],
+                [Change(ChangeType.ADDED_NEW_LINE_MARKER_TO_END_OF_FILE, 3)],
             ),
             whitespace_format.format_file_content(
                 "hello\r\n\rworld  ",
@@ -501,7 +483,7 @@ class TestWhitespaceFormat(unittest.TestCase):
         self.assertEqual(
             (
                 "hello\r\n\rworld  ",
-                [Change(ChangeType.NEW_LINE_MARKER_REMOVED_FROM_END_OF_FILE, 3)],
+                [Change(ChangeType.REMOVED_NEW_LINE_MARKER_FROM_END_OF_FILE, 3)],
             ),
             whitespace_format.format_file_content(
                 "hello\r\n\rworld  \n",
@@ -525,7 +507,7 @@ class TestWhitespaceFormat(unittest.TestCase):
         self.assertEqual(
             (
                 "hello\r\n\rworld  \n\r\n",
-                [Change(ChangeType.NEW_LINE_MARKER_REMOVED_FROM_END_OF_FILE, 5)],
+                [Change(ChangeType.REMOVED_NEW_LINE_MARKER_FROM_END_OF_FILE, 5)],
             ),
             whitespace_format.format_file_content(
                 "hello\r\n\rworld  \n\r\n\r",
@@ -994,7 +976,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                 "hello   ",
                 [
                     Change(ChangeType.REMOVED_EMPTY_LINES, 2),
-                    Change(ChangeType.NEW_LINE_MARKER_REMOVED_FROM_END_OF_FILE, 1),
+                    Change(ChangeType.REMOVED_NEW_LINE_MARKER_FROM_END_OF_FILE, 1),
                 ],
             ),
             whitespace_format.format_file_content(
