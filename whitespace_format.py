@@ -777,7 +777,7 @@ def parse_command_line() -> argparse.Namespace:
     parser.add_argument(
         "--remove-trailing-empty-lines",
         help="Remove empty lines at the end of each file. "
-        "If --remove-trailing-empty-lines is used, this option is used automatically.",
+        "If --remove-new-line-marker-from-end-of-file is used, this option is used automatically.",
         required=False,
         default=False,
         action="store_true",
