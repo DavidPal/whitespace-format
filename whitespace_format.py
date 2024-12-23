@@ -226,7 +226,10 @@ def die(error_code: int, message: str = ""):
 
 
 def read_file_content(file_name: str, encoding: str) -> str:
-    """Reads content of a file."""
+    """Reads content of a file.
+
+    New line markers are preserved.
+    """
     try:
         with open(file_name, "r", encoding=encoding, newline="") as file:
             return file.read()
@@ -246,34 +249,39 @@ def write_file(file_name: str, file_content: str, encoding: str):
         die(4, f"Cannot write to file '{file_name}': {exception}")
 
 
-def is_file_whitespace(file_content: str) -> bool:
-    """Determines if a file consists of only whitespace characters."""
-    for char in file_content:
+def is_whitespace_only(text: str) -> bool:
+    """Determines if a string consists of only whitespace characters."""
+    for char in text:
         if char not in WHITESPACE_CHARACTERS:
             return False
     return True
 
 
-def find_most_common_new_line_marker(file_content: str) -> str:
-    """Finds the most common new line marker in a string.
+def find_most_common_new_line_marker(text: str) -> str:
+    """Returns the most common new line marker in a string.
 
-    The function returns the most common end-of-line marker.
-    Ties are broken in order Linux "\n", Mac "\r", Windows "\r\n".
-    If no end-of-line marker is present, default to the Linux "\n" end-of-line marker.
+    If there are ties, prefer Linux '\n' to Windows '\r\n' to Mac '\r'.
+    If there are no new line markers, return Linux.
+
+    Args:
+        text: A string.
+
+    Returns:
+        Either '\n', or '\r\n' or '\r'.
     """
     linux_count = 0
     macos_count = 0
     windows_count = 0
     i = 0
 
-    while i < len(file_content):
-        if file_content[i] == CARRIAGE_RETURN:
-            if i < len(file_content) - 1 and file_content[i + 1] == LINE_FEED:
+    while i < len(text):
+        if text[i] == CARRIAGE_RETURN:
+            if i < len(text) - 1 and text[i + 1] == LINE_FEED:
                 windows_count += 1
                 i += 1
             else:
                 macos_count += 1
-        elif file_content[i] == LINE_FEED:
+        elif text[i] == LINE_FEED:
             linux_count += 1
         i += 1
 
@@ -311,7 +319,7 @@ def format_file_content(
             return output_new_line_marker, [Change(ChangeType.REPLACED_EMPTY_FILE_WITH_ONE_LINE, 1)]
 
     # Handle non-empty file consisting of whitespace only.
-    if is_file_whitespace(file_content):
+    if is_whitespace_only(file_content):
         if parsed_arguments.normalize_whitespace_only_files == "empty":
             return "", [Change(ChangeType.REPLACED_WHITESPACE_ONLY_FILE_WITH_EMPTY_FILE, 1)]
         if parsed_arguments.normalize_whitespace_only_files == "one-line":

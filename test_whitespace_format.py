@@ -72,16 +72,16 @@ class TestWhitespaceFormat(unittest.TestCase):
             whitespace_format.find_all_files_recursively(".circleci/", True),
         )
 
-    def test_is_file_whitespace(self):
-        """Tests is_file_whitespace() function."""
-        self.assertTrue(whitespace_format.is_file_whitespace(""))
-        self.assertTrue(whitespace_format.is_file_whitespace("    "))
-        self.assertTrue(whitespace_format.is_file_whitespace("\n\n\n"))
-        self.assertTrue(whitespace_format.is_file_whitespace("\r\r\r"))
-        self.assertTrue(whitespace_format.is_file_whitespace(" \t\n\r"))
-        self.assertTrue(whitespace_format.is_file_whitespace("\t\v\f\n\r "))
-        self.assertFalse(whitespace_format.is_file_whitespace("hello"))
-        self.assertFalse(whitespace_format.is_file_whitespace("hello world\n"))
+    def test_is_whitespace_only(self):
+        """Tests is_whitespace_only() function."""
+        self.assertTrue(whitespace_format.is_whitespace_only(""))
+        self.assertTrue(whitespace_format.is_whitespace_only("    "))
+        self.assertTrue(whitespace_format.is_whitespace_only("\n\n\n"))
+        self.assertTrue(whitespace_format.is_whitespace_only("\r\r\r"))
+        self.assertTrue(whitespace_format.is_whitespace_only(" \t\n\r"))
+        self.assertTrue(whitespace_format.is_whitespace_only("\t\v\f\n\r "))
+        self.assertFalse(whitespace_format.is_whitespace_only("hello"))
+        self.assertFalse(whitespace_format.is_whitespace_only("hello world\n"))
 
     def test_find_most_common_new_line_marker(self):
         """Tests find_most_common_new_line_marker() function."""
