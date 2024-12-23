@@ -138,7 +138,7 @@ class Change:
 
     def message(self, check_only: bool) -> str:
         """Returns a message describing the change."""
-        check_only_word = "would be" if check_only else " "
+        check_only_word = " would be " if check_only else " "
 
         if self.change_type == ChangeType.ADDED_NEW_LINE_MARKER_TO_END_OF_FILE:
             return f"New line marker{check_only_word}added to the end of the file."
@@ -522,7 +522,7 @@ def reformat_file(file_name: str, parsed_arguments: argparse.Namespace) -> bool:
     file_content = read_file_content(file_name, parsed_arguments.encoding)
     formatted_file_content, file_changes = format_file_content(file_content, parsed_arguments)
     if parsed_arguments.verbose:
-        color_print(f"Processing file '{file_name}'...", parsed_arguments)
+        color_print(f"[WHITE]Processing file [BOLD]{file_name}[RESET_ALL]...", parsed_arguments)
     if parsed_arguments.check_only:
         if file_changes:
             color_print(
@@ -553,7 +553,7 @@ def reformat_file(file_name: str, parsed_arguments: argparse.Namespace) -> bool:
             )
         else:
             if parsed_arguments.verbose:
-                color_print(f"[WHITE]{file_name} [BLUE]left unchanged[RESET_ALL]", parsed_arguments)
+                color_print(f"[WHITE]Unchanged [BOLD]{file_name}[RESET_ALL]", parsed_arguments)
 
     return bool(file_changes)
 
