@@ -738,7 +738,10 @@ def parse_command_line() -> argparse.Namespace:
     )
     parser.add_argument(
         "--remove-new-line-marker-from-end-of-file",
-        help="Remove new line markers from the end of each file.",
+        help="Remove new line markers from the end of each file. "
+        "This option conflicts with --add-new-line-marker-at-end-of-file. "
+        "This option implies --remove-trailing-empty-lines option, i.e., "
+        "all empty lines at the end of the file are removed.",
         required=False,
         default=False,
         action="store_true",
@@ -752,7 +755,8 @@ def parse_command_line() -> argparse.Namespace:
     )
     parser.add_argument(
         "--remove-trailing-empty-lines",
-        help="Remove empty lines at the end of each file.",
+        help="Remove empty lines at the end of each file. "
+        "If --remove-trailing-empty-lines is used, this option is used automatically.",
         required=False,
         default=False,
         action="store_true",
@@ -791,6 +795,16 @@ def parse_command_line() -> argparse.Namespace:
 
     if parsed_arguments.verbose:
         parsed_arguments.quiet = False
+
+    if parsed_arguments.remove_new_line_marker_from_end_of_file:
+        parsed_arguments.remove_empty_lines = True
+
+        if parsed_arguments.add_new_line_marker_from_end_of_file:
+            die(
+                1,
+                "The option --remove-new-line-marker-from-end-of-file "
+                "conflicts with --add-new-line-marker-at-end-of-file option.",
+            )
 
     return parsed_arguments
 
