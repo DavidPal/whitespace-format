@@ -704,6 +704,7 @@ def parse_command_line() -> argparse.Namespace:
             "mac: Use Mac new line marker '\\r'. "
             "windows: Use Windows new line marker '\\r\\n'. "
         ),
+        required=False,
         type=str,
         choices=["auto", "linux", "mac", "windows"],
         default="auto",
