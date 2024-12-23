@@ -75,14 +75,15 @@ The regular expression is evaluated on the path of each file.
 
 * `--add-new-line-marker-at-end-of-file` -- Add missing new line marker at end of each file.
 * `--remove-new-line-marker-from-end-of-file` -- Remove all new line marker(s) from the end of each file.
-This option is ignored when `--add-new-line-marker-at-end-of-file` is used.
-Empty lines at the end of the file are removed.
+This option cannot be used in combination with `--add-new-line-marker-at-end-of-file`.
+Empty lines at the end of the file are removed, i.e., this option implies `--remove-trailing-empty-lines`
+option.
 * `--normalize-new-line-markers` -- Make new line markers consistent in each file
 by replacing `\r\n`, `\n`, and `\r` with a consistent new line marker.
 * `--remove-trailing-whitespace` -- Remove whitespace at the end of each line.
 * `--remove-trailing-empty-lines` -- Remove empty lines at the end of each file.
-* `--new-line-marker=MARKER` -- This option specifies what new line marker to use.
-`MARKER` must be one of the following:
+* `--new-line-marker=MARKER` -- This option specifies what new line marker to when
+adding or replacing new line markers. `MARKER` must be one of the following:
   * `auto` -- Use new line marker that is the most common in each individual file.
   If no new line marker is present in the file, Linux `\n` is used.
   This is the default option.

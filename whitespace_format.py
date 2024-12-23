@@ -799,9 +799,9 @@ def parse_command_line() -> argparse.Namespace:
     if parsed_arguments.remove_new_line_marker_from_end_of_file:
         parsed_arguments.remove_empty_lines = True
 
-        if parsed_arguments.add_new_line_marker_from_end_of_file:
+        if parsed_arguments.add_new_line_marker_at_end_of_file:
             die(
-                1,
+                5,
                 "The option --remove-new-line-marker-from-end-of-file "
                 "conflicts with --add-new-line-marker-at-end-of-file option.",
             )
