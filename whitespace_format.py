@@ -341,10 +341,6 @@ def format_file_content(
     line_number = 1
 
     # Position one byte past the end of last line in the output buffer
-    # excluding the last end of line marker.
-    last_end_of_line_excluding_eol_marker = 0
-
-    # Position one byte past the end of last line in the output buffer
     # including the last end of line marker.
     last_end_of_line_including_eol_marker = 0
 
@@ -399,8 +395,11 @@ def format_file_content(
             # Determine if the last line is empty
             is_empty_line: bool = last_end_of_line_including_eol_marker == len(output)
 
-            # Add new line marker
+            # Position one byte past the end of last line in the output buffer
+            # excluding the last end of line marker.
             last_end_of_line_excluding_eol_marker = len(output)
+
+            # Add new line marker
             if (
                 parsed_arguments.normalize_new_line_markers
                 and output_new_line_marker != new_line_marker
@@ -488,7 +487,6 @@ def format_file_content(
         and last_end_of_non_empty_line_including_eol_marker < len(output)
     ):
         line_number = last_non_empty_line_number + 1
-        last_end_of_line_excluding_eol_marker = last_end_of_non_empty_line_excluding_eol_marker
         last_end_of_line_including_eol_marker = last_end_of_non_empty_line_including_eol_marker
         changes.append(Change(ChangeType.REMOVED_EMPTY_LINES, line_number))
         output = output[:last_end_of_non_empty_line_including_eol_marker]
@@ -498,21 +496,20 @@ def format_file_content(
         parsed_arguments.add_new_line_marker_at_end_of_file
         and last_end_of_line_including_eol_marker < len(output)
     ):
-        last_end_of_line_excluding_eol_marker = len(output)
         changes.append(Change(ChangeType.ADDED_NEW_LINE_MARKER_TO_END_OF_FILE, line_number))
         output += output_new_line_marker
         last_end_of_line_including_eol_marker = len(output)
         line_number += 1
 
-    # Remove new line marker from the end of the file
+    # Remove new line marker(s) from the end of the file
     if (
         parsed_arguments.remove_new_line_marker_from_end_of_file
         and last_end_of_line_including_eol_marker == len(output)
         and line_number >= 2
     ):
-        line_number -= 1
+        line_number = last_non_empty_line_number
         changes.append(Change(ChangeType.REMOVED_NEW_LINE_MARKER_FROM_END_OF_FILE, line_number))
-        output = output[:last_end_of_line_excluding_eol_marker]
+        output = output[:last_end_of_non_empty_line_excluding_eol_marker]
 
     return output, changes
 

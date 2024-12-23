@@ -506,8 +506,8 @@ class TestWhitespaceFormat(unittest.TestCase):
         """Tests format_file_content() function."""
         self.assertEqual(
             (
-                "hello\r\n\rworld  \n\r\n",
-                [Change(ChangeType.REMOVED_NEW_LINE_MARKER_FROM_END_OF_FILE, 5)],
+                "hello\r\n\rworld  ",
+                [Change(ChangeType.REMOVED_NEW_LINE_MARKER_FROM_END_OF_FILE, 3)],
             ),
             whitespace_format.format_file_content(
                 "hello\r\n\rworld  \n\r\n\r",
