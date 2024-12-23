@@ -340,18 +340,18 @@ def format_file_content(
     # Line number. It is incremented every time we encounter a new end of line marker.
     line_number = 1
 
-    # Position one byte past the end of last line in the output buffer
+    # Position one character past the end of last line in the output buffer
     # including the last end of line marker.
     last_end_of_line_including_eol_marker = 0
 
-    # Position one byte past the last non-whitespace character in the output buffer.
+    # Position one character past the last non-whitespace character in the output buffer.
     last_non_whitespace = 0
 
-    # Position one byte past the end of last non-empty line in the output buffer
+    # Position one character past the end of last non-empty line in the output buffer
     # excluding the last end of line marker.
     last_end_of_non_empty_line_excluding_eol_marker = 0
 
-    # Position one byte past the end of last non-empty line in the output buffer,
+    # Position one character past the end of last non-empty line in the output buffer,
     # including the last end of line marker.
     last_end_of_non_empty_line_including_eol_marker = 0
 
@@ -369,8 +369,8 @@ def format_file_content(
                 new_line_marker = LINE_FEED
             elif i < len(file_content) - 1 and file_content[i + 1] == LINE_FEED:
                 new_line_marker = "\r\n"
-                # Windows new line marker consists of two bytes.
-                # Skip the extra byte.
+                # Windows new line marker consists of two characters.
+                # Skip the extra character.
                 i += 1
             else:
                 new_line_marker = CARRIAGE_RETURN
@@ -395,7 +395,7 @@ def format_file_content(
             # Determine if the last line is empty
             is_empty_line: bool = last_end_of_line_including_eol_marker == len(output)
 
-            # Position one byte past the end of last line in the output buffer
+            # Position one character past the end of last line in the output buffer
             # excluding the last end of line marker.
             last_end_of_line_excluding_eol_marker = len(output)
 
