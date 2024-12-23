@@ -228,7 +228,7 @@ def die(error_code: int, message: str = ""):
 def read_file_content(file_name: str, encoding: str) -> str:
     """Reads content of a file.
 
-    New line markers are preserved.
+    New line markers are preserved in their original form.
     """
     try:
         with open(file_name, "r", encoding=encoding, newline="") as file:
@@ -270,7 +270,7 @@ def find_most_common_new_line_marker(text: str) -> str:
         Either '\n', or '\r\n' or '\r'.
     """
     linux_count = 0
-    macos_count = 0
+    mac_count = 0
     windows_count = 0
     i = 0
 
@@ -280,12 +280,12 @@ def find_most_common_new_line_marker(text: str) -> str:
                 windows_count += 1
                 i += 1
             else:
-                macos_count += 1
+                mac_count += 1
         elif text[i] == LINE_FEED:
             linux_count += 1
         i += 1
 
-    if macos_count > windows_count and macos_count > linux_count:
+    if mac_count > windows_count and mac_count > linux_count:
         return "\r"
 
     if windows_count > linux_count:
@@ -295,9 +295,12 @@ def find_most_common_new_line_marker(text: str) -> str:
 
 
 def format_file_content(
-    file_content: str, parsed_arguments: argparse.Namespace
+    file_content: str,
+    parsed_arguments: argparse.Namespace,
 ) -> Tuple[str, List[Change]]:
-    """Applies a function to the content of a file.
+    """Formats content of a file.
+
+    The formatting options are specified in the parsed_arguments.
 
     Args:
         file_content: Content of the file.
