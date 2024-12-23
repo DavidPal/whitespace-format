@@ -656,20 +656,24 @@ def parse_command_line() -> argparse.Namespace:
         default="utf-8",
         type=str,
     )
-    parser.add_argument(
+
+    # Mutually exclusive group of parameters.
+    group1 = parser.add_mutually_exclusive_group()
+    group1.add_argument(
         "--verbose",
         help="Print more messages than normally.",
         required=False,
         action="store_true",
         default=False,
     )
-    parser.add_argument(
+    group1.add_argument(
         "--quiet",
         help="Do not print any messages, except for errors when reading or writing files.",
         required=False,
         action="store_true",
         default=False,
     )
+
     parser.add_argument(
         "--color",
         help="Print messages in color.",
@@ -750,14 +754,17 @@ def parse_command_line() -> argparse.Namespace:
         default="ignore",
         choices=["ignore", "empty", "one-line"],
     )
-    parser.add_argument(
+
+    # Mutually exclusive group of parameters.
+    group2 = parser.add_mutually_exclusive_group()
+    group2.add_argument(
         "--add-new-line-marker-at-end-of-file",
         help="Add missing new line marker at end of each file.",
         required=False,
         default=False,
         action="store_true",
     )
-    parser.add_argument(
+    group2.add_argument(
         "--remove-new-line-marker-from-end-of-file",
         help="Remove new line markers from the end of each file. "
         "This option conflicts with --add-new-line-marker-at-end-of-file. "
@@ -767,6 +774,7 @@ def parse_command_line() -> argparse.Namespace:
         default=False,
         action="store_true",
     )
+
     parser.add_argument(
         "--remove-trailing-whitespace",
         help="Remove whitespace at the end of each line.",
@@ -814,18 +822,8 @@ def parse_command_line() -> argparse.Namespace:
     if parsed_arguments.normalize_whitespace_only_files == "empty":
         parsed_arguments.normalize_empty_files = parsed_arguments.normalize_whitespace_only_files
 
-    if parsed_arguments.verbose:
-        parsed_arguments.quiet = False
-
     if parsed_arguments.remove_new_line_marker_from_end_of_file:
         parsed_arguments.remove_empty_lines = True
-
-        if parsed_arguments.add_new_line_marker_at_end_of_file:
-            die(
-                5,
-                "The option --remove-new-line-marker-from-end-of-file "
-                "conflicts with --add-new-line-marker-at-end-of-file option.",
-            )
 
     return parsed_arguments
 
