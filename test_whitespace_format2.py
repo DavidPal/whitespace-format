@@ -496,7 +496,7 @@ class TestWhitespaceFormat(unittest.TestCase):
             ),
         )
 
-    def test_format_file_content__remove_new_line_marker_from_end_of_file(self):
+    def test_format_file_content__remove_new_line_marker_from_end_of_file_1(self):
         """Tests format_file_content() function."""
         self.assertEqual(
             (
@@ -505,6 +505,72 @@ class TestWhitespaceFormat(unittest.TestCase):
             ),
             whitespace_format2.format_file_content(
                 "hello\r\n\rworld  \n",
+                argparse.Namespace(
+                    add_new_line_marker_at_end_of_file=False,
+                    new_line_marker="auto",
+                    normalize_empty_files="ignore",
+                    normalize_new_line_markers=False,
+                    normalize_non_standard_whitespace="ignore",
+                    normalize_whitespace_only_files="ignore",
+                    remove_new_line_marker_from_end_of_file=True,
+                    remove_trailing_empty_lines=False,
+                    remove_trailing_whitespace=False,
+                    replace_tabs_with_spaces=-1,
+                ),
+            ),
+        )
+
+    def test_format_file_content__remove_new_line_marker_from_end_of_file_2(self):
+        """Tests format_file_content() function."""
+        self.assertEqual(
+            (
+                "hello\r\n\rworld  ",
+                [Change(ChangeType.NEW_LINE_MARKER_REMOVED_FROM_END_OF_FILE, 3)],
+            ),
+            whitespace_format2.format_file_content(
+                "hello\r\n\rworld  \n\r\n\r",
+                argparse.Namespace(
+                    add_new_line_marker_at_end_of_file=False,
+                    new_line_marker="auto",
+                    normalize_empty_files="ignore",
+                    normalize_new_line_markers=False,
+                    normalize_non_standard_whitespace="ignore",
+                    normalize_whitespace_only_files="ignore",
+                    remove_new_line_marker_from_end_of_file=True,
+                    remove_trailing_empty_lines=False,
+                    remove_trailing_whitespace=False,
+                    replace_tabs_with_spaces=-1,
+                ),
+            ),
+        )
+
+    def test_format_file_content__remove_new_line_marker_from_end_of_file_3(self):
+        """Tests format_file_content() function."""
+        self.assertEqual(
+            ("", []),
+            whitespace_format2.format_file_content(
+                "",
+                argparse.Namespace(
+                    add_new_line_marker_at_end_of_file=False,
+                    new_line_marker="auto",
+                    normalize_empty_files="ignore",
+                    normalize_new_line_markers=False,
+                    normalize_non_standard_whitespace="ignore",
+                    normalize_whitespace_only_files="ignore",
+                    remove_new_line_marker_from_end_of_file=True,
+                    remove_trailing_empty_lines=False,
+                    remove_trailing_whitespace=False,
+                    replace_tabs_with_spaces=-1,
+                ),
+            ),
+        )
+
+    def test_format_file_content__remove_new_line_marker_from_end_of_file_4(self):
+        """Tests format_file_content() function."""
+        self.assertEqual(
+            ("hello", []),
+            whitespace_format2.format_file_content(
+                "hello",
                 argparse.Namespace(
                     add_new_line_marker_at_end_of_file=False,
                     new_line_marker="auto",

@@ -490,9 +490,9 @@ def format_file_content(
         and last_end_of_line_including_eol_marker == len(output)
         and line_number >= 2
     ):
-        line_number -= 1
+        line_number = last_non_empty_line_number
         changes.append(Change(ChangeType.NEW_LINE_MARKER_REMOVED_FROM_END_OF_FILE, line_number))
-        output = output[:last_end_of_line_excluding_eol_marker]
+        output = output[:last_end_of_non_empty_line_excluding_eol_marker]
 
     return output, changes
 
