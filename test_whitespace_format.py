@@ -896,7 +896,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     new_line_marker="auto",
                     normalize_empty_files="ignore",
                     normalize_new_line_markers=False,
-                    normalize_non_standard_whitespace="replace",
+                    normalize_non_standard_whitespace="ignore",
                     normalize_whitespace_only_files="ignore",
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=True,
@@ -917,7 +917,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     new_line_marker="auto",
                     normalize_empty_files="ignore",
                     normalize_new_line_markers=False,
-                    normalize_non_standard_whitespace="replace",
+                    normalize_non_standard_whitespace="ignore",
                     normalize_whitespace_only_files="ignore",
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
@@ -938,7 +938,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     new_line_marker="auto",
                     normalize_empty_files="ignore",
                     normalize_new_line_markers=False,
-                    normalize_non_standard_whitespace="replace",
+                    normalize_non_standard_whitespace="ignore",
                     normalize_whitespace_only_files="ignore",
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
@@ -959,7 +959,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     new_line_marker="auto",
                     normalize_empty_files="ignore",
                     normalize_new_line_markers=False,
-                    normalize_non_standard_whitespace="replace",
+                    normalize_non_standard_whitespace="ignore",
                     normalize_whitespace_only_files="ignore",
                     remove_new_line_marker_from_end_of_file=False,
                     remove_trailing_empty_lines=False,
@@ -969,7 +969,9 @@ class TestWhitespaceFormat(unittest.TestCase):
             ),
         )
 
-    def test_format_file_content__remove_new_line_marker__remove_trailing_empty_lines__1(self):
+    def test_format_file_content__remove_new_line_marker_from_end_of_file__remove_trailing_empty_lines(
+        self,
+    ):
         """Tests format_file_content() function."""
         self.assertEqual(
             (
@@ -986,11 +988,75 @@ class TestWhitespaceFormat(unittest.TestCase):
                     new_line_marker="auto",
                     normalize_empty_files="ignore",
                     normalize_new_line_markers=False,
-                    normalize_non_standard_whitespace="replace",
+                    normalize_non_standard_whitespace="ignore",
                     normalize_whitespace_only_files="ignore",
                     remove_new_line_marker_from_end_of_file=True,
                     remove_trailing_empty_lines=True,
                     remove_trailing_whitespace=False,
+                    replace_tabs_with_spaces=-1,
+                ),
+            ),
+        )
+
+    def test_format_file_content__remove_new_line_marker__remove_trailing_empty_lines__remove_trailing_whitespace(
+        self,
+    ):
+        """Tests format_file_content() function."""
+        self.assertEqual(
+            (
+                " hello\r\n  world",
+                [
+                    Change(ChangeType.REMOVED_TRAILING_WHITESPACE, 1),
+                    Change(ChangeType.REMOVED_TRAILING_WHITESPACE, 2),
+                    Change(ChangeType.REMOVED_EMPTY_LINES, 3),
+                    Change(ChangeType.REMOVED_NEW_LINE_MARKER_FROM_END_OF_FILE, 2),
+                ],
+            ),
+            whitespace_format.format_file_content(
+                " hello  \r\n  world \t  \n\r\n\r",
+                argparse.Namespace(
+                    add_new_line_marker_at_end_of_file=False,
+                    new_line_marker="auto",
+                    normalize_empty_files="ignore",
+                    normalize_new_line_markers=False,
+                    normalize_non_standard_whitespace="ignore",
+                    normalize_whitespace_only_files="ignore",
+                    remove_new_line_marker_from_end_of_file=True,
+                    remove_trailing_empty_lines=True,
+                    remove_trailing_whitespace=True,
+                    replace_tabs_with_spaces=-1,
+                ),
+            ),
+        )
+
+    def test_format_file_content__comprehensive__1(self):
+        """Tests format_file_content() function."""
+        self.assertEqual(
+            (
+                " hello\n world\n",
+                [
+                    Change(ChangeType.REPLACED_NONSTANDARD_WHITESPACE, 1, "\v", " "),
+                    Change(ChangeType.REMOVED_TRAILING_WHITESPACE, 1),
+                    Change(ChangeType.REPLACED_NEW_LINE_MARKER, 1, "\r\n", "\n"),
+                    Change(ChangeType.REPLACED_NONSTANDARD_WHITESPACE, 2, "\f", " "),
+                    Change(ChangeType.REMOVED_TRAILING_WHITESPACE, 2),
+                    Change(ChangeType.REPLACED_NEW_LINE_MARKER, 3, "\r\n", "\n"),
+                    Change(ChangeType.REPLACED_NEW_LINE_MARKER, 4, "\r", "\n"),
+                    Change(ChangeType.REMOVED_EMPTY_LINES, 3),
+                ],
+            ),
+            whitespace_format.format_file_content(
+                "\vhello  \r\n\fworld \t  \n\r\n\r",
+                argparse.Namespace(
+                    add_new_line_marker_at_end_of_file=True,
+                    new_line_marker="linux",
+                    normalize_empty_files="empty",
+                    normalize_new_line_markers=True,
+                    normalize_non_standard_whitespace="replace",
+                    normalize_whitespace_only_files="empty",
+                    remove_new_line_marker_from_end_of_file=False,
+                    remove_trailing_empty_lines=True,
+                    remove_trailing_whitespace=True,
                     replace_tabs_with_spaces=-1,
                 ),
             ),
