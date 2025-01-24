@@ -187,7 +187,7 @@ class Change:
     def color_print(self, parsed_arguments: argparse.Namespace) -> None:
         """Prints a message in color."""
         color_print(
-            f"[BOLD][BLUE]↳ line {self.line_number + 1}: "
+            f"[BOLD][BLUE]↳ line {self.line_number}: "
             f"[WHITE]{self.message(parsed_arguments.check_only)}[RESET_ALL]",
             parsed_arguments,
         )
