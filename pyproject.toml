@@ -1,11 +1,9 @@
-[project]
+[tool.poetry]
 name = "whitespace-format"
-version = "0.0.7"
+version = "0.0.6"
 description = "Linter and formatter for source code files and text files"
 license = "MIT"
-authors = [
-    {name = "David Pal", email= "davidko.pal@gmail.com"},
-]
+authors = ["David Pal <davidko.pal@gmail.com>"]
 readme = "README.md"
 homepage = "https://github.com/DavidPal/whitespace-format"
 repository = "https://github.com/DavidPal/whitespace-format"
@@ -14,26 +12,24 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
 ]
-requires-python = ">=3.8.0"
-dependencies = []
 
 [tool.poetry.scripts]
 whitespace-format = "whitespace_format:main"
 
 [tool.poetry.dependencies]
+python = "^3.8.0"
 
-[tool.poetry.group.dev.dependencies]
+[tool.poetry.dev-dependencies]
 black = "^23.12.1"
 coverage = "^7.2.4"
 flake8 = "^5.0.4"
 flake8-absolute-import = "^1.0.0.2"
 isort = {extras = ["colors"], version = "^5.13.2"}
-mypy = "^1.14.1"
+mypy = "^1.13.0"
 pydocstyle = {extras = ["toml"], version = "^6.3.0"}
+pytest = "^8.3.4"
 pylint = "^2.17.7"
 pylint-quotes = "^0.2.3"
-pytest = "^8.3.4"
-ruff = "^0.9.3"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
