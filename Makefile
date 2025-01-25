@@ -1,36 +1,10 @@
+.PHONY: whitespace-format-check whitespace-format black-check black-format isort-check isort-format pydocstyle flake8 pylint mypy lint test coverage clean install-python create-environment delete-environment install-dependencies build-package publish-to-pypi publish-to-test-pypi
+
 PYTHON_ENVIRONMENT = "whitespace_format"
 PYTHON_VERSION = "3.8.0"
 SOURCE_FILES = *.py
 
-TEMPORARY_FILES = pytest_results/ .coverage *.egg-info/ dist/ .ruff_cache/ .mypy_cache/ .pytest_cache/
-NON_TEXT_FILES_REGEX = "\.pyc$$|^\.git/|^\.idea/|^\.ruff_cache/|^.mypy_cache/|^.coverage$$|^pytest_results/|^.pytest_cache/|^test_data/"
-
-.PHONY: \
-	whitespace-format-check \
-	whitespace-format \
-	init-file-checker \
-	init-file-checker-add-missing \
-	isort-check \
-	isort-format \
-	black-check \
-	black-format \
-	ruff ruff-fix \
-	flake8 \
-	pylint \
-	mypy \
-	lint \
-	fix \
-	test \
-	coverage \
-	clean \
-	install-python \
-	create-environment \
-	delete-environment \
-	install-dependencies \
-	poetry-check-lock \
-	build-package \
-	publish-to-pypi \
-	publish-to-test-pypi \
+NON_TEXT_FILES_REGEX = "\.pyc$$|\.git/|\.idea/|test_data/|^\.coverage$$|^\.mypy_cache/|"
 
 whitespace-format-check:
 	# Check whitespace formatting.
@@ -56,13 +30,13 @@ whitespace-format:
 			--normalize-whitespace-only-files empty \
 			--exclude $(NON_TEXT_FILES_REGEX)  .
 
-init-file-checker:
-	# Checks if __init__.py files are not missing.
-	init-file-checker `ls -d */`
+black-check:
+	# Check code formatting.
+	black --diff --check --color --exclude "_pb2.py|_rpc.py|_twirp.py" $(SOURCE_FILES)
 
-init-file-checker-add-missing:
-	# Adds missing __init__.py files.
-	init-file-checker --add-missing `ls -d */`
+black-format:
+	# Reformat code.
+	black --exclude "_pb2.py|_rpc.py|_twirp.py" $(SOURCE_FILES)
 
 isort-check:
 	# Check imports.
@@ -72,21 +46,9 @@ isort-format:
 	# Format imports.
 	isort --color --skip-glob="*_pb2.py" --skip-glob="*_rpc.py" --skip-glob="*_twirp.py" $(SOURCE_FILES)
 
-black-check:
-	# Check code formatting.
-	black --diff --check --color --exclude "_pb2.py|_rpc.py|_twirp.py" $(SOURCE_FILES)
-
-black-format:
-	# Reformat code.
-	black --exclude "_pb2.py|_rpc.py|_twirp.py" $(SOURCE_FILES)
-
-ruff:
-	# Check code style with ruff.
-	ruff check ./
-
-ruff-fix:
-	# Fix code style with ruff
-	ruff check --fix ./
+pydocstyle:
+	# Check docstrings
+	python -m pydocstyle --verbose --explain --source --count $(SOURCE_FILES)
 
 flake8:
 	# Check PEP8 code style.
@@ -98,13 +60,9 @@ pylint:
 
 mypy:
 	# Check type hints.
-	mypy --exclude ".*_pb2.py$$|.*_rpc.py$$|.*_twirp.py$$" $(SOURCE_FILES)
+	mypy --config-file "mypy.ini" --exclude ".*_pb2.py$$|.*_rpc.py$$|.*_twirp.py$$" $(SOURCE_FILES)
 
-# Run all linters
-lint: whitespace-format-check black-check isort-check ruff flake8 pylint mypy
-
-# Fix code formatting.
-fix: whitespace-format black-format isort-format ruff-fix
+lint: whitespace-format-check black-check isort-check pydocstyle flake8 pylint mypy
 
 test:
 	# Run unit tests.
@@ -118,8 +76,10 @@ coverage:
 
 clean:
 	# Remove temporary files.
-	rm -rf $(TEMPORARY_FILES)
+	rm -rf logs/*.log  pytest_results/  .coverage *.egg-info/  dist/
 	find . -name "__pycache__" -prune -exec rm -rf {} \;
+	find . -name ".pytest_cache" -prune -exec rm -rf {} \;
+	find . -name ".mypy_cache" -prune -exec rm -rf {} \;
 
 install-python:
 	# Install the correct version of python.
@@ -134,17 +94,12 @@ create-environment:
 delete-environment:
 	# Delete virtual environment.
 	pyenv virtualenv-delete $(PYTHON_ENVIRONMENT)
-	pyenv local --unset
 	rm -rf .python-version
 
 install-dependencies:
 	# Install all dependencies.
 	poetry install --verbose
 	pyenv rehash
-
-poetry-check-lock:
-	# Check that poetry.lock is consistent with pyproject.toml
-	poetry check --lock
 
 build-package:
 	# Build a wheel package.
