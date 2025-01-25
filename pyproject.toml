@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "whitespace-format"
-version = "0.0.6"
+version = "0.0.7"
 description = "Linter and formatter for source code files and text files"
 license = "MIT"
 authors = ["David Pal <davidko.pal@gmail.com>"]
