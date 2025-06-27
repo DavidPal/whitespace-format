@@ -1,10 +1,31 @@
-.PHONY: whitespace-format-check whitespace-format black-check black-format isort-check isort-format pydocstyle flake8 pylint mypy lint test coverage clean install-python create-environment delete-environment install-dependencies build-package publish-to-pypi publish-to-test-pypi
-
 PYTHON_ENVIRONMENT = "whitespace_format"
 PYTHON_VERSION = "3.8.0"
 SOURCE_FILES = *.py
 
 NON_TEXT_FILES_REGEX = "\.pyc$$|\.git/|\.idea/|test_data/|^\.coverage$$|^\.mypy_cache/|"
+
+.PHONY: \
+	whitespace-format-check \
+	whitespace-format \
+	black-check \
+	black-format \
+	isort-check \
+	isort-format \
+	pydocstyle \
+	flake8 \
+	pylint \
+	mypy \
+	lint \
+	test \
+	coverage \
+	clean \
+	install-python \
+	create-environment \
+	delete-environment \
+	install-dependencies \
+	build-package \
+	publish-to-pypi \
+	publish-to-test-pypi
 
 whitespace-format-check:
 	# Check whitespace formatting.
