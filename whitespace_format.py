@@ -90,16 +90,16 @@ ESCAPE_TRANSLATION_TABLE = str.maketrans(
 class ChangeType(Enum):
     """Type of change that happened to a file."""
 
-    # New line marker was added to the end of the file (because it was missing).
+    # A new line marker was added to the end of the file (because it was missing).
     ADDED_NEW_LINE_MARKER_TO_END_OF_FILE = 1
 
-    # New line marker was removed from the end of the file.
+    # A new line marker was removed from the end of the file.
     REMOVED_NEW_LINE_MARKER_FROM_END_OF_FILE = 2
 
-    # New line marker was replaced by another one.
+    # A new line marker was replaced by another one.
     REPLACED_NEW_LINE_MARKER = 3
 
-    # White at the end of a line was removed.
+    # Whitespace at the end of a line was removed.
     REMOVED_TRAILING_WHITESPACE = 4
 
     # Empty line(s) at the end of file were removed.
@@ -114,7 +114,7 @@ class ChangeType(Enum):
     # A file consisting of only whitespace was replaced by a file consisting of single empty line.
     REPLACED_WHITESPACE_ONLY_FILE_WITH_ONE_LINE = 8
 
-    # A tab character was replaces by space character(s).
+    # A tab character was replaced by space character(s).
     REPLACED_TAB_WITH_SPACES = 9
 
     # A tab character was removed.
@@ -534,7 +534,7 @@ def reformat_file(file_name: str, parsed_arguments: argparse.Namespace) -> bool:
     file_content = read_file_content(file_name, parsed_arguments.encoding)
     formatted_file_content, file_changes = format_file_content(file_content, parsed_arguments)
     if parsed_arguments.verbose:
-        color_print(f"[WHITE]Processing file [BOLD]{file_name}[RESET_ALL]...", parsed_arguments)
+        color_print(f"[WHITE]Processing file [BOLD]{file_name}[RESET_ALL] ...", parsed_arguments)
     if parsed_arguments.check_only:
         if file_changes:
             color_print(
@@ -621,7 +621,7 @@ def find_files_to_process(file_names: List[str], parsed_arguments: argparse.Name
     """Finds files that need to be processed.
 
     The function excludes files that match the regular expression specified
-    by the --exclude command line option.
+    by the "--exclude" command line option.
     """
     return [
         expanded_file_name
@@ -653,7 +653,7 @@ def parse_command_line() -> argparse.Namespace:
         "--encoding",
         help=(
             "Text encoding for both reading and writing files. Default encoding is utf-8. "
-            "List of supported encodings can be found at "
+            "The list of supported encodings can be found at "
             "https://docs.python.org/3/library/codecs.html#standard-encodings"
         ),
         required=False,
@@ -763,7 +763,7 @@ def parse_command_line() -> argparse.Namespace:
     group2 = parser.add_mutually_exclusive_group()
     group2.add_argument(
         "--add-new-line-marker-at-end-of-file",
-        help="Add missing new line marker at end of each file.",
+        help="Add missing new line marker at the end of each file.",
         required=False,
         default=False,
         action="store_true",
