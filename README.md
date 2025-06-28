@@ -6,7 +6,7 @@
 
 Linter and formatter for source code files and text files.
 
-The purpose of this tool is to normalize source code files (e.g. Python, Java,
+The purpose of this tool is to normalize source code files (e.g., Python, Java,
 C/C++, Ruby, Go, JavaScript, etc.) and text files (HTML, JSON, YAML, CSV,
 MarkDown, LaTeX) before checking them into a version control system.
 
@@ -73,7 +73,7 @@ The regular expression is evaluated on the path of each file.
 
 ### Formatting options
 
-* `--add-new-line-marker-at-end-of-file` -- Add missing new line marker at end of each file.
+* `--add-new-line-marker-at-end-of-file` -- Add missing new line marker at the end of each file.
 * `--remove-new-line-marker-from-end-of-file` -- Remove all new line marker(s) from the end of each file.
 This option cannot be used in combination with `--add-new-line-marker-at-end-of-file`.
 Empty lines at the end of the file are removed, i.e., this option implies `--remove-trailing-empty-lines`
@@ -91,7 +91,7 @@ adding or replacing new line markers. `MARKER` must be one of the following:
   * `mac` -- Use Mac new line marker `\r`.
   * `windows` -- Use Windows new line marker `\r\n`.
 * `--encoding` -- Text encoding for both reading and writing files. Default encoding is `utf-8`.
-List of supported encodings can be found at
+The list of supported encodings can be found at
 https://docs.python.org/3/library/codecs.html#standard-encodings
 
 Note that input files can contain an arbitrary mix of new line markers `\n`,
@@ -108,8 +108,8 @@ whitespace-format \
     --remove-trailing-empty-lines \
     foo.txt  my_project/
 ```
-This should work well for common programming languages (e.g. Python, Java,
-C/C++, JavaScript) and common text file formats (e.g. CSV, LaTeX, JSON, YAML,
+This should work well for common programming languages (e.g., Python, Java,
+C/C++, JavaScript) and common text file formats (e.g., CSV, LaTeX, JSON, YAML,
 HTML, MarkDown).
 
 ### Empty files
@@ -128,7 +128,7 @@ where `MODE` is one of the following:
 
 Depending on the mode, an empty file or a whitespace-only file will be either
 ignored, replaced by a zero-byte file, or replaced by a file consisting of
-single end of line marker.
+the single new line marker.
 
 If `--normalize-whitespace-only-files` is set to `empty`,
 `--normalize-empty-files setting` set to `empty` as well. In other words,
