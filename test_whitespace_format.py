@@ -11,7 +11,7 @@ from whitespace_format import find_most_common_new_line_marker
 
 
 def extract_version_from_pyproject():
-    """Extracts version from pyproject.toml file."""
+    """Extracts the version from pyproject.toml file."""
     with open("pyproject.toml", "r", encoding="utf-8") as file:
         lines = file.readlines()
 
@@ -671,12 +671,33 @@ class TestWhitespaceFormat(unittest.TestCase):
             ),
         )
 
-    def test_format_file_content__remove_trailing_empty_lines(self):
+    def test_format_file_content__remove_trailing_empty_lines_1(self):
         """Tests format_file_content() function."""
         self.assertEqual(
             ("hello\r\n\rworld\r\n", [Change(ChangeType.REMOVED_EMPTY_LINES, 4)]),
             whitespace_format.format_file_content(
                 "hello\r\n\rworld\r\n\n\n\n\n\n",
+                argparse.Namespace(
+                    add_new_line_marker_at_end_of_file=False,
+                    new_line_marker="auto",
+                    normalize_empty_files="ignore",
+                    normalize_new_line_markers=False,
+                    normalize_non_standard_whitespace="ignore",
+                    normalize_whitespace_only_files="ignore",
+                    remove_new_line_marker_from_end_of_file=False,
+                    remove_trailing_empty_lines=True,
+                    remove_trailing_whitespace=False,
+                    replace_tabs_with_spaces=-1,
+                ),
+            ),
+        )
+
+    def test_format_file_content__remove_trailing_empty_lines_2(self):
+        """Tests format_file_content() function."""
+        self.assertEqual(
+            ("hello   \r\n\rworld   \r\n   \n", [Change(ChangeType.REMOVED_EMPTY_LINES, 5)]),
+            whitespace_format.format_file_content(
+                "hello   \r\n\rworld   \r\n   \n\n\n\r\n",
                 argparse.Namespace(
                     add_new_line_marker_at_end_of_file=False,
                     new_line_marker="auto",

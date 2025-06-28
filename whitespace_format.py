@@ -314,14 +314,14 @@ def format_file_content(
         find_most_common_new_line_marker(file_content),
     )
 
-    # Handle empty file:
+    # Handle an empty file.
     if not file_content:
         if parsed_arguments.normalize_empty_files in ["ignore", "empty"]:
             return "", []
         if parsed_arguments.normalize_empty_files == "one-line":
             return output_new_line_marker, [Change(ChangeType.REPLACED_EMPTY_FILE_WITH_ONE_LINE, 1)]
 
-    # Handle non-empty file consisting of whitespace only.
+    # Handle a non-empty file consisting of whitespace only.
     if is_whitespace_only(file_content):
         if parsed_arguments.normalize_whitespace_only_files == "empty":
             return "", [Change(ChangeType.REPLACED_WHITESPACE_ONLY_FILE_WITH_EMPTY_FILE, 1)]
@@ -337,31 +337,31 @@ def format_file_content(
     # Index into the input buffer.
     i = 0
 
-    # List of changes
+    # List of changes.
     changes: List[Change] = []
 
     # Line number. It is incremented every time we encounter a new end of line marker.
     line_number = 1
 
-    # Position one character past the end of last line in the output buffer
+    # Index into the output buffer pointing just after the end of the last line,
     # including the last end of line marker.
     last_end_of_line_including_eol_marker = 0
 
-    # Position one character past the last non-whitespace character in the output buffer.
+    # Index into the output buffer pointing just after the last non-whitespace character.
     last_non_whitespace = 0
 
-    # Position one character past the end of last non-empty line in the output buffer
+    # Index into the output buffer pointing just after the end of the last non-empty line,
     # excluding the last end of line marker.
     last_end_of_non_empty_line_excluding_eol_marker = 0
 
-    # Position one character past the end of last non-empty line in the output buffer,
+    # Index into the output buffer pointing just after the end of the last non-empty line,
     # including the last end of line marker.
     last_end_of_non_empty_line_including_eol_marker = 0
 
     # Line number of the last non-empty line.
     last_non_empty_line_number = 0
 
-    # Formatted output
+    # Formatted output.
     output = ""
 
     while i < len(file_content):
@@ -378,31 +378,35 @@ def format_file_content(
             else:
                 new_line_marker = CARRIAGE_RETURN
 
-            # Remove trailing whitespace
-            if parsed_arguments.remove_trailing_whitespace and max(
-                last_non_whitespace, last_end_of_line_including_eol_marker
-            ) < len(output):
+            # Index into the output buffer pointing just after the last non-whitespace character
+            # on the current line. If the current line is empty, it is pointing to the beginning
+            # of the current line (i.e., just after the end of the previous line).
+            last_non_whitespace_on_current_line = max(
+                last_non_whitespace,
+                last_end_of_line_including_eol_marker,
+            )
+
+            # Remove trailing whitespace.
+            if (
+                parsed_arguments.remove_trailing_whitespace
+                and last_non_whitespace_on_current_line < len(output)
+            ):
                 changes.append(
                     Change(
                         ChangeType.REMOVED_TRAILING_WHITESPACE,
                         line_number,
                     )
                 )
-                output = output[
-                    : max(
-                        last_non_whitespace,
-                        last_end_of_line_including_eol_marker,
-                    )
-                ]
+                output = output[:last_non_whitespace_on_current_line]
 
-            # Determine if the last line is empty
+            # Determine if the last line is empty.
             is_empty_line: bool = last_end_of_line_including_eol_marker == len(output)
 
-            # Position one character past the end of last line in the output buffer
+            # Index into the output buffer pointing just after the end of the last line,
             # excluding the last end of line marker.
             last_end_of_line_excluding_eol_marker = len(output)
 
-            # Add new line marker
+            # Add new line marker.
             if (
                 parsed_arguments.normalize_new_line_markers
                 and output_new_line_marker != new_line_marker
@@ -471,7 +475,7 @@ def format_file_content(
             output += file_content[i]
             last_non_whitespace = len(output)
 
-        # Move to the next character
+        # Move to the next character.
         i += 1
 
     # Remove trailing whitespace from the last line.
@@ -494,7 +498,7 @@ def format_file_content(
         changes.append(Change(ChangeType.REMOVED_EMPTY_LINES, line_number))
         output = output[:last_end_of_non_empty_line_including_eol_marker]
 
-    # Add new line marker at the end of the file
+    # Add new line marker at the end of the file.
     if (
         parsed_arguments.add_new_line_marker_at_end_of_file
         and last_end_of_line_including_eol_marker < len(output)
@@ -504,7 +508,7 @@ def format_file_content(
         last_end_of_line_including_eol_marker = len(output)
         line_number += 1
 
-    # Remove new line marker(s) from the end of the file
+    # Remove new line marker(s) from the end of the file.
     if (
         parsed_arguments.remove_new_line_marker_from_end_of_file
         and last_end_of_line_including_eol_marker == len(output)
