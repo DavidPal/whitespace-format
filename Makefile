@@ -2,7 +2,7 @@ PYTHON_ENVIRONMENT = "whitespace_format"
 PYTHON_VERSION = "3.8.0"
 SOURCE_FILES = *.py
 
-NON_TEXT_FILES_REGEX = "\.pyc$$|\.git/|\.idea/|test_data/|^\.coverage$$|^\.mypy_cache/|"
+NON_TEXT_FILES_REGEX = "\.pyc$$|\.git/|\.idea/|test_data/|^\.coverage$$|^\.mypy_cache/|^.pytest_cache/|^.ruff_cache/"
 
 .PHONY: \
 	whitespace-format-check \
@@ -107,7 +107,7 @@ coverage:
 
 clean:
 	# Remove temporary files.
-	rm -rf logs/*.log  pytest_results/  .coverage *.egg-info/  dist/
+	rm -rf logs/*.log pytest_results/ .coverage *.egg-info/ dist/ .mypy_cache/ .pytest_cache/ .ruff_cache/
 	find . -name "__pycache__" -prune -exec rm -rf {} \;
 	find . -name ".pytest_cache" -prune -exec rm -rf {} \;
 	find . -name ".mypy_cache" -prune -exec rm -rf {} \;
