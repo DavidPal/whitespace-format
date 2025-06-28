@@ -24,8 +24,8 @@ dist/
 
 # Pytest files
 .pytest_cache/
-pytest_results/
 
 # Coverage files
 .coverage
 coverage.xml
+pytest_results/
