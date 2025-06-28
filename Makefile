@@ -12,6 +12,8 @@ NON_TEXT_FILES_REGEX = "\.pyc$$|\.git/|\.idea/|test_data/|^\.coverage$$|^\.mypy_
 	isort-check \
 	isort-format \
 	pydocstyle \
+	ruff \
+	ruff-fix \
 	flake8 \
 	pylint \
 	mypy \
@@ -71,6 +73,14 @@ pydocstyle:
 	# Check docstrings
 	python -m pydocstyle --verbose --explain --source --count $(SOURCE_FILES)
 
+ruff:
+	# Check code style with ruff.
+	ruff check ./
+
+ruff-fix:
+	# Fix code style with ruff
+	ruff check --fix ./
+
 flake8:
 	# Check PEP8 code style.
 	flake8 --color=always --exclude="*_pb2.py,*_rpc.py,*_twirp.py" $(SOURCE_FILES)
@@ -83,7 +93,7 @@ mypy:
 	# Check type hints.
 	mypy --config-file "mypy.ini" --exclude ".*_pb2.py$$|.*_rpc.py$$|.*_twirp.py$$" $(SOURCE_FILES)
 
-lint: whitespace-format-check black-check isort-check pydocstyle flake8 pylint mypy
+lint: whitespace-format-check black-check isort-check pydocstyle ruff flake8 pylint mypy
 
 test:
 	# Run unit tests.
