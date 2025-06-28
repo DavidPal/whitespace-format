@@ -3,7 +3,7 @@
 """Formatter of whitespace in text files.
 
 Author: David Pal <davidko.pal@gmail.com>
-Date: 2023 - 2024
+Date: 2023 - 2025
 License: MIT License
 
 Usage:
@@ -22,7 +22,7 @@ from enum import Enum
 from typing import List
 from typing import Tuple
 
-VERSION = "0.0.7"
+VERSION = "0.0.8"
 
 # Regular expression that does NOT match any string.
 UNMATCHABLE_REGEX = "$."
@@ -83,7 +83,7 @@ ESCAPE_TRANSLATION_TABLE = str.maketrans(
         TAB: "\\t",
         VERTICAL_TAB: "\\v",
         FORM_FEED: "\\f",
-    }
+    },
 )
 
 
@@ -193,7 +193,7 @@ class Change:
         )
 
 
-def color_print(message: str, parsed_arguments: argparse.Namespace):
+def color_print(message: str, parsed_arguments: argparse.Namespace) -> None:
     """Outputs a colored message."""
     if parsed_arguments.quiet:
         return
@@ -218,7 +218,7 @@ def string_to_hex(text: str) -> str:
     return ":".join(f"{ord(character):02x}" for character in text)
 
 
-def die(error_code: int, message: str = ""):
+def die(error_code: int, message: str = "") -> None:
     """Exits the script."""
     if message:
         print(message)
@@ -240,7 +240,7 @@ def read_file_content(file_name: str, encoding: str) -> str:
     return ""
 
 
-def write_file(file_name: str, file_content: str, encoding: str):
+def write_file(file_name: str, file_content: str, encoding: str) -> None:
     """Writes data to a file."""
     try:
         with open(file_name, "w", encoding=encoding) as file:
@@ -251,10 +251,7 @@ def write_file(file_name: str, file_content: str, encoding: str):
 
 def is_whitespace_only(text: str) -> bool:
     """Determines if a string consists of only whitespace characters."""
-    for char in text:
-        if char not in WHITESPACE_CHARACTERS:
-            return False
-    return True
+    return all(char in WHITESPACE_CHARACTERS for char in text)
 
 
 def find_most_common_new_line_marker(text: str) -> str:
@@ -329,7 +326,7 @@ def format_file_content(
             if file_content == output_new_line_marker:
                 return file_content, []
             return output_new_line_marker, [
-                Change(ChangeType.REPLACED_WHITESPACE_ONLY_FILE_WITH_ONE_LINE, 1)
+                Change(ChangeType.REPLACED_WHITESPACE_ONLY_FILE_WITH_ONE_LINE, 1),
             ]
         if parsed_arguments.normalize_whitespace_only_files == "ignore":
             return file_content, []
@@ -392,10 +389,7 @@ def format_file_content(
                 and last_non_whitespace_on_current_line < len(output)
             ):
                 changes.append(
-                    Change(
-                        ChangeType.REMOVED_TRAILING_WHITESPACE,
-                        line_number,
-                    )
+                    Change(ChangeType.REMOVED_TRAILING_WHITESPACE, line_number),
                 )
                 output = output[:last_non_whitespace_on_current_line]
 
@@ -417,7 +411,7 @@ def format_file_content(
                         line_number,
                         new_line_marker,
                         output_new_line_marker,
-                    )
+                    ),
                 )
                 output += output_new_line_marker
             else:
@@ -461,13 +455,16 @@ def format_file_content(
                         line_number,
                         file_content[i],
                         SPACE,
-                    )
+                    ),
                 )
             elif parsed_arguments.normalize_non_standard_whitespace == "remove":
                 changes.append(
                     Change(
-                        ChangeType.REMOVED_NONSTANDARD_WHITESPACE, line_number, file_content[i], ""
-                    )
+                        ChangeType.REMOVED_NONSTANDARD_WHITESPACE,
+                        line_number,
+                        file_content[i],
+                        "",
+                    ),
                 )
             else:
                 raise ValueError("Unknown value of normalize_non_standard_whitespace")
@@ -570,7 +567,7 @@ def reformat_file(file_name: str, parsed_arguments: argparse.Namespace) -> bool:
     return bool(file_changes)
 
 
-def reformat_files(file_names: List[str], parsed_arguments: argparse.Namespace):
+def reformat_files(file_names: List[str], parsed_arguments: argparse.Namespace) -> None:
     """Reformats multiple files."""
     color_print(f"Processing {len(file_names)} file(s)...", parsed_arguments)
     num_changed_files = 0
@@ -627,7 +624,8 @@ def find_files_to_process(file_names: List[str], parsed_arguments: argparse.Name
         expanded_file_name
         for file_name in file_names
         for expanded_file_name in find_all_files_recursively(
-            file_name, parsed_arguments.follow_symlinks
+            file_name,
+            parsed_arguments.follow_symlinks,
         )
         if not re.search(parsed_arguments.exclude, expanded_file_name)
     ]
@@ -832,7 +830,7 @@ def parse_command_line() -> argparse.Namespace:
     return parsed_arguments
 
 
-def main():
+def main() -> None:
     """Formats white space in text files."""
     parsed_arguments = parse_command_line()
     file_names = find_files_to_process(parsed_arguments.input_files, parsed_arguments)
