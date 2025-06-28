@@ -3,6 +3,9 @@
 __pycache__/
 .cache/
 
+# Python package
+dist/
+
 # PyCharm files
 .idea/
 
@@ -19,8 +22,10 @@ __pycache__/
 # Mypy files
 .mypy_cache/
 
+# Pytest files
+.pytest_cache/
+pytest_results/
+
 # Coverage files
 .coverage
 coverage.xml
-.pytest_cache/
-pytest_results/
