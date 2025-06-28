@@ -31,7 +31,10 @@ NON_TEXT_FILES_REGEX = "\.pyc$$|\.git/|\.idea/|test_data/|^\.coverage$$|^\.mypy_
 
 whitespace-format-check:
 	# Check whitespace formatting.
-	whitespace-format --check-only --color --verbose \
+	whitespace-format \
+			--check-only \
+			--color \
+			--verbose \
 			--new-line-marker linux \
 			--normalize-new-line-markers \
 			--add-new-line-marker-at-end-of-file \
@@ -43,7 +46,9 @@ whitespace-format-check:
 
 whitespace-format:
 	# Reformat code.
-	whitespace-format --color --verbose \
+	whitespace-format \
+			--color \
+			--verbose \
 			--new-line-marker linux \
 			--normalize-new-line-markers \
 			--add-new-line-marker-at-end-of-file \
@@ -125,6 +130,7 @@ create-environment:
 delete-environment:
 	# Delete virtual environment.
 	pyenv virtualenv-delete $(PYTHON_ENVIRONMENT)
+	pyenv local --unset
 	rm -rf .python-version
 
 install-dependencies:
