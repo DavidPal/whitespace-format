@@ -81,6 +81,7 @@ option.
 * `--normalize-new-line-markers` -- Make new line markers consistent in each file
 by replacing `\r\n`, `\n`, and `\r` with a consistent new line marker.
 * `--remove-trailing-whitespace` -- Remove whitespace at the end of each line.
+* `--remove-leading-empty-lines` -- Remove empty lines at the beginning of each file.
 * `--remove-trailing-empty-lines` -- Remove empty lines at the end of each file.
 * `--new-line-marker=MARKER` -- This option specifies what new line marker to when
 adding or replacing new line markers. `MARKER` must be one of the following:
@@ -105,12 +106,13 @@ whitespace-format \
     --add-new-line-marker-at-end-of-file \
     --normalize-new-line-markers \
     --remove-trailing-whitespace \
+    --remove-leading-empty-lines \
     --remove-trailing-empty-lines \
     foo.txt  my_project/
 ```
 This should work well for common programming languages (e.g., Python, Java,
 C/C++, JavaScript) and common text file formats (e.g., CSV, LaTeX, JSON, YAML,
-HTML, MarkDown).
+HTML, MarkDown, Makefile, TSV).
 
 ### Empty files
 
@@ -139,8 +141,8 @@ behavior that is not idempotent.
 ### Special characters
 
 * `--replace-tabs-with-spaces=N` -- Replace tabs with spaces.
-Where is `N` is the number of spaces. If `N` is negative, tabs are not replaced.
-Default value is `-1`.
+Where is `N` is the number of spaces. If `N` is zero, tabs are removed.
+If `N` is negative, tabs are not replaced. Default value is `-1`.
 
 * `--normalize-non-standard-whitespace=MODE` -- Replace or remove
 non-standard whitespace characters (`\v` and `\f`). `MODE` must be one of the following:

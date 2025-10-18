@@ -831,7 +831,7 @@ def parse_command_line() -> argparse.Namespace:
     )
     parser.add_argument(
         "--remove-leading-empty-lines",
-        help="Remove empty lines at the beginning of each file. ",
+        help="Remove empty lines at the beginning of each file.",
         required=False,
         default=False,
         action="store_true",
@@ -861,7 +861,8 @@ def parse_command_line() -> argparse.Namespace:
         "--replace-tabs-with-spaces",
         help=(
             "Replace tabs with spaces. "
-            "The parameter specifies number of spaces to use. "
+            "The parameter specifies the number of spaces to use. "
+            "If the parameter is zero, tabs are removed. "
             "If the parameter is negative, tabs are not replaced."
         ),
         required=False,
