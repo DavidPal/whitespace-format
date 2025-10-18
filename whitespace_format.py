@@ -138,49 +138,71 @@ class Change:
 
     def message(self, check_only: bool) -> str:
         """Returns a message describing the change."""
-        check_only_word = " would be " if check_only else " "
-
         if self.change_type == ChangeType.ADDED_NEW_LINE_MARKER_TO_END_OF_FILE:
-            return f"New line marker{check_only_word}added to the end of the file."
+            if check_only:
+                return "New line marker missing at the end of the file."
+            return "New line marker added to the end of the file."
 
         if self.change_type == ChangeType.REMOVED_NEW_LINE_MARKER_FROM_END_OF_FILE:
-            return f"New line marker{check_only_word}removed from the end of the file."
+            if check_only:
+                return "New line marker present at the end of the file."
+            return "New line marker removed from the end of the file."
 
         if self.change_type == ChangeType.REPLACED_NEW_LINE_MARKER:
+            if check_only:
+                return f"Wrong new line marker '{escape_chars(self.changed_from)}'."
             return (
-                f"New line marker '{escape_chars(self.changed_from)}'"
-                f"{check_only_word}replaced by '{escape_chars(self.changed_to)}'."
+                f"New line marker '{escape_chars(self.changed_from)}' "
+                f"replaced by '{escape_chars(self.changed_to)}'."
             )
 
         if self.change_type == ChangeType.REMOVED_TRAILING_WHITESPACE:
-            return f"Trailing whitespace{check_only_word}removed."
+            if check_only:
+                return "Trailing whitespace present."
+            return "Trailing whitespace removed."
 
         if self.change_type == ChangeType.REMOVED_TRAILING_EMPTY_LINES:
-            return f"Empty line(s) at the end of the file{check_only_word}removed."
+            if check_only:
+                return "Empty line(s) present at the end of the file."
+            return "Empty line(s) at the end of the file removed."
 
         if self.change_type == ChangeType.REPLACED_EMPTY_FILE_WITH_ONE_LINE:
-            return f"Empty file{check_only_word}replaced with a single empty line."
+            if check_only:
+                return "Empty file."
+            return "Empty file replaced with a single empty line."
 
         if self.change_type == ChangeType.REPLACED_WHITESPACE_ONLY_FILE_WITH_EMPTY_FILE:
-            return f"File{check_only_word}replaced with an empty file."
+            if check_only:
+                return "File consists only of whitespace."
+            return "File replaced with an empty file."
 
         if self.change_type == ChangeType.REPLACED_WHITESPACE_ONLY_FILE_WITH_ONE_LINE:
-            return f"File{check_only_word}replaced with a single empty line."
+            if check_only:
+                return "File consists only of whitespace."
+            return "File replaced with a single empty line."
 
         if self.change_type == ChangeType.REPLACED_TAB_WITH_SPACES:
-            return f"Tab{check_only_word}replaced with spaces."
+            if check_only:
+                return "Tab character present."
+            return "Tab character replaced with spaces."
 
         if self.change_type == ChangeType.REMOVED_TAB:
-            return f"Tab{check_only_word}removed."
+            if check_only:
+                return "Tab character present."
+            return "Tab character removed."
 
         if self.change_type == ChangeType.REPLACED_NONSTANDARD_WHITESPACE:
+            if check_only:
+                return f"Non-standard whitespace character '{escape_chars(self.changed_from)}' present."
             return (
-                f"Non-standard whitespace character '{escape_chars(self.changed_from)}'"
-                f"{check_only_word}replaced by a space."
+                f"Non-standard whitespace character '{escape_chars(self.changed_from)}' "
+                f"replaced by a space."
             )
 
         if self.change_type == ChangeType.REMOVED_NONSTANDARD_WHITESPACE:
-            return f"Non-standard whitespace character '{escape_chars(self.changed_from)}'{check_only_word}removed."
+            if check_only:
+                return f"Non-standard whitespace character '{escape_chars(self.changed_from)}' present."
+            return f"Non-standard whitespace character '{escape_chars(self.changed_from)}' removed."
 
         raise ValueError(f"Unknown change type: {self.change_type}")
 

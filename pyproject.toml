@@ -86,7 +86,7 @@ fixable = ["ALL"]
 unfixable = []
 
 [tool.ruff.lint.pylint]
-max-returns = 15
+max-returns = 25
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
