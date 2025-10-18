@@ -103,7 +103,7 @@ class ChangeType(Enum):
     REMOVED_TRAILING_WHITESPACE = 4
 
     # Empty line(s) at the end of file were removed.
-    REMOVED_LEADING_EMPTY_LINES = 5
+    REMOVED_LEADING_EMPTY_LINE = 5
 
     # Empty line(s) at the end of file were removed.
     REMOVED_TRAILING_EMPTY_LINES = 6
@@ -143,12 +143,12 @@ class Change:
         """Returns a message describing the change."""
         if self.change_type == ChangeType.ADDED_NEW_LINE_MARKER_TO_END_OF_FILE:
             if check_only:
-                return "New line marker missing at the end of the file."
+                return "New line marker is missing at the end of the file."
             return "New line marker was added to the end of the file."
 
         if self.change_type == ChangeType.REMOVED_NEW_LINE_MARKER_FROM_END_OF_FILE:
             if check_only:
-                return "New line marker present at the end of the file."
+                return "New line marker is present at the end of the file."
             return "New line marker was removed from the end of the file."
 
         if self.change_type == ChangeType.REPLACED_NEW_LINE_MARKER:
@@ -161,22 +161,22 @@ class Change:
 
         if self.change_type == ChangeType.REMOVED_TRAILING_WHITESPACE:
             if check_only:
-                return "Trailing whitespace present."
-            return "Trailing whitespace removed."
+                return "Trailing whitespace is present."
+            return "Trailing whitespace was removed."
 
-        if self.change_type == ChangeType.REMOVED_LEADING_EMPTY_LINES:
+        if self.change_type == ChangeType.REMOVED_LEADING_EMPTY_LINE:
             if check_only:
-                return "Empty line(s) present at the beginning of the file."
-            return "Empty line(s) at the beginning of the file removed."
+                return "Empty line is present at the beginning of the file."
+            return "Empty line at the beginning of the file was removed."
 
         if self.change_type == ChangeType.REMOVED_TRAILING_EMPTY_LINES:
             if check_only:
-                return "Empty line(s) present at the end of the file."
-            return "Empty line(s) at the end of the file was removed."
+                return "Empty lines are present at the end of the file."
+            return "Empty lines at the end of the file were removed."
 
         if self.change_type == ChangeType.REPLACED_EMPTY_FILE_WITH_ONE_LINE:
             if check_only:
-                return "Empty file."
+                return "File is empty."
             return "Empty file was replaced with a single empty line."
 
         if self.change_type == ChangeType.REPLACED_WHITESPACE_ONLY_FILE_WITH_EMPTY_FILE:
@@ -191,17 +191,17 @@ class Change:
 
         if self.change_type == ChangeType.REPLACED_TAB_WITH_SPACES:
             if check_only:
-                return "Tab character present."
+                return "Tab character is present."
             return "Tab character was replaced with spaces."
 
         if self.change_type == ChangeType.REMOVED_TAB:
             if check_only:
-                return "Tab character present."
+                return "Tab character is present."
             return "Tab character was removed."
 
         if self.change_type == ChangeType.REPLACED_NONSTANDARD_WHITESPACE:
             if check_only:
-                return f"Non-standard whitespace character '{escape_chars(self.changed_from)}' present."
+                return f"Non-standard whitespace character '{escape_chars(self.changed_from)}' is present."
             return (
                 f"Non-standard whitespace character '{escape_chars(self.changed_from)}' was "
                 f"replaced by a space."
@@ -209,7 +209,7 @@ class Change:
 
         if self.change_type == ChangeType.REMOVED_NONSTANDARD_WHITESPACE:
             if check_only:
-                return f"Non-standard whitespace character '{escape_chars(self.changed_from)}' present."
+                return f"Non-standard whitespace character '{escape_chars(self.changed_from)}' is present."
             return (
                 f"Non-standard whitespace character '{escape_chars(self.changed_from)}' "
                 f"was removed."
@@ -373,6 +373,9 @@ def format_file_content(
     # Line number. It is incremented every time we encounter a new end of line marker.
     line_number = 1
 
+    # Number of non-empty lines in the output buffer.
+    number_of_non_empty_lines = 0
+
     # Index into the output buffer pointing just after the end of the last line,
     # including the last end of line marker.
     last_end_of_line_including_eol_marker = 0
@@ -429,38 +432,47 @@ def format_file_content(
             # Determine if the last line is empty.
             is_empty_line: bool = last_end_of_line_including_eol_marker == len(output)
 
-            # Index into the output buffer pointing just after the end of the last line,
-            # excluding the last end of line marker.
-            last_end_of_line_excluding_eol_marker = len(output)
-
-            # Add new line marker.
             if (
-                parsed_arguments.normalize_new_line_markers
-                and output_new_line_marker != new_line_marker
+                is_empty_line
+                and parsed_arguments.remove_leading_empty_lines
+                and number_of_non_empty_lines == 0
             ):
-                changes.append(
-                    Change(
-                        ChangeType.REPLACED_NEW_LINE_MARKER,
-                        line_number,
-                        new_line_marker,
-                        output_new_line_marker,
-                    ),
-                )
-                output += output_new_line_marker
+                # Remove empty leading line.
+                changes.append(Change(ChangeType.REMOVED_LEADING_EMPTY_LINE, line_number))
             else:
-                output += new_line_marker
+                # Index into the output buffer pointing just after the end of the last line,
+                # excluding the last end of line marker.
+                last_end_of_line_excluding_eol_marker = len(output)
 
-            last_end_of_line_including_eol_marker = len(output)
+                # Add new line marker.
+                if (
+                    parsed_arguments.normalize_new_line_markers
+                    and output_new_line_marker != new_line_marker
+                ):
+                    changes.append(
+                        Change(
+                            ChangeType.REPLACED_NEW_LINE_MARKER,
+                            line_number,
+                            new_line_marker,
+                            output_new_line_marker,
+                        ),
+                    )
+                    output += output_new_line_marker
+                else:
+                    output += new_line_marker
 
-            # Update position of last non-empty line.
-            if not is_empty_line:
-                last_end_of_non_empty_line_excluding_eol_marker = (
-                    last_end_of_line_excluding_eol_marker
-                )
-                last_end_of_non_empty_line_including_eol_marker = (
-                    last_end_of_line_including_eol_marker
-                )
-                last_non_empty_line_number = line_number
+                last_end_of_line_including_eol_marker = len(output)
+
+                # Update position of last non-empty line.
+                if not is_empty_line:
+                    last_end_of_non_empty_line_excluding_eol_marker = (
+                        last_end_of_line_excluding_eol_marker
+                    )
+                    last_end_of_non_empty_line_including_eol_marker = (
+                        last_end_of_line_including_eol_marker
+                    )
+                    last_non_empty_line_number = line_number
+                    number_of_non_empty_lines += 1
 
             line_number += 1
 
@@ -813,6 +825,13 @@ def parse_command_line() -> argparse.Namespace:
     parser.add_argument(
         "--remove-trailing-whitespace",
         help="Remove whitespace at the end of each line.",
+        required=False,
+        default=False,
+        action="store_true",
+    )
+    parser.add_argument(
+        "--remove-leading-empty-lines",
+        help="Remove empty lines at the beginning of each file. ",
         required=False,
         default=False,
         action="store_true",
