@@ -103,7 +103,7 @@ class ChangeType(Enum):
     REMOVED_TRAILING_WHITESPACE = 4
 
     # Empty line(s) at the end of file were removed.
-    REMOVED_EMPTY_LINES = 5
+    REMOVED_TRAILING_EMPTY_LINES = 5
 
     # An empty file was replaced by a file consisting of single empty line.
     REPLACED_EMPTY_FILE_WITH_ONE_LINE = 6
@@ -155,7 +155,7 @@ class Change:
         if self.change_type == ChangeType.REMOVED_TRAILING_WHITESPACE:
             return f"Trailing whitespace{check_only_word}removed."
 
-        if self.change_type == ChangeType.REMOVED_EMPTY_LINES:
+        if self.change_type == ChangeType.REMOVED_TRAILING_EMPTY_LINES:
             return f"Empty line(s) at the end of the file{check_only_word}removed."
 
         if self.change_type == ChangeType.REPLACED_EMPTY_FILE_WITH_ONE_LINE:
@@ -492,7 +492,7 @@ def format_file_content(
     ):
         line_number = last_non_empty_line_number + 1
         last_end_of_line_including_eol_marker = last_end_of_non_empty_line_including_eol_marker
-        changes.append(Change(ChangeType.REMOVED_EMPTY_LINES, line_number))
+        changes.append(Change(ChangeType.REMOVED_TRAILING_EMPTY_LINES, line_number))
         output = output[:last_end_of_non_empty_line_including_eol_marker]
 
     # Add new line marker at the end of the file.
