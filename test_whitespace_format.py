@@ -678,7 +678,7 @@ class TestWhitespaceFormat(unittest.TestCase):
     def test_format_file_content__remove_trailing_empty_lines_1(self) -> None:
         """Tests format_file_content() function."""
         self.assertEqual(
-            ("hello\r\n\rworld\r\n", [Change(ChangeType.REMOVED_EMPTY_LINES, 4)]),
+            ("hello\r\n\rworld\r\n", [Change(ChangeType.REMOVED_TRAILING_EMPTY_LINES, 4)]),
             whitespace_format.format_file_content(
                 "hello\r\n\rworld\r\n\n\n\n\n\n",
                 argparse.Namespace(
@@ -699,7 +699,10 @@ class TestWhitespaceFormat(unittest.TestCase):
     def test_format_file_content__remove_trailing_empty_lines_2(self) -> None:
         """Tests format_file_content() function."""
         self.assertEqual(
-            ("hello   \r\n\rworld   \r\n   \n", [Change(ChangeType.REMOVED_EMPTY_LINES, 5)]),
+            (
+                "hello   \r\n\rworld   \r\n   \n",
+                [Change(ChangeType.REMOVED_TRAILING_EMPTY_LINES, 5)],
+            ),
             whitespace_format.format_file_content(
                 "hello   \r\n\rworld   \r\n   \n\n\n\r\n",
                 argparse.Namespace(
@@ -913,7 +916,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                 [
                     Change(ChangeType.REMOVED_TRAILING_WHITESPACE, 1),
                     Change(ChangeType.REMOVED_TRAILING_WHITESPACE, 3),
-                    Change(ChangeType.REMOVED_EMPTY_LINES, 2),
+                    Change(ChangeType.REMOVED_TRAILING_EMPTY_LINES, 2),
                 ],
             ),
             whitespace_format.format_file_content(
@@ -1004,7 +1007,7 @@ class TestWhitespaceFormat(unittest.TestCase):
             (
                 "hello   ",
                 [
-                    Change(ChangeType.REMOVED_EMPTY_LINES, 2),
+                    Change(ChangeType.REMOVED_TRAILING_EMPTY_LINES, 2),
                     Change(ChangeType.REMOVED_NEW_LINE_MARKER_FROM_END_OF_FILE, 1),
                 ],
             ),
@@ -1035,7 +1038,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                 [
                     Change(ChangeType.REMOVED_TRAILING_WHITESPACE, 1),
                     Change(ChangeType.REMOVED_TRAILING_WHITESPACE, 2),
-                    Change(ChangeType.REMOVED_EMPTY_LINES, 3),
+                    Change(ChangeType.REMOVED_TRAILING_EMPTY_LINES, 3),
                     Change(ChangeType.REMOVED_NEW_LINE_MARKER_FROM_END_OF_FILE, 2),
                 ],
             ),
@@ -1069,7 +1072,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     Change(ChangeType.REMOVED_TRAILING_WHITESPACE, 2),
                     Change(ChangeType.REPLACED_NEW_LINE_MARKER, 3, "\r\n", "\n"),
                     Change(ChangeType.REPLACED_NEW_LINE_MARKER, 4, "\r", "\n"),
-                    Change(ChangeType.REMOVED_EMPTY_LINES, 3),
+                    Change(ChangeType.REMOVED_TRAILING_EMPTY_LINES, 3),
                 ],
             ),
             whitespace_format.format_file_content(
