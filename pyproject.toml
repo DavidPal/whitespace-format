@@ -25,9 +25,9 @@ coverage = "^7.2.4"
 flake8 = "^5.0.4"
 flake8-absolute-import = "^1.0.0.2"
 isort = {extras = ["colors"], version = "^5.13.2"}
-mypy = "^1.13.0"
+mypy = "^1.14.1"
 pydocstyle = {extras = ["toml"], version = "^6.3.0"}
-pytest = "^8.3.5"
+pytest = "^8.3.4"
 pylint = "^2.17.7"
 pylint-quotes = "^0.2.3"
 ruff = "^0.14.1"
