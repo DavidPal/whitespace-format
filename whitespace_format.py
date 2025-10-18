@@ -103,28 +103,31 @@ class ChangeType(Enum):
     REMOVED_TRAILING_WHITESPACE = 4
 
     # Empty line(s) at the end of file were removed.
-    REMOVED_TRAILING_EMPTY_LINES = 5
+    REMOVED_LEADING_EMPTY_LINES = 5
+
+    # Empty line(s) at the end of file were removed.
+    REMOVED_TRAILING_EMPTY_LINES = 6
 
     # An empty file was replaced by a file consisting of single empty line.
-    REPLACED_EMPTY_FILE_WITH_ONE_LINE = 6
+    REPLACED_EMPTY_FILE_WITH_ONE_LINE = 7
 
     # A file consisting of only whitespace was replaced by an empty file.
-    REPLACED_WHITESPACE_ONLY_FILE_WITH_EMPTY_FILE = 7
+    REPLACED_WHITESPACE_ONLY_FILE_WITH_EMPTY_FILE = 8
 
     # A file consisting of only whitespace was replaced by a file consisting of single empty line.
-    REPLACED_WHITESPACE_ONLY_FILE_WITH_ONE_LINE = 8
+    REPLACED_WHITESPACE_ONLY_FILE_WITH_ONE_LINE = 9
 
     # A tab character was replaced by space character(s).
-    REPLACED_TAB_WITH_SPACES = 9
+    REPLACED_TAB_WITH_SPACES = 10
 
     # A tab character was removed.
-    REMOVED_TAB = 10
+    REMOVED_TAB = 11
 
     # A non-standard whitespace character (`\f` or `\v`) was replaced by a space character.
-    REPLACED_NONSTANDARD_WHITESPACE = 11
+    REPLACED_NONSTANDARD_WHITESPACE = 12
 
     # A non-standard whitespace character (`\f` or `\v`) was removed.
-    REMOVED_NONSTANDARD_WHITESPACE = 12
+    REMOVED_NONSTANDARD_WHITESPACE = 13
 
 
 @dataclasses.dataclass
@@ -141,18 +144,18 @@ class Change:
         if self.change_type == ChangeType.ADDED_NEW_LINE_MARKER_TO_END_OF_FILE:
             if check_only:
                 return "New line marker missing at the end of the file."
-            return "New line marker added to the end of the file."
+            return "New line marker was added to the end of the file."
 
         if self.change_type == ChangeType.REMOVED_NEW_LINE_MARKER_FROM_END_OF_FILE:
             if check_only:
                 return "New line marker present at the end of the file."
-            return "New line marker removed from the end of the file."
+            return "New line marker was removed from the end of the file."
 
         if self.change_type == ChangeType.REPLACED_NEW_LINE_MARKER:
             if check_only:
                 return f"Wrong new line marker '{escape_chars(self.changed_from)}'."
             return (
-                f"New line marker '{escape_chars(self.changed_from)}' "
+                f"New line marker '{escape_chars(self.changed_from)}' was "
                 f"replaced by '{escape_chars(self.changed_to)}'."
             )
 
@@ -161,48 +164,56 @@ class Change:
                 return "Trailing whitespace present."
             return "Trailing whitespace removed."
 
+        if self.change_type == ChangeType.REMOVED_LEADING_EMPTY_LINES:
+            if check_only:
+                return "Empty line(s) present at the beginning of the file."
+            return "Empty line(s) at the beginning of the file removed."
+
         if self.change_type == ChangeType.REMOVED_TRAILING_EMPTY_LINES:
             if check_only:
                 return "Empty line(s) present at the end of the file."
-            return "Empty line(s) at the end of the file removed."
+            return "Empty line(s) at the end of the file was removed."
 
         if self.change_type == ChangeType.REPLACED_EMPTY_FILE_WITH_ONE_LINE:
             if check_only:
                 return "Empty file."
-            return "Empty file replaced with a single empty line."
+            return "Empty file was replaced with a single empty line."
 
         if self.change_type == ChangeType.REPLACED_WHITESPACE_ONLY_FILE_WITH_EMPTY_FILE:
             if check_only:
                 return "File consists only of whitespace."
-            return "File replaced with an empty file."
+            return "File was replaced with an empty file."
 
         if self.change_type == ChangeType.REPLACED_WHITESPACE_ONLY_FILE_WITH_ONE_LINE:
             if check_only:
                 return "File consists only of whitespace."
-            return "File replaced with a single empty line."
+            return "File was replaced with a single empty line."
 
         if self.change_type == ChangeType.REPLACED_TAB_WITH_SPACES:
             if check_only:
                 return "Tab character present."
-            return "Tab character replaced with spaces."
+            return "Tab character was replaced with spaces."
 
         if self.change_type == ChangeType.REMOVED_TAB:
             if check_only:
                 return "Tab character present."
-            return "Tab character removed."
+            return "Tab character was removed."
 
         if self.change_type == ChangeType.REPLACED_NONSTANDARD_WHITESPACE:
             if check_only:
                 return f"Non-standard whitespace character '{escape_chars(self.changed_from)}' present."
             return (
-                f"Non-standard whitespace character '{escape_chars(self.changed_from)}' "
+                f"Non-standard whitespace character '{escape_chars(self.changed_from)}' was "
                 f"replaced by a space."
             )
 
         if self.change_type == ChangeType.REMOVED_NONSTANDARD_WHITESPACE:
             if check_only:
                 return f"Non-standard whitespace character '{escape_chars(self.changed_from)}' present."
-            return f"Non-standard whitespace character '{escape_chars(self.changed_from)}' removed."
+            return (
+                f"Non-standard whitespace character '{escape_chars(self.changed_from)}' "
+                f"was removed."
+            )
 
         raise ValueError(f"Unknown change type: {self.change_type}")
 
