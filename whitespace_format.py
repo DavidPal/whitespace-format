@@ -391,8 +391,9 @@ def format_file_content(
     # Line number of the last non-empty line.
     last_non_empty_line_number = 0
 
-    # Formatted output.
-    output = ""
+    # Formatted output. This is a list of characters instead of a string in order
+    # to avoid unnecessary string concatenation.
+    output: List[str] = []
 
     while i < len(file_content):
         if file_content[i] in [CARRIAGE_RETURN, LINE_FEED]:
@@ -446,9 +447,9 @@ def format_file_content(
                         output_new_line_marker,
                     ),
                 )
-                output += output_new_line_marker
+                output.extend(output_new_line_marker)
             else:
-                output += new_line_marker
+                output.extend(new_line_marker)
 
             last_end_of_line_including_eol_marker = len(output)
 
@@ -465,23 +466,23 @@ def format_file_content(
             line_number += 1
 
         elif file_content[i] == SPACE:
-            output += file_content[i]
+            output.extend(file_content[i])
 
         elif file_content[i] == TAB:
             if parsed_arguments.replace_tabs_with_spaces < 0:
-                output += file_content[i]
+                output.extend(file_content[i])
             elif parsed_arguments.replace_tabs_with_spaces > 0:
                 changes.append(Change(ChangeType.REPLACED_TAB_WITH_SPACES, line_number))
-                output += SPACE * parsed_arguments.replace_tabs_with_spaces
+                output.extend(SPACE * parsed_arguments.replace_tabs_with_spaces)
             else:
                 # Remove the tab character.
                 changes.append(Change(ChangeType.REMOVED_TAB, line_number))
 
         elif file_content[i] in [VERTICAL_TAB, FORM_FEED]:
             if parsed_arguments.normalize_non_standard_whitespace == "ignore":
-                output += file_content[i]
+                output.extend(file_content[i])
             elif parsed_arguments.normalize_non_standard_whitespace == "replace":
-                output += SPACE
+                output.extend(SPACE)
                 changes.append(
                     Change(
                         ChangeType.REPLACED_NONSTANDARD_WHITESPACE,
@@ -502,7 +503,7 @@ def format_file_content(
             else:
                 raise ValueError("Unknown value of normalize_non_standard_whitespace")
         else:
-            output += file_content[i]
+            output.extend(file_content[i])
             last_non_whitespace = len(output)
 
         # Move to the next character.
@@ -534,7 +535,7 @@ def format_file_content(
         and last_end_of_line_including_eol_marker < len(output)
     ):
         changes.append(Change(ChangeType.ADDED_NEW_LINE_MARKER_TO_END_OF_FILE, line_number))
-        output += output_new_line_marker
+        output.extend(output_new_line_marker)
         last_end_of_line_including_eol_marker = len(output)
         line_number += 1
 
@@ -548,7 +549,8 @@ def format_file_content(
         changes.append(Change(ChangeType.REMOVED_NEW_LINE_MARKER_FROM_END_OF_FILE, line_number))
         output = output[:last_end_of_non_empty_line_excluding_eol_marker]
 
-    return output, changes
+    # Concatenate the list of characters into a string.
+    return "".join(output), changes
 
 
 def reformat_file(file_name: str, parsed_arguments: argparse.Namespace) -> bool:
