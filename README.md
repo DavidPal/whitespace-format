@@ -83,8 +83,8 @@ by replacing `\r\n`, `\n`, and `\r` with a consistent new line marker.
 * `--remove-trailing-whitespace` -- Remove whitespace at the end of each line.
 * `--remove-leading-empty-lines` -- Remove empty lines at the beginning of each file.
 * `--remove-trailing-empty-lines` -- Remove empty lines at the end of each file.
-* `--new-line-marker=MARKER` -- This option specifies what new line marker to when
-adding or replacing new line markers. `MARKER` must be one of the following:
+* `--new-line-marker=MARKER` -- This option specifies the new line marker to use when
+adding or replacing existing new line markers. `MARKER` must be one of the following:
   * `auto` -- Use new line marker that is the most common in each individual file.
   If no new line marker is present in the file, Linux `\n` is used.
   This is the default option.
