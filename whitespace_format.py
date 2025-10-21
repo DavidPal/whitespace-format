@@ -699,14 +699,18 @@ def parse_command_line() -> argparse.Namespace:
     """Parses command line arguments."""
     parser = argparse.ArgumentParser(
         prog="whitespace-format",
-        description="Linter and formatter for source code files and text files",
+        description="Linter and formatter of whitespace in source code files and text files",
         allow_abbrev=False,
         add_help=True,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
         "--check-only",
-        help="Do not format files. Only report which files would be formatted.",
+        help=(
+            "Do not format files. Only report which files need to be formatted. "
+            "If one or more files need to be formatted, "
+            "the command exits with a non-zero exit code."
+        ),
         required=False,
         action="store_true",
         default=False,
@@ -748,9 +752,10 @@ def parse_command_line() -> argparse.Namespace:
         help=(
             "Regular expression that specifies which files to exclude. "
             "The regular expression is evaluated on the path of each file. "
-            "Example #1: --exclude=\"(\\.jpeg|\\.png)$\" excludes files "
-            "with '.jpeg' or '.png' extension. "
-            "Example #2: --exclude=\"\\.git/\" excludes all files in the '.git' directory."
+            "For example, --exclude=\"(\\.jpeg|\\.png)$\" excludes files "
+            "with '.jpeg' or '.png' extension. As another example, "
+            "--exclude=\"^tmp/\" excludes all files in the 'tmp/' directory and "
+            "its subdirectories, however, files in 'data/tmp/' will not be excluded."
         ),
         required=False,
         type=str,
@@ -807,10 +812,12 @@ def parse_command_line() -> argparse.Namespace:
     )
     group2.add_argument(
         "--remove-new-line-marker-from-end-of-file",
-        help="Remove all new line marker(s) from the end of each file. "
-        "This option conflicts with --add-new-line-marker-at-end-of-file. "
-        "Due to idempotence, all empty lines at the end of the file are removed. "
-        "In other words, this option implies --remove-trailing-empty-lines option.",
+        help=(
+            "Remove all new line marker(s) from the end of each file. "
+            "This option conflicts with --add-new-line-marker-at-end-of-file. "
+            "Due to idempotence, all empty lines at the end of the file are removed. "
+            "In other words, this option implies --remove-trailing-empty-lines option."
+        ),
         required=False,
         default=False,
         action="store_true",
@@ -832,8 +839,10 @@ def parse_command_line() -> argparse.Namespace:
     )
     parser.add_argument(
         "--remove-trailing-empty-lines",
-        help="Remove empty lines at the end of each file. "
-        "If --remove-new-line-marker-from-end-of-file is used, this option is used automatically.",
+        help=(
+            "Remove empty lines at the end of each file. "
+            "If --remove-new-line-marker-from-end-of-file is used, this option is used automatically."
+        ),
         required=False,
         default=False,
         action="store_true",

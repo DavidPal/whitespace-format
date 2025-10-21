@@ -75,6 +75,14 @@ class TestWhitespaceFormat(unittest.TestCase):
             [".circleci/config.yml"],
             whitespace_format.find_all_files_recursively(".circleci/", True),
         )
+        self.assertEqual(
+            [
+                ".circleci/../test_data/linux-end-of-line-markers.txt",
+                ".circleci/../test_data/mac-end-of-line-markers.txt",
+                ".circleci/../test_data/windows-end-of-line-markers.txt",
+            ],
+            whitespace_format.find_all_files_recursively(".circleci/../test_data/", True),
+        )
 
     def test_is_whitespace_only(self) -> None:
         """Tests is_whitespace_only() function."""

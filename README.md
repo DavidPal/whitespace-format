@@ -4,25 +4,27 @@
 
 [![Build, lint and test](https://github.com/DavidPal/whitespace-format/actions/workflows/build.yaml/badge.svg)](https://github.com/DavidPal/whitespace-format/actions/workflows/build.yaml)
 
-Linter and formatter for source code files and text files.
+Linter and formatter of whitespace in source code files and text files.
 
-The purpose of this tool is to normalize source code files (e.g., Python, Java,
-C/C++, JavaScript, Rust, Go, Ruby, etc.) and text files (HTML, CSS, JSON, YAML,
-CSV, TSV MarkDown, LaTeX) before checking them into a version control system.
+The purpose of this tool is to normalize whitespace in source code files (e.g.,
+Python, Java, C/C++, JavaScript, Rust, Go, Ruby, etc.) and text files (HTML,
+CSS, JSON, YAML, CSV, TSV MarkDown, LaTeX) before checking them into a version
+control system.
 
 The features include:
 
-* Auto-detection of new line markers (Linux `\n`, Windows `\r\n`, Mac `\r`).
-* Add a new line marker at the end of the file if it is missing.
-* Make new line markers consistent.
-* Remove empty lines at the end of the file.
 * Remove whitespace at the end of each line.
+* Remove empty lines at the end of the file.
+* Remove empty lines at the beginning of the file.
+* Add a new line marker at the end of the file if it is missing.
+* Auto-detection of new line markers (Linux `\n`, Windows `\r\n`, Mac `\r`).
+* Make new line markers consistent.
 * Replace tabs with spaces.
 * Remove/replace non-standard whitespace characters.
 
 The formatting changes are
 [idempotent](https://en.wikipedia.org/wiki/Idempotence), i.e., running the tool
-second time (with the same parameters) has no effect.
+a second time (with the same parameters) has no effect.
 
 ## Installation
 
@@ -37,7 +39,7 @@ Installation requires Python 3.8.0 or higher.
 A sample command that formats source code files:
 ```shell
 whitespace-format \
-    --exclude ".git/|.idea/|.pyc$" \
+    --exclude "\.git/|\.idea/|\.pyc$" \
     --new-line-marker linux \
     --normalize-new-line-markers \
     foo.txt  my_project/
@@ -53,23 +55,33 @@ option:
 ```shell
 whitespace-format \
     --check-only \
-    --exclude ".git/|.idea/|.pyc$" \
+    --exclude "\.git/|\.idea/|\.pyc$" \
     --new-line-marker linux \
     --normalize-new-line-markers \
     foo.txt  my_project/
 ```
-This command can be used as a validation step before checking the source files
-into a version control system. The command outputs non-zero exit code if any
-of the files would be formatted.
+The command outputs non-zero exit code if any of the files needs to be
+formatted. The command can be used as a validation step before checking the
+source files into a version control system.
 
 ### Options
 
-* `--check-only` -- Do not format files. Only report which files would be formatted.
+Any combination of directories and/or files can be listed. The directories are
+searched recursively for files.
+
+* `--check-only` -- Do not format files. Only report which files need to be
+formatted. If one or more files need to be formatted, the command exits with a
+non-zero exit code.
 * `--follow-symlinks` -- Follow symbolic links when searching for files.
-* `--exclude=REGEX` -- Regular expression that specifies which files to exclude.
-The regular expression is evaluated on the path of each file.
+* `--exclude=REGEX` -- Regular expression that specifies which files to
+exclude. The regular expression is evaluated on the path of each file.
+For example, `--exclude="(\.jpeg|\.png)$"` excludes files with `.jpeg` or `.png`
+extension. As another example, `--exclude="^tmp/"` excludes all files in the
+top-level `tmp/` directory and its subdirectories, however, files in `data/tmp/`
+will not be excluded.
 * `--verbose` -- Print more messages than normally.
-* `--quiet` -- Do not print any messages, except for errors when reading or writing files.
+* `--quiet` -- Do not print any messages, except for errors when reading or
+writing files.
 * `--encoding` -- Text encoding for both reading and writing files. Default
 encoding is `utf-8`. The list of supported encodings can be found at
 https://docs.python.org/3/library/codecs.html#standard-encodings
@@ -172,11 +184,11 @@ number of spaces in different editors, potentially leading to inconsistent
 visual formatting if not everyone working on the code uses the same tab
 settings.
 
-If `--check-only` is used, any combination of non-default options is
-recommended (e.g. `--replace-tabs-with-spaces=0` and
-`--normalize-non-standard-whitespace=remove`) for text files other than
-Makefiles and TSV files. This will warn about presence of tabs and non-standard
-whitespace characters.
+If `--check-only` is used, a combination of non-default options is recommended
+(e.g. `--replace-tabs-with-spaces=0` and
+`--normalize-non-standard-whitespace=remove`). However, Makefiles and TSV files
+must be explicitly excluded using the `--exclude` option. This will warn about
+presence of tabs and non-standard whitespace characters.
 
 However, without `--check-only`, there is no simple universal recommendation
 for all text files. First, in Makefiles and TSV files, tabs are required.
