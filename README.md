@@ -7,8 +7,8 @@
 Linter and formatter for source code files and text files.
 
 The purpose of this tool is to normalize source code files (e.g., Python, Java,
-C/C++, Ruby, Go, JavaScript, etc.) and text files (HTML, JSON, YAML, CSV,
-MarkDown, LaTeX) before checking them into a version control system.
+C/C++, JavaScript, Rust, Go, Ruby, etc.) and text files (HTML, CSS, JSON, YAML,
+CSV, TSV MarkDown, LaTeX) before checking them into a version control system.
 
 The features include:
 
@@ -70,34 +70,38 @@ of the files would be formatted.
 The regular expression is evaluated on the path of each file.
 * `--verbose` -- Print more messages than normally.
 * `--quiet` -- Do not print any messages, except for errors when reading or writing files.
+* `--encoding` -- Text encoding for both reading and writing files. Default
+encoding is `utf-8`. The list of supported encodings can be found at
+https://docs.python.org/3/library/codecs.html#standard-encodings
 
 ### Formatting options
 
-* `--add-new-line-marker-at-end-of-file` -- Add missing new line marker at the end of each file.
-* `--remove-new-line-marker-from-end-of-file` -- Remove all new line marker(s) from the end of each file.
-This option cannot be used in combination with `--add-new-line-marker-at-end-of-file`.
-Empty lines at the end of the file are removed, i.e., this option implies `--remove-trailing-empty-lines`
-option.
-* `--normalize-new-line-markers` -- Make new line markers consistent in each file
-by replacing `\r\n`, `\n`, and `\r` with a consistent new line marker.
-* `--remove-trailing-whitespace` -- Remove whitespace at the end of each line.
-* `--remove-leading-empty-lines` -- Remove empty lines at the beginning of each file.
-* `--remove-trailing-empty-lines` -- Remove empty lines at the end of each file.
-* `--new-line-marker=MARKER` -- This option specifies the new line marker to use when
-adding or replacing existing new line markers. `MARKER` must be one of the following:
+* `--new-line-marker=MARKER` -- Specifies what new line marker to use in the
+formatted output file. `MARKER` must be one of the following:
   * `auto` -- Use new line marker that is the most common in each individual file.
   If no new line marker is present in the file, Linux `\n` is used.
   This is the default option.
   * `linux` -- Use Linux new line marker `\n`.
   * `mac` -- Use Mac new line marker `\r`.
   * `windows` -- Use Windows new line marker `\r\n`.
-* `--encoding` -- Text encoding for both reading and writing files. Default encoding is `utf-8`.
-The list of supported encodings can be found at
-https://docs.python.org/3/library/codecs.html#standard-encodings
-
-Note that input files can contain an arbitrary mix of new line markers `\n`,
-`\r`, `\r\n` even within the same file. The option `--new-line-marker`
-specifies the character that should be in the formatted file.
+* `--normalize-new-line-markers` -- Make new line markers consistent in each
+file by replacing `\r\n`, `\n`, and `\r` with a consistent new line marker. The
+new line marker in the output is specified by `--new-line-marker` option. This
+option works even if the input contains an arbitrary mix of new line markers
+`\r\n`, `\n`, `\r` even within the same input file.
+* `--add-new-line-marker-at-end-of-file` -- Add new line marker at the end of
+each file if it is missing.
+* `--remove-new-line-marker-from-end-of-file` -- Remove all new line marker(s)
+from the end of each file. This option cannot be used in combination with
+`--add-new-line-marker-at-end-of-file`. Due to idempotence, all empty lines at
+the end of the file are removed.  In other words, this option implies
+`--remove-trailing-empty-lines` option.
+* `--remove-trailing-whitespace` -- Remove whitespace at the end of each line.
+* `--remove-leading-empty-lines` -- Remove empty lines at the beginning of each
+file.
+* `--remove-trailing-empty-lines` -- Remove empty lines at the end of each
+file. If `--remove-new-line-marker-from-end-of-file` is used, this option is
+used automatically.
 
 An opinionated combination of options is:
 ```shell
@@ -111,26 +115,27 @@ whitespace-format \
     foo.txt  my_project/
 ```
 This should work well for common programming languages (e.g., Python, Java,
-C/C++, JavaScript) and common text file formats (e.g., CSV, LaTeX, JSON, YAML,
-HTML, MarkDown, Makefile, TSV).
+C/C++, JavaScript, Rust, Go, Ruby) and common text file formats (e.g., HTML,
+CSS, CSV, TSV, JSON, YAML, MarkDown, Makefile, LaTeX).
 
 ### Empty files
 
-There are separate options for handling empty files and files consisting of
-whitespace characters only:
+The options above do not format empty files and files consisting of only
+whitespace. There are separate options for handling such files:
 
 * `--normalize-empty-files=MODE`
 * `--normalize-whitespace-only-files=MODE`
 
 where `MODE` is one of the following:
 
-* `ignore` -- Leave the file as is. This is the default option.
+* `ignore` -- Leave the file unchanged. This is the default option.
 * `empty` -- Replace the file with an empty file.
-* `one-line` -- Replace each file with a file consisting of a single new line marker.
+* `one-line` -- Replace the file with a file consisting of a single new line
+marker.
 
 Depending on the mode, an empty file or a whitespace-only file will be either
-ignored, replaced by a zero-byte file, or replaced by a file consisting of
-the single new line marker.
+ignored, replaced by a zero-byte file, or replaced by a file consisting of the
+single new line marker.
 
 If `--normalize-whitespace-only-files` is set to `empty`,
 `--normalize-empty-files setting` set to `empty` as well. In other words,
@@ -138,17 +143,50 @@ combination `--normalize-whitespace-only-files=empty` and
 `--normalize-empty-files=one-line` is not allowed, since it would lead to
 behavior that is not idempotent.
 
+An opinionated combination of options is:
+```
+--normalize-empty-files=empty --normalize-whitespace-only-files=empty
+```
+This should work well for common programming languages (e.g., Python, Java,
+C/C++, JavaScript, Rust, Go, Ruby) and common text file formats (e.g., HTML,
+CSS, CSV, TSV, JSON, YAML, MarkDown, Makefile, LaTeX).
+
 ### Special characters
 
-* `--replace-tabs-with-spaces=N` -- Replace tabs with spaces.
-Where is `N` is the number of spaces. If `N` is zero, tabs are removed.
-If `N` is negative, tabs are not replaced. Default value is `-1`.
+* `--replace-tabs-with-spaces=N` -- Remove tabs or replace them with spaces.
+The value `N` specifies the number of spaces to use. If `N` is positive
+each tab character is replaced by `N` spaces. If `N` is zero, tabs are removed.
+If `N` is negative, tabs are left unchanged. Default value is `-1`.
 
-* `--normalize-non-standard-whitespace=MODE` -- Replace or remove
-non-standard whitespace characters (`\v` and `\f`). `MODE` must be one of the following:
+* `--normalize-non-standard-whitespace=MODE` -- Replace or remove non-standard
+whitespace characters (`\v` and `\f`). `MODE` must be one of the following:
   * `ignore` -- Leave `\v` and `\f` as is. This is the default option.
   * `replace` -- Replace any occurrence of `\v` or `\f` with a single space.
   * `remove` -- Remove all occurrences of `\v` and `\f`
+
+While both tabs and spaces are functionally similar for indentation in text
+files, using spaces offers consistency in how the indentation appears across
+different editors and platforms, as a space character always renders as a
+single space. Tabs, on the other hand, can be configured to represent a varying
+number of spaces in different editors, potentially leading to inconsistent
+visual formatting if not everyone working on the code uses the same tab
+settings.
+
+If `--check-only` is used, any combination of non-default options is
+recommended (e.g. `--replace-tabs-with-spaces=0` and
+`--normalize-non-standard-whitespace=remove`) for text files other than
+Makefiles and TSV files. This will warn about presence of tabs and non-standard
+whitespace characters.
+
+However, without `--check-only`, there is no simple universal recommendation
+for all text files. First, in Makefiles and TSV files, tabs are required.
+Second, even in programming languages and text data formats where tabs can be
+avoided (e.g.  Python, Java, C/C++), their replacement depends on the context.
+For example, in Python, Java and C/C++, tabs in string literals can be replaced
+by the string `\t`. However, tabs outside of string literals cannot be replaced
+by the string `\t` and instead spaces must be used. While it is possible to
+replace tabs by spaces in string literals, this changes the semantics of the
+program.
 
 ## License
 

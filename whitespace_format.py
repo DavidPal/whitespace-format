@@ -711,17 +711,6 @@ def parse_command_line() -> argparse.Namespace:
         action="store_true",
         default=False,
     )
-    parser.add_argument(
-        "--encoding",
-        help=(
-            "Text encoding for both reading and writing files. Default encoding is utf-8. "
-            "The list of supported encodings can be found at "
-            "https://docs.python.org/3/library/codecs.html#standard-encodings"
-        ),
-        required=False,
-        default="utf-8",
-        type=str,
-    )
 
     # Mutually exclusive group of parameters.
     group1 = parser.add_mutually_exclusive_group()
@@ -759,23 +748,34 @@ def parse_command_line() -> argparse.Namespace:
         help=(
             "Regular expression that specifies which files to exclude. "
             "The regular expression is evaluated on the path of each file. "
-            "Example #1: --exclude=\"(.jpeg|.png)$\" excludes files "
+            "Example #1: --exclude=\"(\\.jpeg|\\.png)$\" excludes files "
             "with '.jpeg' or '.png' extension. "
-            "Example #2: --exclude=\".git/\" excludes all files in the '.git' directory. "
+            "Example #2: --exclude=\"\\.git/\" excludes all files in the '.git' directory."
         ),
         required=False,
         type=str,
         default=UNMATCHABLE_REGEX,
     )
     parser.add_argument(
+        "--encoding",
+        help=(
+            "Text encoding for both reading and writing files. Default encoding is utf-8. "
+            "The list of supported encodings can be found at "
+            "https://docs.python.org/3/library/codecs.html#standard-encodings"
+        ),
+        required=False,
+        default="utf-8",
+        type=str,
+    )
+    parser.add_argument(
         "--new-line-marker",
         help=(
-            "Specifies what new line marker to use. "
+            "Specifies what new line marker to use in the formatted output file. "
             "auto: Use new line marker that is the most common in each individual file. "
             "If no new line marker is present in the file, Linux '\\n' is used."
             "linux: Use Linux new line marker '\\n'. "
             "mac: Use Mac new line marker '\\r'. "
-            "windows: Use Windows new line marker '\\r\\n'. "
+            "windows: Use Windows new line marker '\\r\\n'."
         ),
         required=False,
         type=str,
@@ -787,55 +787,30 @@ def parse_command_line() -> argparse.Namespace:
         help=(
             "Make new line markers consistent in each file "
             "by replacing '\\r\\n', '\\n', and `\\r` with a consistent new line marker. "
+            "The new line marker in the output is specified by `--new-line-marker` option. "
+            "This option works even if the input contains an arbitrary mix of new line markers "
+            "'\\r\\n', '\\n', '\\r' even within the same input file."
         ),
         required=False,
         default=False,
         action="store_true",
-    )
-    parser.add_argument(
-        "--normalize-empty-files",
-        help=(
-            "Replace files of zero length. "
-            "ignore: Leave empty files as is. "
-            "empty: Same as ignore. "
-            "one-line: Replace the file with a single empty line with an end of line marker. "
-            "If --whitespace-only-files is set to value other than 'ignore', "
-            "it overrides --empty-files setting. "
-        ),
-        required=False,
-        default="ignore",
-        choices=["ignore", "empty", "one-line"],
-    )
-    parser.add_argument(
-        "--normalize-whitespace-only-files",
-        help=(
-            "Replace files consisting of whitespace only. "
-            "ignore: Leave empty files as is. "
-            "empty: Replace each file with an empty file. "
-            "one-line: Replace the file with a single empty line with an end of line marker. "
-            "If --normalize-whitespace-only-files is set to value other than 'ignore', "
-            "it overrides --normalize-empty-files setting. "
-        ),
-        required=False,
-        default="ignore",
-        choices=["ignore", "empty", "one-line"],
     )
 
     # Mutually exclusive group of parameters.
     group2 = parser.add_mutually_exclusive_group()
     group2.add_argument(
         "--add-new-line-marker-at-end-of-file",
-        help="Add missing new line marker at the end of each file.",
+        help="Add new line marker at the end of each file if it is missing.",
         required=False,
         default=False,
         action="store_true",
     )
     group2.add_argument(
         "--remove-new-line-marker-from-end-of-file",
-        help="Remove new line markers from the end of each file. "
+        help="Remove all new line marker(s) from the end of each file. "
         "This option conflicts with --add-new-line-marker-at-end-of-file. "
-        "This option implies --remove-trailing-empty-lines option, i.e., "
-        "all empty lines at the end of the file are removed.",
+        "Due to idempotence, all empty lines at the end of the file are removed. "
+        "In other words, this option implies --remove-trailing-empty-lines option.",
         required=False,
         default=False,
         action="store_true",
@@ -864,6 +839,47 @@ def parse_command_line() -> argparse.Namespace:
         action="store_true",
     )
     parser.add_argument(
+        "--normalize-empty-files",
+        help=(
+            "Replace files of zero length. "
+            "ignore: Leave empty files unchanged. "
+            "empty: Same as ignore. "
+            "one-line: Replace each empty file with a single empty line with an end of line marker. "
+            "If --whitespace-only-files is set to 'empty', "
+            "the same value is used for --empty-files. "
+        ),
+        required=False,
+        default="ignore",
+        choices=["ignore", "empty", "one-line"],
+    )
+    parser.add_argument(
+        "--normalize-whitespace-only-files",
+        help=(
+            "Replace files consisting of whitespace only. "
+            "ignore: Leave whitespace files unchanged. "
+            "empty: Replace each whitespace file with an empty file. "
+            "one-line: Replace each whitespace file with a single empty line with an end of line marker. "
+            "If --whitespace-only-files is set to 'empty', "
+            "the same value is used for --empty-files. "
+        ),
+        required=False,
+        default="ignore",
+        choices=["ignore", "empty", "one-line"],
+    )
+    parser.add_argument(
+        "--replace-tabs-with-spaces",
+        help=(
+            "Remove tabs or replace them with spaces. "
+            "The value of the parameter specifies the number of spaces to use. "
+            "If the value is positive, tabs are replaced. "
+            "If the parameter is zero, tabs are removed. "
+            "If the parameter is negative, tabs are left unchanged."
+        ),
+        required=False,
+        default=-1,
+        type=int,
+    )
+    parser.add_argument(
         "--normalize-non-standard-whitespace",
         help=(
             "Replace or remove non-standard whitespace characters '\\v' and '\\f' in each file. "
@@ -875,18 +891,6 @@ def parse_command_line() -> argparse.Namespace:
         default="ignore",
         type=str,
         choices=["ignore", "remove", "replace"],
-    )
-    parser.add_argument(
-        "--replace-tabs-with-spaces",
-        help=(
-            "Replace tabs with spaces. "
-            "The parameter specifies the number of spaces to use. "
-            "If the parameter is zero, tabs are removed. "
-            "If the parameter is negative, tabs are not replaced."
-        ),
-        required=False,
-        default=-1,
-        type=int,
     )
     parser.add_argument(
         "input_files",
