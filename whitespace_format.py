@@ -143,73 +143,85 @@ class Change:
         """Returns a message describing the change."""
         if self.change_type == ChangeType.ADDED_NEW_LINE_MARKER_TO_END_OF_FILE:
             if check_only:
-                return "New line marker is missing at the end of the file."
+                return "New line marker needs to be added at the end of the file."
             return "New line marker was added to the end of the file."
 
         if self.change_type == ChangeType.REMOVED_NEW_LINE_MARKER_FROM_END_OF_FILE:
             if check_only:
-                return "New line marker is present at the end of the file."
+                return "New line marker needs to be removed from the end of the file."
             return "New line marker was removed from the end of the file."
 
         if self.change_type == ChangeType.REPLACED_NEW_LINE_MARKER:
             if check_only:
-                return f"Wrong new line marker '{escape_chars(self.changed_from)}'."
+                return (
+                    f"New line marker '{escape_chars(self.changed_from)}' "
+                    f"needs to be replaced by '{escape_chars(self.changed_to)}'."
+                )
             return (
-                f"New line marker '{escape_chars(self.changed_from)}' was "
-                f"replaced by '{escape_chars(self.changed_to)}'."
+                f"New line marker '{escape_chars(self.changed_from)}' "
+                f"was replaced by '{escape_chars(self.changed_to)}'."
             )
 
         if self.change_type == ChangeType.REMOVED_TRAILING_WHITESPACE:
             if check_only:
-                return "Trailing whitespace is present."
+                return "Trailing whitespace needs to be removed."
             return "Trailing whitespace was removed."
 
         if self.change_type == ChangeType.REMOVED_LEADING_EMPTY_LINE:
             if check_only:
-                return "Empty line is present at the beginning of the file."
+                return "Empty line at the beginning of the file needs to be removed."
             return "Empty line at the beginning of the file was removed."
 
         if self.change_type == ChangeType.REMOVED_TRAILING_EMPTY_LINES:
             if check_only:
-                return "Empty lines are present at the end of the file."
+                return "Empty lines at the end of the file need to be removed."
             return "Empty lines at the end of the file were removed."
 
         if self.change_type == ChangeType.REPLACED_EMPTY_FILE_WITH_ONE_LINE:
             if check_only:
-                return "File is empty."
-            return "Empty file was replaced with a single empty line."
+                return "Empty file needs to be replaced by single empty line."
+            return "Empty file was replaced by a single empty line."
 
         if self.change_type == ChangeType.REPLACED_WHITESPACE_ONLY_FILE_WITH_EMPTY_FILE:
             if check_only:
-                return "File consists only of whitespace."
-            return "File was replaced with an empty file."
+                return "File consisting of only whitespace needs to be replaced by an empty file."
+            return "File consisting of only whitespace was replaced by an empty file."
 
         if self.change_type == ChangeType.REPLACED_WHITESPACE_ONLY_FILE_WITH_ONE_LINE:
             if check_only:
-                return "File consists only of whitespace."
-            return "File was replaced with a single empty line."
+                return (
+                    "File consisting of only whitespace "
+                    "needs to be replaced by a single empty line."
+                )
+            return "File consisting of only whitespace was replaced by a single empty line."
 
         if self.change_type == ChangeType.REPLACED_TAB_WITH_SPACES:
             if check_only:
-                return "Tab character is present."
-            return "Tab character was replaced with spaces."
+                return "Tab character needs to be replaced by spaces or removed."
+            return f"Tab character was replaced by {len(self.changed_to)} spaces."
 
         if self.change_type == ChangeType.REMOVED_TAB:
             if check_only:
-                return "Tab character is present."
+                return "Tab character needs to be replaced by spaces or removed."
             return "Tab character was removed."
 
         if self.change_type == ChangeType.REPLACED_NONSTANDARD_WHITESPACE:
             if check_only:
-                return f"Non-standard whitespace character '{escape_chars(self.changed_from)}' is present."
+                return (
+                    f"Non-standard whitespace character '{escape_chars(self.changed_from)}' "
+                    f"needs to replaced a by space."
+                )
             return (
-                f"Non-standard whitespace character '{escape_chars(self.changed_from)}' was "
-                f"replaced by a space."
+                f"Non-standard whitespace character '{escape_chars(self.changed_from)}' "
+                f"was replaced by a space."
             )
 
         if self.change_type == ChangeType.REMOVED_NONSTANDARD_WHITESPACE:
             if check_only:
-                return f"Non-standard whitespace character '{escape_chars(self.changed_from)}' is present."
+                return (
+                    f"Non-standard whitespace character '{escape_chars(self.changed_from)}' "
+                    f"needs to be removed."
+                )
             return (
                 f"Non-standard whitespace character '{escape_chars(self.changed_from)}' "
                 f"was removed."
@@ -483,7 +495,14 @@ def format_file_content(
             if parsed_arguments.replace_tabs_with_spaces < 0:
                 output += file_content[i]
             elif parsed_arguments.replace_tabs_with_spaces > 0:
-                changes.append(Change(ChangeType.REPLACED_TAB_WITH_SPACES, line_number))
+                changes.append(
+                    Change(
+                        ChangeType.REPLACED_TAB_WITH_SPACES,
+                        line_number,
+                        "\t",
+                        parsed_arguments.replace_tabs_with_spaces * " ",
+                    ),
+                )
                 output += SPACE * parsed_arguments.replace_tabs_with_spaces
             else:
                 # Remove the tab character.
@@ -869,7 +888,13 @@ def parse_command_line() -> argparse.Namespace:
         default=-1,
         type=int,
     )
-    parser.add_argument("input_files", help="List of input files", nargs="+", default=[], type=str)
+    parser.add_argument(
+        "input_files",
+        help="List of input files",
+        nargs="+",
+        default=[],
+        type=str,
+    )
 
     parsed_arguments = parser.parse_args()
 

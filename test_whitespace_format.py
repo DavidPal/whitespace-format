@@ -528,7 +528,10 @@ class TestWhitespaceFormat(unittest.TestCase):
         self.assertEqual(
             (
                 "hello\r\n\rworld  ",
-                [Change(ChangeType.REMOVED_NEW_LINE_MARKER_FROM_END_OF_FILE, 3)],
+                [
+                    Change(ChangeType.REMOVED_TRAILING_EMPTY_LINES, 4),
+                    Change(ChangeType.REMOVED_NEW_LINE_MARKER_FROM_END_OF_FILE, 3),
+                ],
             ),
             whitespace_format.format_file_content(
                 "hello\r\n\rworld  \n\r\n\r",
@@ -541,7 +544,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     normalize_whitespace_only_files="ignore",
                     remove_new_line_marker_from_end_of_file=True,
                     remove_leading_empty_lines=False,
-                    remove_trailing_empty_lines=False,
+                    remove_trailing_empty_lines=True,
                     remove_trailing_whitespace=False,
                     replace_tabs_with_spaces=-1,
                 ),
@@ -576,6 +579,33 @@ class TestWhitespaceFormat(unittest.TestCase):
             ("hello", []),
             whitespace_format.format_file_content(
                 "hello",
+                argparse.Namespace(
+                    add_new_line_marker_at_end_of_file=False,
+                    new_line_marker="auto",
+                    normalize_empty_files="ignore",
+                    normalize_new_line_markers=False,
+                    normalize_non_standard_whitespace="ignore",
+                    normalize_whitespace_only_files="ignore",
+                    remove_new_line_marker_from_end_of_file=True,
+                    remove_leading_empty_lines=False,
+                    remove_trailing_empty_lines=False,
+                    remove_trailing_whitespace=False,
+                    replace_tabs_with_spaces=-1,
+                ),
+            ),
+        )
+
+    def test_format_file_content__remove_new_line_marker_from_end_of_file_5(self) -> None:
+        """Tests format_file_content() function."""
+        self.assertEqual(
+            (
+                "hello\r\n\rworld  ",
+                [
+                    Change(ChangeType.REMOVED_NEW_LINE_MARKER_FROM_END_OF_FILE, 3),
+                ],
+            ),
+            whitespace_format.format_file_content(
+                "hello\r\n\rworld  \n\r\n\r",
                 argparse.Namespace(
                     add_new_line_marker_at_end_of_file=False,
                     new_line_marker="auto",
@@ -1104,7 +1134,7 @@ class TestWhitespaceFormat(unittest.TestCase):
     def test_format_file_content__replace_tabs_with_spaces__3(self) -> None:
         """Tests format_file_content() function."""
         self.assertEqual(
-            ("   hello", [Change(ChangeType.REPLACED_TAB_WITH_SPACES, 1)]),
+            ("   hello", [Change(ChangeType.REPLACED_TAB_WITH_SPACES, 1, "\t", "   ")]),
             whitespace_format.format_file_content(
                 "\thello",
                 argparse.Namespace(
