@@ -707,9 +707,10 @@ def parse_command_line() -> argparse.Namespace:
     parser.add_argument(
         "--check-only",
         help=(
-            "Do not format files. Only report which files need to be formatted. "
+            "Do not format files. Only report which files need to be formatted "
+            "and what changes need to be made to each file. "
             "If one or more files need to be formatted, "
-            "the command exits with a non-zero exit code."
+            "a non-zero exit code is returned."
         ),
         required=False,
         action="store_true",

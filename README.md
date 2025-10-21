@@ -50,8 +50,8 @@ their (relative) path are excluded. For example, files in `my_project/.git/`
 and files in `my_project/.idea/` are excluded. Likewise, files ending with
 `*.pyc` are excluded.
 
-If you want to know only if any changes **would be** made, add `--check-only`
-option:
+If you want to know only if any files need to be formatted and what changes
+need to be made, add `--check-only` option:
 ```shell
 whitespace-format \
     --check-only \
@@ -60,9 +60,11 @@ whitespace-format \
     --normalize-new-line-markers \
     foo.txt  my_project/
 ```
-The command outputs non-zero exit code if any of the files needs to be
-formatted. The command can be used as a validation step before checking the
-source files into a version control system.
+If any of the files needs to be formatted, the command exits with a non-zero
+exit code. The command prints list of any changes that need to be made to each
+file. The command can be used as a validation step before checking the source
+files into a version control system (e.g. as a pre-commit or a pre-submit
+check), or as a step in the test or in the build process.
 
 ### Options
 
@@ -70,8 +72,8 @@ Any combination of directories and/or files can be listed. The directories are
 searched recursively for files.
 
 * `--check-only` -- Do not format files. Only report which files need to be
-formatted. If one or more files need to be formatted, the command exits with a
-non-zero exit code.
+formatted and what changes need to be made to each file. If one or more files
+need to be formatted, a non-zero exit code is returned.
 * `--follow-symlinks` -- Follow symbolic links when searching for files.
 * `--exclude=REGEX` -- Regular expression that specifies which files to
 exclude. The regular expression is evaluated on the path of each file.
@@ -126,9 +128,9 @@ whitespace-format \
     --remove-trailing-empty-lines \
     foo.txt  my_project/
 ```
-This should work well for common programming languages (e.g., Python, Java,
-C/C++, JavaScript, Rust, Go, Ruby) and common text file formats (e.g., HTML,
-CSS, CSV, TSV, JSON, YAML, MarkDown, Makefile, LaTeX).
+This combination should work well for common programming languages (e.g.,
+Python, Java, C/C++, JavaScript, Rust, Go, Ruby) and common text file formats
+(e.g., HTML, CSS, CSV, TSV, JSON, YAML, MarkDown, Makefile, LaTeX).
 
 ### Empty files
 
@@ -159,9 +161,9 @@ An opinionated combination of options is:
 ```
 --normalize-empty-files=empty --normalize-whitespace-only-files=empty
 ```
-This should work well for common programming languages (e.g., Python, Java,
-C/C++, JavaScript, Rust, Go, Ruby) and common text file formats (e.g., HTML,
-CSS, CSV, TSV, JSON, YAML, MarkDown, Makefile, LaTeX).
+This combination should work well for common programming languages (e.g.,
+Python, Java, C/C++, JavaScript, Rust, Go, Ruby) and common text file formats
+(e.g., HTML, CSS, CSV, TSV, JSON, YAML, MarkDown, Makefile, LaTeX).
 
 ### Special characters
 
