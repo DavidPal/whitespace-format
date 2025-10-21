@@ -176,19 +176,20 @@ whitespace characters (`\v` and `\f`). `MODE` must be one of the following:
   * `replace` -- Replace any occurrence of `\v` or `\f` with a single space.
   * `remove` -- Remove all occurrences of `\v` and `\f`
 
-While both tabs and spaces are functionally similar for indentation in text
-files, using spaces offers consistency in how the indentation appears across
-different editors and platforms, as a space character always renders as a
-single space. Tabs, on the other hand, can be configured to represent a varying
-number of spaces in different editors, potentially leading to inconsistent
-visual formatting if not everyone working on the code uses the same tab
-settings.
+It is recommended to avoid tabs in source code and text files if possible, and
+replace them with spaces or other strings, such as `\t` or `&Tab;`. While both
+tabs and spaces are functionally similar for indentation in text files, using
+spaces offers consistency in how the indentation appears across different
+editors and platforms, as a space character always renders as a single space.
+Tabs, on the other hand, can be configured to represent a varying number of
+spaces in different editors, potentially leading to inconsistent visual
+formatting if not everyone working on the code uses the same tab settings.
 
 If `--check-only` is used, a combination of non-default options is recommended
 (e.g. `--replace-tabs-with-spaces=0` and
-`--normalize-non-standard-whitespace=remove`). However, Makefiles and TSV files
-must be explicitly excluded using the `--exclude` option. This will warn about
-presence of tabs and non-standard whitespace characters.
+`--normalize-non-standard-whitespace=remove`). This will warn about presence of
+tabs and non-standard whitespace characters. However, Makefiles and TSV files
+must be explicitly excluded using the `--exclude` option.
 
 However, without `--check-only`, there is no simple universal recommendation
 for all text files. First, in Makefiles and TSV files, tabs are required.
