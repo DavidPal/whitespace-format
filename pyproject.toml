@@ -73,7 +73,6 @@ ignore = [
     "FA100",
     "FBT001",
     "FBT003",
-    "I001",
     "PLR0912",
     "PLR0915",
     "PLR2004",
@@ -91,6 +90,12 @@ ignore = [
 ]
 fixable = ["ALL"]
 unfixable = []
+
+[tool.ruff.lint.isort]
+force-single-line = true
+force-sort-within-sections = false
+from-first = false
+order-by-type = true
 
 [tool.ruff.lint.pylint]
 max-returns = 30

@@ -754,7 +754,7 @@ def parse_command_line() -> argparse.Namespace:
             "The regular expression is evaluated on the path of each file. "
             "For example, --exclude='(\\.jpeg|\\.png)$' excludes files "
             "with '.jpeg' or '.png' extension. As another example, "
-            "--exclude=\"^tmp/\" excludes all files in the 'tmp/' directory and "
+            "--exclude='^tmp/' excludes all files in the 'tmp/' directory and "
             "its subdirectories, however, files in 'data/tmp/' will not be excluded."
         ),
         required=False,

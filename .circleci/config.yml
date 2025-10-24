@@ -45,10 +45,6 @@ jobs:
           command: make pydocstyle
 
       - run:
-          name: Check import order
-          command: make isort-check
-
-      - run:
           name: Check python code style with flake8
           command: make flake8
 
