@@ -30,6 +30,10 @@ jobs:
 
       - run:
           name: Check whitespace formatting
+          command: make poetry-check
+
+      - run:
+          name: Check whitespace formatting
           command: make whitespace-format-check
 
       - run:

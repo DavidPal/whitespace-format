@@ -46,6 +46,6 @@ jobs:
 
       - name: Lint and test code
         run: |
-          make clean lint test coverage
+          make clean poetry-check lint test coverage
 
       - run: echo "This job's status is ${{ job.status }}."

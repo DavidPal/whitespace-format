@@ -149,3 +149,7 @@ publish-to-pypi:
 publish-to-test-pypi:
 	# Publish package to Test-PyPI.
 	poetry publish -r test-pypi
+
+poetry-check:
+	# Check if poetry.lock is consistent with pyproject.toml file.
+	poetry check --lock
