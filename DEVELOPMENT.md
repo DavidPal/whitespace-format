@@ -10,7 +10,7 @@
     brew install poetry
     ```
 
-3) Add the following lines to `.zshrc` or `.bash_profile` and restart the terminal:
+3) Add the following lines to `.zshrc` or `.bashrc` and restart the terminal:
    ```shell
    # Pyenv settings
    export PYENV_ROOT="$HOME/.pyenv"
@@ -37,14 +37,14 @@ command `make delete-environment`.
 
 If you make code change, run unit tests and code checks with the command:
 ```shell
-make clean whitespace-format-check black-check isort-check pydocstyle ruff flake8 pylint mypy test coverage
+make clean poetry-check whitespace-format-check ruff-format-check pydocstyle ruff flake8 pylint mypy test coverage
 ```
 
 Each make target runs different checks:
 - `clean` deletes temporary files
+- `poetry-check` runs [poetry](https://python-poetry.org/docs/) checks that `poetry.lock` file in sync with `pyproject.toml`
 - `whitespace-format-check` runs [whitespace-format](https://github.com/DavidPal/whitespace-format) checker on all files
-- `black-check` runs [black](https://github.com/psf/black/) code format checker on `*.py` files
-- `isort-check` runs [isort](https://pycqa.github.io/isort/) checker of imports in `*.py` files
+- `ruff-format-check` runs [ruff](https://github.com/psf/black/) code format checker on `*.py` files
 - `pydocstyle` runs [pydocstyle](http://www.pydocstyle.org/) docstring checker on `*.py` files
 - `ruff` runs [ruff](https://docs.astral.sh/ruff/) code checker on `*.py` files
 - `flake8` runs [flake8](https://flake8.pycqa.org/) code style checker on `*.py` files
@@ -55,7 +55,7 @@ Each make target runs different checks:
 
 You can automatically format code with the command:
 ```shell
-make whitespace-format isort-format black-format ruff-fix
+make whitespace-format ruff-format ruff-fix
 ```
 
 # Modifying dependencies
