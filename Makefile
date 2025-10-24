@@ -58,13 +58,13 @@ whitespace-format:
 			--normalize-whitespace-only-files empty \
 			--exclude $(NON_TEXT_FILES_REGEX)  .
 
-black-check:
+ruff-format-check:
 	# Check code formatting.
-	black --diff --check --color --exclude "_pb2.py|_rpc.py|_twirp.py" $(SOURCE_FILES)
+	ruff format --check --diff $(SOURCE_FILES)
 
-black-format:
+ruff-format:
 	# Reformat code.
-	black --exclude "_pb2.py|_rpc.py|_twirp.py" $(SOURCE_FILES)
+	ruff format $(SOURCE_FILES)
 
 isort-check:
 	# Check imports.
@@ -98,7 +98,7 @@ mypy:
 	# Check type hints.
 	mypy --config-file "mypy.ini" --exclude ".*_pb2.py$$|.*_rpc.py$$|.*_twirp.py$$" $(SOURCE_FILES)
 
-lint: whitespace-format-check black-check isort-check pydocstyle ruff flake8 pylint mypy
+lint: whitespace-format-check ruff-format-check isort-check pydocstyle ruff flake8 pylint mypy
 
 test:
 	# Run unit tests.

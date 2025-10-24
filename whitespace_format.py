@@ -599,8 +599,7 @@ def reformat_file(file_name: str, parsed_arguments: argparse.Namespace) -> bool:
     if parsed_arguments.check_only:
         if file_changes:
             color_print(
-                f"[RED]✘[RESET_ALL] [BOLD][WHITE]{file_name} "
-                f"[RED]needs to be formatted[RESET_ALL]",
+                f"[RED]✘[RESET_ALL] [BOLD][WHITE]{file_name} [RED]needs to be formatted[RESET_ALL]",
                 parsed_arguments,
             )
             for line_change in file_changes:
@@ -753,7 +752,7 @@ def parse_command_line() -> argparse.Namespace:
         help=(
             "Regular expression that specifies which files to exclude. "
             "The regular expression is evaluated on the path of each file. "
-            "For example, --exclude=\"(\\.jpeg|\\.png)$\" excludes files "
+            "For example, --exclude='(\\.jpeg|\\.png)$' excludes files "
             "with '.jpeg' or '.png' extension. As another example, "
             "--exclude=\"^tmp/\" excludes all files in the 'tmp/' directory and "
             "its subdirectories, however, files in 'data/tmp/' will not be excluded."

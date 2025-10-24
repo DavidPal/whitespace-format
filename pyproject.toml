@@ -54,6 +54,12 @@ select = "D101,D102,D103,D105,D200,D201,D204,D205,D206,D207,D208,D209,D210,D211,
 
 [tool.ruff]
 line-length = 100
+indent-width = 4
+
+[tool.ruff.format]
+line-ending = "lf"
+indent-style = "space"
+quote-style = "double"
 
 [tool.ruff.lint]
 select = ["ALL"]
