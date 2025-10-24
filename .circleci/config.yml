@@ -38,7 +38,7 @@ jobs:
 
       - run:
           name: Check code formatting
-          command: make black-check
+          command: make ruff-format-check
 
       - run:
           name: Check docstrings
