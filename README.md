@@ -7,7 +7,7 @@
 Linter and formatter of whitespace in source code files and text files.
 
 The purpose of this tool is to normalize whitespace in source code files (e.g.,
-Python, Java, C/C++, JavaScript, Rust, Go, Ruby, etc.) and text files (HTML,
+Python, Java, C/C++, JavaScript, Rust, Go, Ruby, SQL) and text files (HTML,
 CSS, JSON, YAML, CSV, TSV MarkDown, LaTeX) before checking them into a version
 control system.
 
@@ -48,7 +48,7 @@ The command above formats `foo.txt` and all files contained in `my_project/`
 directory and its subdirectories. Files that contain `.git/` or `.idea/` in
 their (relative) path are excluded. For example, files in `my_project/.git/`
 and files in `my_project/.idea/` are excluded. Likewise, files ending with
-`*.pyc` are excluded.
+`.pyc` are excluded.
 
 If you want to know only if any files need to be formatted and what changes
 need to be made, add `--check-only` option:
@@ -162,8 +162,8 @@ An opinionated combination of options is:
 --normalize-empty-files=empty --normalize-whitespace-only-files=empty
 ```
 This combination should work well for common programming languages (e.g.,
-Python, Java, C/C++, JavaScript, Rust, Go, Ruby) and common text file formats
-(e.g., HTML, CSS, CSV, TSV, JSON, YAML, MarkDown, Makefile, LaTeX).
+Python, Java, C/C++, JavaScript, Rust, Go, Ruby, SQL) and common text file
+formats (e.g., HTML, CSS, CSV, TSV, JSON, YAML, MarkDown, Makefile, LaTeX).
 
 ### Special characters
 

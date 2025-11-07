@@ -319,7 +319,7 @@ def find_most_common_new_line_marker(text: str) -> str:
     """Returns the most common new line marker in a string.
 
     If there are ties, prefer Linux '\n' to Windows '\r\n' to Mac '\r'.
-    If there are no new line markers, return Linux.
+    If there are no new line markers, return Linux '\n'.
 
     Args:
         text: A string.
