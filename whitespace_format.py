@@ -709,9 +709,9 @@ def find_files_to_process(
     """
     return [
         expanded_file_name
-        for file_name in file_or_directory_paths
+        for file_or_directory_path in file_or_directory_paths
         for expanded_file_name in find_all_files_recursively(
-            file_name,
+            file_or_directory_path,
             parsed_arguments.follow_symlinks,
         )
         if not re.search(parsed_arguments.exclude, expanded_file_name)
