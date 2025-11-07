@@ -259,6 +259,12 @@ def string_to_hex(text: str) -> str:
     """Converts a string into a human-readable hexadecimal representation.
 
     This function is for debugging purposes only. It is used only during development.
+
+    Args:
+        text: A string to convert to a hexadecimal representation.
+
+    Returns:
+        String where each character is replaced by a hexadecimal number.
     """
     return ":".join(f"{ord(character):02x}" for character in text)
 
@@ -274,6 +280,16 @@ def read_file_content(file_name: str, encoding: str) -> str:
     """Reads content of a file.
 
     New line markers are preserved in their original form.
+
+    If the file cannot be opened, read or decoded, the function kills the script.
+
+    Args:
+        file_name: The name of the file to read.
+        encoding: The character encoding to use.
+
+    Returns:
+        Content of the file as a string. New line markers are preserved
+        in their original form.
     """
     try:
         with open(file_name, "r", encoding=encoding, newline="") as file:
@@ -358,7 +374,7 @@ def format_file_content(
 
     # Handle an empty file.
     if not file_content:
-        if parsed_arguments.normalize_empty_files in ["ignore", "empty"]:
+        if parsed_arguments.normalize_empty_files in {"ignore", "empty"}:
             return "", []
         if parsed_arguments.normalize_empty_files == "one-line":
             return output_new_line_marker, [Change(ChangeType.REPLACED_EMPTY_FILE_WITH_ONE_LINE, 1)]
@@ -410,7 +426,7 @@ def format_file_content(
     output = ""
 
     while i < len(file_content):
-        if file_content[i] in [CARRIAGE_RETURN, LINE_FEED]:
+        if file_content[i] in {CARRIAGE_RETURN, LINE_FEED}:
             # Parse the new line marker
             new_line_marker = ""
             if file_content[i] == LINE_FEED:
@@ -508,10 +524,8 @@ def format_file_content(
                 # Remove the tab character.
                 changes.append(Change(ChangeType.REMOVED_TAB, line_number))
 
-        elif file_content[i] in [VERTICAL_TAB, FORM_FEED]:
-            if parsed_arguments.normalize_non_standard_whitespace == "ignore":
-                output += file_content[i]
-            elif parsed_arguments.normalize_non_standard_whitespace == "replace":
+        elif file_content[i] in {VERTICAL_TAB, FORM_FEED}:
+            if parsed_arguments.normalize_non_standard_whitespace == "replace":
                 output += SPACE
                 changes.append(
                     Change(
@@ -530,8 +544,8 @@ def format_file_content(
                         "",
                     ),
                 )
-            else:
-                raise ValueError("Unknown value of normalize_non_standard_whitespace")
+            else:  # parsed_arguments.normalize_non_standard_whitespace == "remove"
+                output += file_content[i]
         else:
             output += file_content[i]
             last_non_whitespace = len(output)
@@ -659,35 +673,45 @@ def reformat_files(file_names: List[str], parsed_arguments: argparse.Namespace) 
         color_print(message, parsed_arguments)
 
 
-def find_all_files_recursively(file_name: str, follow_symlinks: bool) -> List[str]:
+def find_all_files_recursively(file_or_directory_path: str, follow_symlinks: bool) -> List[str]:
     """Finds files in directories recursively."""
-    if (not follow_symlinks) and pathlib.Path(file_name).is_symlink():
+    if (not follow_symlinks) and pathlib.Path(file_or_directory_path).is_symlink():
         return []
 
-    if pathlib.Path(file_name).is_file():
-        return [file_name]
+    if pathlib.Path(file_or_directory_path).is_file():
+        return [file_or_directory_path]
 
-    if pathlib.Path(file_name).is_dir():
+    if pathlib.Path(file_or_directory_path).is_dir():
         return [
             expanded_file_name
-            for inner_file in sorted(pathlib.Path(file_name).iterdir())
+            for inner_file in sorted(pathlib.Path(file_or_directory_path).iterdir())
             for expanded_file_name in find_all_files_recursively(str(inner_file), follow_symlinks)
         ]
 
     return []
 
 
-def find_files_to_process(file_names: List[str], parsed_arguments: argparse.Namespace) -> List[str]:
+def find_files_to_process(
+    file_or_directory_paths: List[str],
+    parsed_arguments: argparse.Namespace,
+) -> List[str]:
     """Finds files that need to be processed.
 
-    The function excludes files that match the regular expression specified
-    by the "--exclude" command line option.
+    Args:
+        file_or_directory_paths: List of paths of files or directories.
+        parsed_arguments: Parsed command line arguments.
+            The function excludes file paths that match the regular expression specified
+            by the "--exclude" command line option. The symbolic links are followed
+            only if "--follow-symlinks" is set.
+
+    Returns:
+        List of paths of files that need to be processed.
     """
     return [
         expanded_file_name
-        for file_name in file_names
+        for file_or_directory_path in file_or_directory_paths
         for expanded_file_name in find_all_files_recursively(
-            file_name,
+            file_or_directory_path,
             parsed_arguments.follow_symlinks,
         )
         if not re.search(parsed_arguments.exclude, expanded_file_name)
@@ -792,7 +816,7 @@ def parse_command_line() -> argparse.Namespace:
         help=(
             "Make new line markers consistent in each file "
             "by replacing '\\r\\n', '\\n', and `\\r` with a consistent new line marker. "
-            "The new line marker in the output is specified by `--new-line-marker` option. "
+            "The new line marker in the output is specified by --new-line-marker option. "
             "This option works even if the input contains an arbitrary mix of new line markers "
             "'\\r\\n', '\\n', '\\r' even within the same input file."
         ),
@@ -902,8 +926,14 @@ def parse_command_line() -> argparse.Namespace:
         choices=["ignore", "remove", "replace"],
     )
     parser.add_argument(
-        "input_files",
-        help="List of input files",
+        "input_files_or_directories",
+        help=(
+            "List of input files or directories. "
+            "Directories are recursively searched for files. "
+            "Files can be excluded with --exclude option. "
+            "By default symbolic links are ignored. "
+            "Use --follow-symlinks option to enable them."
+        ),
         nargs="+",
         default=[],
         type=str,
@@ -924,7 +954,10 @@ def parse_command_line() -> argparse.Namespace:
 def main() -> None:
     """Formats white space in text files."""
     parsed_arguments = parse_command_line()
-    file_names = find_files_to_process(parsed_arguments.input_files, parsed_arguments)
+    file_names = find_files_to_process(
+        parsed_arguments.input_files_or_directories,
+        parsed_arguments,
+    )
     reformat_files(file_names, parsed_arguments)
 
 

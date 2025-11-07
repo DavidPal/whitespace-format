@@ -28,7 +28,7 @@ pydocstyle = {extras = ["toml"], version = "^6.3.0"}
 pytest = "8.3.5"
 pylint = "^2.17.7"
 pylint-quotes = "^0.2.3"
-ruff = "^0.14.1"
+ruff = "^0.14.4"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -60,9 +60,12 @@ indent-style = "space"
 quote-style = "double"
 
 [tool.ruff.lint]
+preview = true
+explicit-preview-rules = false
 select = ["ALL"]
 ignore = [
     "C901",
+    "CPY001",
     "D301",
     "E501",
     "EM101",
@@ -71,6 +74,8 @@ ignore = [
     "FA100",
     "FBT001",
     "FBT003",
+    "FURB103",
+    "PLR0904",
     "PLR0912",
     "PLR0915",
     "PLR2004",
@@ -100,6 +105,10 @@ max-returns = 30
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+[tool.ruff.lint.pydoclint]
+# Skip docstrings which fit on a single line.
+ignore-one-line-docstrings = true
 
 [tool.mypy]
 python_version = "3.8"
