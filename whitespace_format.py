@@ -930,9 +930,9 @@ def parse_command_line() -> argparse.Namespace:
         help=(
             "List of input files or directories. "
             "Directories are recursively searched for files. "
-            "Files can be excluded --exclude option. "
+            "Files can be excluded with --exclude option. "
             "By default symbolic links are ignored. "
-            "They can enabled with --follow-symlinks option."
+            "Use --follow-symlinks option to enable them."
         ),
         nargs="+",
         default=[],
