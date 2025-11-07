@@ -86,7 +86,7 @@ pylint:
 
 mypy:
 	# Check type hints.
-	mypy --config-file "mypy.ini" --exclude ".*_pb2.py$$|.*_rpc.py$$|.*_twirp.py$$" $(SOURCE_FILES)
+	mypy --exclude ".*_pb2.py$$|.*_rpc.py$$|.*_twirp.py$$" $(SOURCE_FILES)
 
 lint: whitespace-format-check ruff-format-check pydocstyle ruff flake8 pylint mypy
 
