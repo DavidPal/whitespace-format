@@ -151,15 +151,21 @@ Depending on the mode, an empty file or a whitespace-only file will be either
 ignored, replaced by a zero-byte file, or replaced by a file consisting of the
 single new line marker.
 
+Note that `--normalize-empty-files=ignore` and `--normalize-empty-files=empty`
+are equivalent.
+
 If `--normalize-whitespace-only-files` is set to `empty`,
 `--normalize-empty-files setting` set to `empty` as well. In other words,
 combination `--normalize-whitespace-only-files=empty` and
 `--normalize-empty-files=one-line` is not allowed, since it would lead to
 behavior that is not idempotent.
 
-An opinionated combination of options is:
-```
---normalize-empty-files=empty --normalize-whitespace-only-files=empty
+An opinionated combination for these two options is:
+```shell
+whitespace-format \
+    ...
+    --normalize-empty-files=empty \
+    --normalize-whitespace-only-files=empty
 ```
 This combination should work well for common programming languages (e.g.,
 Python, Java, C/C++, JavaScript, Rust, Go, Ruby, SQL) and common text file
