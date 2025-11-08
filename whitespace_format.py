@@ -144,7 +144,7 @@ class Change:
         if self.change_type == ChangeType.ADDED_NEW_LINE_MARKER_TO_END_OF_FILE:
             if check_only:
                 return "New line marker needs to be added at the end of the file."
-            return "New line marker was added to the end of the file."
+            return "New line marker was added at the end of the file."
 
         if self.change_type == ChangeType.REMOVED_NEW_LINE_MARKER_FROM_END_OF_FILE:
             if check_only:
