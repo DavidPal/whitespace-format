@@ -102,6 +102,7 @@ order-by-type = true
 
 [tool.ruff.lint.pylint]
 max-returns = 30
+max-locals = 20
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

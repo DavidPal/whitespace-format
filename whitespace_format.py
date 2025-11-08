@@ -102,8 +102,8 @@ class ChangeType(Enum):
     # Whitespace at the end of a line was removed.
     REMOVED_TRAILING_WHITESPACE = 4
 
-    # Empty line(s) at the end of file were removed.
-    REMOVED_LEADING_EMPTY_LINE = 5
+    # Empty line(s) at the beginning of file were removed.
+    REMOVED_LEADING_EMPTY_LINES = 5
 
     # Empty line(s) at the end of file were removed.
     REMOVED_TRAILING_EMPTY_LINES = 6
@@ -167,10 +167,10 @@ class Change:
                 return "Trailing whitespace needs to be removed."
             return "Trailing whitespace was removed."
 
-        if self.change_type == ChangeType.REMOVED_LEADING_EMPTY_LINE:
+        if self.change_type == ChangeType.REMOVED_LEADING_EMPTY_LINES:
             if check_only:
-                return "Empty line at the beginning of the file needs to be removed."
-            return "Empty line at the beginning of the file was removed."
+                return "Empty lines at the beginning of the file need to be removed."
+            return "Empty lines at the beginning of the file were removed."
 
         if self.change_type == ChangeType.REMOVED_TRAILING_EMPTY_LINES:
             if check_only:
@@ -404,6 +404,9 @@ def format_file_content(
     # Number of non-empty lines in the output buffer.
     number_of_non_empty_lines = 0
 
+    # Number of leading empty lines removed.
+    number_of_empty_leading_lines_removed = 0
+
     # Index into the output buffer pointing just after the end of the last line,
     # including the last end of line marker.
     last_end_of_line_including_eol_marker = 0
@@ -466,7 +469,7 @@ def format_file_content(
                 and number_of_non_empty_lines == 0
             ):
                 # Remove empty leading line.
-                changes.append(Change(ChangeType.REMOVED_LEADING_EMPTY_LINE, line_number))
+                number_of_empty_leading_lines_removed += 1
             else:
                 # Index into the output buffer pointing just after the end of the last line,
                 # excluding the last end of line marker.
@@ -561,6 +564,10 @@ def format_file_content(
     ):
         changes.append(Change(ChangeType.REMOVED_TRAILING_WHITESPACE, line_number))
         output = output[:last_non_whitespace]
+
+    # If there were any leading empty lines removed, report it.
+    if number_of_empty_leading_lines_removed:
+        changes.append(Change(ChangeType.REMOVED_LEADING_EMPTY_LINES, 1))
 
     # Remove trailing empty lines.
     if (
