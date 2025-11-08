@@ -129,8 +129,8 @@ whitespace-format \
     foo.txt  my_project/
 ```
 This combination should work well for common programming languages (e.g.,
-Python, Java, C/C++, JavaScript, Rust, Go, Ruby) and common text file formats
-(e.g., HTML, CSS, CSV, TSV, JSON, YAML, MarkDown, Makefile, LaTeX).
+Python, Java, C/C++, JavaScript, Rust, Go, Ruby, SQL) and common text file
+formats (e.g., HTML, CSS, CSV, TSV, JSON, YAML, MarkDown, Makefile, LaTeX).
 
 ### Empty files
 
