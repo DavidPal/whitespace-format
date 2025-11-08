@@ -743,9 +743,7 @@ class TestWhitespaceFormat(unittest.TestCase):
             (
                 "hello\r\n\rworld\r\n\n\n\n\n\n",
                 [
-                    Change(ChangeType.REMOVED_LEADING_EMPTY_LINE, 1),
-                    Change(ChangeType.REMOVED_LEADING_EMPTY_LINE, 2),
-                    Change(ChangeType.REMOVED_LEADING_EMPTY_LINE, 3),
+                    Change(ChangeType.REMOVED_LEADING_EMPTY_LINES, 1),
                 ],
             ),
             whitespace_format.format_file_content(
@@ -771,7 +769,7 @@ class TestWhitespaceFormat(unittest.TestCase):
         self.assertEqual(
             (
                 "   \r\n   \nhello\r\n\rworld\r\n\n\n\n\n\n",
-                [Change(ChangeType.REMOVED_LEADING_EMPTY_LINE, 1)],
+                [Change(ChangeType.REMOVED_LEADING_EMPTY_LINES, 1)],
             ),
             whitespace_format.format_file_content(
                 "\r   \r\n   \nhello\r\n\rworld\r\n\n\n\n\n\n",
@@ -799,11 +797,9 @@ class TestWhitespaceFormat(unittest.TestCase):
             (
                 "hello\r\n\rworld\r\n\n\n\n\n\n",
                 [
-                    Change(ChangeType.REMOVED_LEADING_EMPTY_LINE, 1),
                     Change(ChangeType.REMOVED_TRAILING_WHITESPACE, 2),
-                    Change(ChangeType.REMOVED_LEADING_EMPTY_LINE, 2),
                     Change(ChangeType.REMOVED_TRAILING_WHITESPACE, 3),
-                    Change(ChangeType.REMOVED_LEADING_EMPTY_LINE, 3),
+                    Change(ChangeType.REMOVED_LEADING_EMPTY_LINES, 1),
                 ],
             ),
             whitespace_format.format_file_content(
@@ -1263,10 +1259,8 @@ class TestWhitespaceFormat(unittest.TestCase):
             (
                 " hello\n world\n",
                 [
-                    Change(ChangeType.REMOVED_LEADING_EMPTY_LINE, 1),
                     Change(ChangeType.REPLACED_NONSTANDARD_WHITESPACE, 2, "\v", " "),
                     Change(ChangeType.REMOVED_TRAILING_WHITESPACE, 2),
-                    Change(ChangeType.REMOVED_LEADING_EMPTY_LINE, 2),
                     Change(ChangeType.REPLACED_NONSTANDARD_WHITESPACE, 3, "\v", " "),
                     Change(ChangeType.REMOVED_TRAILING_WHITESPACE, 3),
                     Change(ChangeType.REPLACED_NEW_LINE_MARKER, 3, "\r\n", "\n"),
@@ -1274,6 +1268,7 @@ class TestWhitespaceFormat(unittest.TestCase):
                     Change(ChangeType.REMOVED_TRAILING_WHITESPACE, 4),
                     Change(ChangeType.REPLACED_NEW_LINE_MARKER, 5, "\r\n", "\n"),
                     Change(ChangeType.REPLACED_NEW_LINE_MARKER, 6, "\r", "\n"),
+                    Change(ChangeType.REMOVED_LEADING_EMPTY_LINES, 1),
                     Change(ChangeType.REMOVED_TRAILING_EMPTY_LINES, 5),
                 ],
             ),
