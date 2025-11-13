@@ -22,7 +22,7 @@ from enum import Enum
 from typing import List
 from typing import Tuple
 
-VERSION = "0.0.14"
+VERSION = "0.0.15"
 
 # Regular expression that does NOT match any string.
 UNMATCHABLE_REGEX = "$."
