@@ -109,7 +109,8 @@ git push origin X.Y.Z
 ```
 where `X.Y.Z` is the version in `pyproject.toml` file.
 
-The build the package and push by the package to [pypi](https://pypi.org/) with commands:
+Then, build the package and push it to [pypi](https://pypi.org/) with the
+following commands:
 ```shell
 make clean
 make build-package
