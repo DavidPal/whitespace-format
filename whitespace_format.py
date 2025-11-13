@@ -758,7 +758,7 @@ def parse_command_line() -> argparse.Namespace:
     )
     group1.add_argument(
         "--quiet",
-        help="Do not print any messages, except for errors when reading or writing files.",
+        help="Do not print any messages, except for fatal errors.",
         required=False,
         action="store_true",
         default=False,

@@ -82,9 +82,9 @@ For example, `--exclude="(\.jpeg|\.png)$"` excludes files with `.jpeg` or `.png`
 extension. As another example, `--exclude="^tmp/"` excludes all files in the
 top-level `tmp/` directory and its subdirectories, however, files in `data/tmp/`
 will not be excluded.
+* `--color` -- Print messages in color.
 * `--verbose` -- Print more messages than normally.
-* `--quiet` -- Do not print any messages, except for errors when reading or
-writing files.
+* `--quiet` -- Do not print any messages, except for fatal errors.
 * `--encoding` -- Text encoding for both reading and writing files. Default
 encoding is `utf-8`. The list of supported encodings can be found at
 https://docs.python.org/3/library/codecs.html#standard-encodings
