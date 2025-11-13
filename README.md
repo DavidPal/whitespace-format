@@ -8,7 +8,8 @@ Linter and formatter of whitespace in source code files and text files.
 
 The purpose of this tool is to normalize whitespace in source code files (e.g.,
 Python, Java, C/C++, JavaScript, Rust, Go, Ruby, SQL, Bash) and text files
-(HTML, CSS, JSON, YAML, CSV, TSV MarkDown, LaTeX) before checking them into a
+(HTML, CSS, JSON, YAML, CSV, TSV MarkDown, LaTeX). This is useful when sharing
+the code with other people; for example, before the files are checked into a
 version control system.
 
 The features include:
@@ -64,7 +65,7 @@ If any of the files needs to be formatted, the command exits with a non-zero
 exit code. The command prints list of any changes that need to be made to each
 file. The command can be used as a validation step before checking the source
 files into a version control system (e.g. as a pre-commit or a pre-submit
-check), or as a step in the test or in the build process.
+check), or as a test running before the code is merged into the main branch.
 
 ### Options
 
@@ -106,10 +107,10 @@ option works even if the input contains an arbitrary mix of new line markers
 * `--add-new-line-marker-at-end-of-file` -- Add new line marker at the end of
 each file if it is missing.
 * `--remove-new-line-marker-from-end-of-file` -- Remove all new line marker(s)
-from the end of each file.  Due to idempotence, all empty lines at the end of
-the file are removed.  In other words,
+from the end of each file. Due to idempotence, all empty lines at the end of
+the file are removed. In other words,
 `--remove-new-line-marker-from-end-of-file` implies
-`--remove-trailing-empty-lines` option.  The option
+`--remove-trailing-empty-lines` option. The option
 `--remove-new-line-marker-from-end-of-file` conflicts with
 `--add-new-line-marker-at-end-of-file` option.
 * `--remove-trailing-whitespace` -- Remove whitespace at the end of each line.
@@ -207,7 +208,7 @@ must be explicitly excluded using the `--exclude` option.
 However, without `--check-only`, there is no simple universal recommendation
 for all text files. First, in Makefiles and TSV files, tabs are required.
 Second, even in programming languages and text data formats where tabs can be
-avoided (e.g.  Python, Java, C/C++), their replacement depends on the context.
+avoided (e.g. Python, Java, C/C++), their replacement depends on the context.
 For example, in Python, Java and C/C++, tabs in string literals can be replaced
 by the string `\t`. However, tabs outside of string literals cannot be replaced
 by the string `\t` and instead spaces must be used. While it is possible to
