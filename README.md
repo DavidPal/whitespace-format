@@ -7,9 +7,10 @@
 Linter and formatter of whitespace in source code files and text files.
 
 The purpose of this tool is to normalize whitespace in source code files (e.g.,
-Python, Java, C/C++, JavaScript, Rust, Go, Ruby, SQL) and text files (HTML,
-CSS, JSON, YAML, CSV, TSV MarkDown, LaTeX) before checking them into a version
-control system.
+Python, Java, C/C++, JavaScript, Rust, Go, Ruby, SQL, Bash) and text files
+(HTML, CSS, JSON, YAML, CSV, TSV MarkDown, LaTeX). This is useful when sharing
+the code with other people; for example, before the files are checked into a
+version control system.
 
 The features include:
 
@@ -64,7 +65,7 @@ If any of the files needs to be formatted, the command exits with a non-zero
 exit code. The command prints list of any changes that need to be made to each
 file. The command can be used as a validation step before checking the source
 files into a version control system (e.g. as a pre-commit or a pre-submit
-check), or as a step in the test or in the build process.
+check), or as a test running before the code is merged into the main branch.
 
 ### Options
 
@@ -106,16 +107,19 @@ option works even if the input contains an arbitrary mix of new line markers
 * `--add-new-line-marker-at-end-of-file` -- Add new line marker at the end of
 each file if it is missing.
 * `--remove-new-line-marker-from-end-of-file` -- Remove all new line marker(s)
-from the end of each file. This option cannot be used in combination with
-`--add-new-line-marker-at-end-of-file`. Due to idempotence, all empty lines at
-the end of the file are removed.  In other words, this option implies
-`--remove-trailing-empty-lines` option.
+from the end of each file. Due to idempotence, all empty lines at the end of
+the file are removed. In other words,
+`--remove-new-line-marker-from-end-of-file` implies
+`--remove-trailing-empty-lines` option. The option
+`--remove-new-line-marker-from-end-of-file` conflicts with
+`--add-new-line-marker-at-end-of-file` option.
 * `--remove-trailing-whitespace` -- Remove whitespace at the end of each line.
 * `--remove-leading-empty-lines` -- Remove empty lines at the beginning of each
 file.
 * `--remove-trailing-empty-lines` -- Remove empty lines at the end of each
-file. If `--remove-new-line-marker-from-end-of-file` is used, this option is
-used automatically.
+file. If `--remove-new-line-marker-from-end-of-file` is used,
+`--remove-trailing-empty-lines` is used as well; otherwise the behavior
+would not be idempotent.
 
 An opinionated combination of options is:
 ```shell
@@ -129,8 +133,9 @@ whitespace-format \
     foo.txt  my_project/
 ```
 This combination should work well for common programming languages (e.g.,
-Python, Java, C/C++, JavaScript, Rust, Go, Ruby, SQL) and common text file
-formats (e.g., HTML, CSS, CSV, TSV, JSON, YAML, MarkDown, Makefile, LaTeX).
+Python, Java, C/C++, JavaScript, Rust, Go, Ruby, SQL, Bash) and common text
+file formats (e.g., HTML, CSS, CSV, TSV, JSON, YAML, MarkDown, Makefile,
+LaTeX).
 
 ### Empty files
 
@@ -151,11 +156,11 @@ Depending on the mode, an empty file or a whitespace-only file will be either
 ignored, replaced by a zero-byte file, or replaced by a file consisting of the
 single new line marker.
 
-Note that `--normalize-empty-files=ignore` and `--normalize-empty-files=empty`
-are equivalent.
+The options `--normalize-empty-files=ignore` and `--normalize-empty-files=empty`
+are identical.
 
 If `--normalize-whitespace-only-files` is set to `empty`,
-`--normalize-empty-files setting` set to `empty` as well. In other words,
+`--normalize-empty-files` is set to `empty` as well. In other words,
 combination `--normalize-whitespace-only-files=empty` and
 `--normalize-empty-files=one-line` is not allowed, since it would lead to
 behavior that is not idempotent.
@@ -168,8 +173,9 @@ whitespace-format \
     --normalize-whitespace-only-files=empty
 ```
 This combination should work well for common programming languages (e.g.,
-Python, Java, C/C++, JavaScript, Rust, Go, Ruby, SQL) and common text file
-formats (e.g., HTML, CSS, CSV, TSV, JSON, YAML, MarkDown, Makefile, LaTeX).
+Python, Java, C/C++, JavaScript, Rust, Go, Ruby, SQL, Bash) and common text
+file formats (e.g., HTML, CSS, CSV, TSV, JSON, YAML, MarkDown, Makefile,
+LaTeX).
 
 ### Special characters
 
@@ -202,7 +208,7 @@ must be explicitly excluded using the `--exclude` option.
 However, without `--check-only`, there is no simple universal recommendation
 for all text files. First, in Makefiles and TSV files, tabs are required.
 Second, even in programming languages and text data formats where tabs can be
-avoided (e.g.  Python, Java, C/C++), their replacement depends on the context.
+avoided (e.g. Python, Java, C/C++), their replacement depends on the context.
 For example, in Python, Java and C/C++, tabs in string literals can be replaced
 by the string `\t`. However, tabs outside of string literals cannot be replaced
 by the string `\t` and instead spaces must be used. While it is possible to

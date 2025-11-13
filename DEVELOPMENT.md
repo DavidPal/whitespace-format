@@ -108,3 +108,12 @@ git tag
 git push origin X.Y.Z
 ```
 where `X.Y.Z` is the version in `pyproject.toml` file.
+
+Then, build the package and push it to [pypi](https://pypi.org/) with the
+following commands:
+```shell
+make clean
+make build-package
+make publish-to-test-pypi
+make publish-to-pypi
+```

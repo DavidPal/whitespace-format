@@ -845,9 +845,11 @@ def parse_command_line() -> argparse.Namespace:
         "--remove-new-line-marker-from-end-of-file",
         help=(
             "Remove all new line marker(s) from the end of each file. "
-            "This option conflicts with --add-new-line-marker-at-end-of-file. "
             "Due to idempotence, all empty lines at the end of the file are removed. "
-            "In other words, this option implies --remove-trailing-empty-lines option."
+            "In other words, --remove-new-line-marker-from-end-of-file implies "
+            "--remove-trailing-empty-lines option. "
+            "The option --remove-new-line-marker-from-end-of-file conflicts "
+            "with --add-new-line-marker-at-end-of-file option."
         ),
         required=False,
         default=False,
@@ -872,7 +874,9 @@ def parse_command_line() -> argparse.Namespace:
         "--remove-trailing-empty-lines",
         help=(
             "Remove empty lines at the end of each file. "
-            "If --remove-new-line-marker-from-end-of-file is used, this option is used automatically."
+            "If --remove-new-line-marker-from-end-of-file is used, "
+            "--remove-trailing-empty-lines is used as well; "
+            "otherwise the behavior would not be idempotent."
         ),
         required=False,
         default=False,
