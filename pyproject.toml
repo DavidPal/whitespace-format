@@ -1,9 +1,9 @@
-[tool.poetry]
+[project]
 name = "whitespace-format"
 version = "0.0.15"
 description = "Linter and formatter of whitespace in source code files and text files"
 license = "MIT"
-authors = ["David Pal <davidko.pal@gmail.com>"]
+authors = [{ name = "David Pal", email = "davidko.pal@gmail.com" }]
 readme = "README.md"
 homepage = "https://github.com/DavidPal/whitespace-format"
 repository = "https://github.com/DavidPal/whitespace-format"
@@ -12,27 +12,23 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
 ]
+requires-python = ">=3.8.0"
 
-[tool.poetry.scripts]
+[dependency-groups]
+dev = [
+    "coverage~=7.2.4",
+    "flake8~=5.0.4",
+    "flake8-absolute-import~=1.0.0.2",
+    "mypy~=1.13.0",
+    "pydocstyle[toml]~=6.3.0",
+    "pylint~=2.17.7",
+    "pylint-quotes~=0.2.3",
+    "pytest~=8.3.5",
+    "ruff~=0.14.7",
+]
+
+[project.scripts]
 whitespace-format = "whitespace_format:main"
-
-[tool.poetry.dependencies]
-python = "^3.8.0"
-
-[tool.poetry.dev-dependencies]
-coverage = "^7.2.4"
-flake8 = "^5.0.4"
-flake8-absolute-import = "^1.0.0.2"
-mypy = "^1.13.0"
-pydocstyle = {extras = ["toml"], version = "^6.3.0"}
-pytest = "8.3.5"
-pylint = "^2.17.7"
-pylint-quotes = "^0.2.3"
-ruff = "^0.14.4"
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
 
 [tool.black]
 line-length = 100
