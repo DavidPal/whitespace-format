@@ -88,7 +88,7 @@ mypy:
 	# Check type hints.
 	mypy --exclude ".*_pb2.py$$|.*_rpc.py$$|.*_twirp.py$$" $(SOURCE_FILES)
 
-lint: whitespace-format-check ruff-format-check pydocstyle ruff flake8 pylint mypy
+lint: check-lock-file whitespace-format-check ruff-format-check pydocstyle ruff flake8 pylint mypy
 
 test:
 	# Run unit tests.

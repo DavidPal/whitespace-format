@@ -16,9 +16,6 @@ dist/
 *.swp
 *.swo
 
-# Pyenv files
-.python-version
-
 # Mypy files
 .mypy_cache/
 
