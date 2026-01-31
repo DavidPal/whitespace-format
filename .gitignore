@@ -5,6 +5,7 @@ __pycache__/
 
 # Python package
 dist/
+*.egg-info/
 
 # PyCharm files
 .idea/
