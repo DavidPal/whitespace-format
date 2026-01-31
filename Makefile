@@ -1,8 +1,7 @@
-PYTHON_ENVIRONMENT = "whitespace_format"
-PYTHON_VERSION = "3.8.0"
+PYTHON_VERSION = "3.8.2"
 SOURCE_FILES = *.py
 
-NON_TEXT_FILES_REGEX = "\.pyc$$|\.git/|\.idea/|test_data/|^\.coverage$$|^\.mypy_cache/|^.pytest_cache/|^.ruff_cache/"
+NON_TEXT_FILES_REGEX = "\.pyc$$|\.git/|\.idea/|^\.venv/|^test_data/|^\.coverage$$|^\.mypy_cache/|^.pytest_cache/|^.ruff_cache/"
 
 .PHONY: \
 	whitespace-format-check \
@@ -25,11 +24,12 @@ NON_TEXT_FILES_REGEX = "\.pyc$$|\.git/|\.idea/|test_data/|^\.coverage$$|^\.mypy_
 	install-dependencies \
 	build-package \
 	publish-to-pypi \
-	publish-to-test-pypi
+	publish-to-test-pypi \
+	check-lock-file \
 
 whitespace-format-check:
 	# Check whitespace formatting.
-	whitespace-format \
+	python -m whitespace_format \
 			--check-only \
 			--color \
 			--verbose \
@@ -44,7 +44,7 @@ whitespace-format-check:
 
 whitespace-format:
 	# Reformat code.
-	whitespace-format \
+	python -m whitespace_format \
 			--color \
 			--verbose \
 			--new-line-marker linux \
@@ -88,7 +88,7 @@ mypy:
 	# Check type hints.
 	mypy --exclude ".*_pb2.py$$|.*_rpc.py$$|.*_twirp.py$$" $(SOURCE_FILES)
 
-lint: whitespace-format-check ruff-format-check pydocstyle ruff flake8 pylint mypy
+lint: check-lock-file whitespace-format-check ruff-format-check pydocstyle ruff flake8 pylint mypy
 
 test:
 	# Run unit tests.
@@ -109,37 +109,32 @@ clean:
 
 install-python:
 	# Install the correct version of python.
-	pyenv install $(PYTHON_VERSION)
+	uv python install --managed-python $(PYTHON_VERSION)
 
 create-environment:
 	# Create virtual environment.
-	pyenv virtualenv $(PYTHON_VERSION) $(PYTHON_ENVIRONMENT)
-	pyenv local $(PYTHON_ENVIRONMENT)
-	pip install --upgrade pip
+	uv venv --clear --managed-python --python $(PYTHON_VERSION)
 
 delete-environment:
 	# Delete virtual environment.
-	pyenv virtualenv-delete $(PYTHON_ENVIRONMENT)
-	pyenv local --unset
-	rm -rf .python-version
+	rm -rf .venv/
 
 install-dependencies:
 	# Install all dependencies.
-	poetry install --verbose
-	pyenv rehash
+	uv sync --frozen
 
 build-package:
 	# Build a wheel package.
-	poetry build
+	uv build --clear
 
 publish-to-pypi:
 	# Publish package to PyPI.
-	poetry publish
+	uv publish --help
 
 publish-to-test-pypi:
 	# Publish package to Test-PyPI.
-	poetry publish -r test-pypi
+	uv publish --help
 
-poetry-check:
-	# Check if poetry.lock is consistent with pyproject.toml file.
-	poetry check --lock
+check-lock-file:
+	# Check if uv.lock is consistent with pyproject.toml file.
+	uv lock --check

@@ -68,20 +68,20 @@ class TestWhitespaceFormat(unittest.TestCase):
     def test_find_all_files_recursively(self) -> None:
         """Tests find_all_files_recursively() function."""
         self.assertEqual(
-            [".circleci/config.yml"],
-            whitespace_format.find_all_files_recursively(".circleci", False),
+            [".github/workflows/build.yaml"],
+            whitespace_format.find_all_files_recursively(".github", False),
         )
         self.assertEqual(
-            [".circleci/config.yml"],
-            whitespace_format.find_all_files_recursively(".circleci/", True),
+            [".github/workflows/build.yaml"],
+            whitespace_format.find_all_files_recursively(".github/", True),
         )
         self.assertEqual(
             [
-                ".circleci/../test_data/linux-end-of-line-markers.txt",
-                ".circleci/../test_data/mac-end-of-line-markers.txt",
-                ".circleci/../test_data/windows-end-of-line-markers.txt",
+                ".github/../test_data/linux-end-of-line-markers.txt",
+                ".github/../test_data/mac-end-of-line-markers.txt",
+                ".github/../test_data/windows-end-of-line-markers.txt",
             ],
-            whitespace_format.find_all_files_recursively(".circleci/../test_data/", True),
+            whitespace_format.find_all_files_recursively(".github/../test_data/", True),
         )
 
     def test_is_whitespace_only(self) -> None:
