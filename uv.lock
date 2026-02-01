@@ -902,18 +902,6 @@ wheels = [
 ]
 
 [[package]]
-name = "pylint-quotes"
-version = "0.2.3"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "pylint", version = "2.17.7", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/37/3a/a1a3391538e7a45fd6d934943ff12b68d83c3d2fe54a185eee5c75e15470/pylint-quotes-0.2.3.tar.gz", hash = "sha256:2d6bb3fa8a1a85af3af8a0ca875a719ac5bcdb735c45756284699d809c109c95", size = 7662, upload-time = "2021-05-25T12:27:47.85Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/fd/e1/d194a87dd3b44215e086427a3a1dc4366f8c17480811fb7e34bfe791f72c/pylint_quotes-0.2.3-py2.py3-none-any.whl", hash = "sha256:89decd985d3c019314da630f5e3fe0e0df951c2310525fbd6e710bca329c810e", size = 7040, upload-time = "2021-05-25T12:27:46.634Z" },
-]
-
-[[package]]
 name = "pytest"
 version = "8.3.5"
 source = { registry = "https://pypi.org/simple" }
@@ -1121,7 +1109,6 @@ dev = [
     { name = "pydocstyle", extra = ["toml"], marker = "python_full_version < '3.12'" },
     { name = "pylint", version = "2.17.7", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "pylint", version = "4.0.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
-    { name = "pylint-quotes", marker = "python_full_version < '3.12'" },
     { name = "pytest", version = "8.3.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "pytest", version = "9.0.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "ruff" },
@@ -1141,7 +1128,6 @@ dev = [
     { name = "pydocstyle", extras = ["toml"], marker = "python_full_version < '3.12'", specifier = "~=6.3.0" },
     { name = "pylint", marker = "python_full_version < '3.12'", specifier = "~=2.17.7" },
     { name = "pylint", marker = "python_full_version >= '3.12'", specifier = "~=4.0.4" },
-    { name = "pylint-quotes", marker = "python_full_version < '3.12'", specifier = "~=0.2.3" },
     { name = "pytest", marker = "python_full_version < '3.12'", specifier = "~=8.3.5" },
     { name = "pytest", marker = "python_full_version >= '3.12'", specifier = ">=9.0.2" },
     { name = "ruff", specifier = ">=0.14.7" },

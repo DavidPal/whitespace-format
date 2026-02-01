@@ -1,6 +1,4 @@
-PYTHON_VERSION = "3.8.2"
 SOURCE_FILES = *.py
-
 NON_TEXT_FILES_REGEX = "\.pyc$$|\.git/|\.idea/|^\.venv/|^test_data/|^\.coverage$$|^\.mypy_cache/|^.pytest_cache/|^.ruff_cache/"
 
 .PHONY: \
@@ -109,11 +107,11 @@ clean:
 
 install-python:
 	# Install the correct version of python.
-	uv python install --managed-python $(PYTHON_VERSION)
+	uv python install --managed-python
 
 create-environment:
 	# Create virtual environment.
-	uv venv --clear --managed-python --python $(PYTHON_VERSION)
+	uv venv --clear --managed-python
 
 delete-environment:
 	# Delete virtual environment.
