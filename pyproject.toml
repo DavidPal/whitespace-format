@@ -1,6 +1,6 @@
 [project]
 name = "whitespace-format"
-version = "0.0.15"
+version = "0.0.16"
 description = "Linter and formatter of whitespace in source code files and text files"
 authors = [{ name = "David Pal", email = "davidko.pal@gmail.com" }]
 readme = "README.md"

@@ -3,7 +3,7 @@
 """Formatter of whitespace in text files.
 
 Author: David Pal <davidko.pal@gmail.com>
-Date: 2023 - 2025
+Date: 2023 - 2026
 License: MIT License
 
 Usage:
@@ -22,7 +22,7 @@ from enum import Enum
 from typing import List
 from typing import Tuple
 
-VERSION = "0.0.15"
+VERSION = "0.0.16"
 
 # Regular expression that does NOT match any string.
 UNMATCHABLE_REGEX = "$."
@@ -468,14 +468,14 @@ def format_file_content(
                 and parsed_arguments.remove_leading_empty_lines
                 and number_of_non_empty_lines == 0
             ):
-                # Remove empty leading line.
+                # Remove the empty leading line.
                 number_of_empty_leading_lines_removed += 1
             else:
                 # Index into the output buffer pointing just after the end of the last line,
                 # excluding the last end of line marker.
                 last_end_of_line_excluding_eol_marker = len(output)
 
-                # Add new line marker.
+                # Add a new line marker.
                 if (
                     parsed_arguments.normalize_new_line_markers
                     and output_new_line_marker != new_line_marker
