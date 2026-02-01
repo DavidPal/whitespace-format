@@ -301,39 +301,6 @@ wheels = [
 ]
 
 [[package]]
-name = "flake8-absolute-import"
-version = "1.0.0.2"
-source = { registry = "https://pypi.org/simple" }
-resolution-markers = [
-    "python_full_version == '3.9.*'",
-    "python_full_version >= '3.8.1' and python_full_version < '3.9'",
-    "python_full_version < '3.8.1'",
-]
-dependencies = [
-    { name = "flake8", version = "5.0.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/a0/74/09a11a10123d646bdcddb2002383a3c06e02a2e424e4c928bb8988ab7ccd/flake8-absolute-import-1.0.0.2.tar.gz", hash = "sha256:fcb734ac5a9639fa4ffbc6242ae9d6e9d8063f9cd078d6d218597ee883a99d48", size = 8585, upload-time = "2023-10-09T02:52:59.714Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/ce/54/328f839ed7f805d7298560ca194908e96c512c427eefee4ee9494af2ef3f/flake8_absolute_import-1.0.0.2-py3-none-any.whl", hash = "sha256:b72142db999ec5e0ac4f4ac57fb8776a2959d07346c4d3742c446f206d45fcef", size = 5535, upload-time = "2023-10-09T02:52:52.689Z" },
-]
-
-[[package]]
-name = "flake8-absolute-import"
-version = "1.0.0.3"
-source = { registry = "https://pypi.org/simple" }
-resolution-markers = [
-    "python_full_version == '3.11.*'",
-    "python_full_version == '3.10.*'",
-]
-dependencies = [
-    { name = "flake8", version = "5.0.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10' and python_full_version < '3.12'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/00/b3/99967e98c60d82884886c6d0b607d80ccb4a474c69734c60f0533cf1f9d5/flake8_absolute_import-1.0.0.3.tar.gz", hash = "sha256:84b2bb2dbad98227a333ca4ba30357e073117ecd6b068b46ac5906fa9a7ed39e", size = 10900, upload-time = "2025-11-28T02:12:01.518Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/05/97/a2f279f6c749912ad7d254af9c8ec845736352f6d162fb0fc25000d26e22/flake8_absolute_import-1.0.0.3-py3-none-any.whl", hash = "sha256:de62300044f5060f32dbe5cbfa0ad7b345231323c572077997d9c8ae6241b189", size = 5905, upload-time = "2025-11-28T02:12:08.884Z" },
-]
-
-[[package]]
 name = "iniconfig"
 version = "2.1.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1102,8 +1069,6 @@ dev = [
     { name = "coverage", version = "7.13.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "flake8", version = "5.0.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "flake8", version = "7.3.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
-    { name = "flake8-absolute-import", version = "1.0.0.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
-    { name = "flake8-absolute-import", version = "1.0.0.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10' and python_full_version < '3.12'" },
     { name = "mypy", version = "1.13.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "mypy", version = "1.19.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "pydocstyle", extra = ["toml"], marker = "python_full_version < '3.12'" },
@@ -1122,7 +1087,6 @@ dev = [
     { name = "coverage", marker = "python_full_version >= '3.12'", specifier = ">=7.13.2" },
     { name = "flake8", marker = "python_full_version < '3.12'", specifier = "~=5.0.4" },
     { name = "flake8", marker = "python_full_version >= '3.12'", specifier = ">=7.3.0" },
-    { name = "flake8-absolute-import", marker = "python_full_version < '3.12'", specifier = "~=1.0.0.2" },
     { name = "mypy", marker = "python_full_version < '3.12'", specifier = "~=1.13.0" },
     { name = "mypy", marker = "python_full_version >= '3.12'", specifier = ">=1.19.1" },
     { name = "pydocstyle", extras = ["toml"], marker = "python_full_version < '3.12'", specifier = "~=6.3.0" },
@@ -1130,7 +1094,7 @@ dev = [
     { name = "pylint", marker = "python_full_version >= '3.12'", specifier = "~=4.0.4" },
     { name = "pytest", marker = "python_full_version < '3.12'", specifier = "~=8.3.5" },
     { name = "pytest", marker = "python_full_version >= '3.12'", specifier = ">=9.0.2" },
-    { name = "ruff", specifier = ">=0.14.7" },
+    { name = "ruff", specifier = ">=0.14.14" },
 ]
 
 [[package]]

@@ -1,4 +1,4 @@
-"""Unit tests for whitespace_format module."""
+"""Unit tests for the whitespace_format module."""
 
 import argparse
 import re
@@ -12,7 +12,7 @@ from whitespace_format import find_most_common_new_line_marker
 
 
 def extract_version_from_pyproject() -> Optional[str]:
-    """Extracts the version from pyproject.toml file."""
+    """Extracts the version from the pyproject.toml file."""
     with open("pyproject.toml", "r", encoding="utf-8") as file:
         lines = file.readlines()
 
@@ -25,7 +25,7 @@ def extract_version_from_pyproject() -> Optional[str]:
 
 
 class TestWhitespaceFormat(unittest.TestCase):
-    """Unit tests for whitespace_format module."""
+    """Unit tests for the whitespace_format module."""
 
     def test_check_version(self) -> None:
         """Verify that version numbers are the same in all places."""

@@ -46,7 +46,7 @@ limit-inference-results=100
 
 # List of plugins (as comma separated values of python module names) to load,
 # usually to register additional checkers.
-load-plugins=pylint_quotes,pylint.extensions.docstyle,pylint.extensions.docparams,pylint.extensions.no_self_use
+load-plugins=pylint.extensions.docstyle,pylint.extensions.docparams,pylint.extensions.no_self_use
 
 # Pickle collected data for later comparisons.
 persistent=no
@@ -473,18 +473,6 @@ spelling-private-dict-file=
 # Tells whether to store unknown words to the private dictionary (see the
 # --spelling-private-dict-file option) instead of raising a message.
 spelling-store-unknown-words=no
-
-
-[STRING_QUOTES]
-
-# The quote character for triple-quoted docstrings.
-docstring-quote=double
-
-# The quote character for string literals.
-string-quote=double
-
-# The quote character for triple-quoted strings (non-docstring).
-triple-quote=double
 
 
 [DESIGN]
