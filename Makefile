@@ -127,11 +127,11 @@ build-package:
 
 publish-to-pypi:
 	# Publish package to PyPI.
-	uv publish --help
+	uv publish --index pypi
 
 publish-to-test-pypi:
 	# Publish package to Test-PyPI.
-	uv publish --help
+	uv publish --index test-pypi
 
 check-lock-file:
 	# Check if uv.lock is consistent with pyproject.toml file.
