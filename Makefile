@@ -64,7 +64,7 @@ ruff-format:
 
 pydocstyle:
 	# Check docstrings
-	python -m pydocstyle --verbose --explain --source --count $(SOURCE_FILES)
+	pydocstyle --verbose --explain --source --count $(SOURCE_FILES)
 
 ruff:
 	# Check code style with ruff.
