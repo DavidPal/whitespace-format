@@ -3,7 +3,7 @@ name: Publish to PyPi
 on:
   push:
     tags:
-      - made_up_0*
+      - *
 
 jobs:
   run:
@@ -39,7 +39,7 @@ jobs:
         run: make clean lint test coverage
 
       - name: Build
-        run: make build
+        run: make build-package
 
       - name: Smoke test (wheel)
         run: uv run --isolated --no-project --with dist/*.whl tests/test_whitespace_format.py
