@@ -4,13 +4,13 @@ version = "0.0.16"
 description = "Linter and formatter of whitespace in source code files and text files"
 authors = [{ name = "David Pal", email = "davidko.pal@gmail.com" }]
 readme = "README.md"
-license = { file = "LICENSE" }
-requires-python = ">=3.8.0"
+license = "MIT"
 classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
 ]
+requires-python = ">=3.8.0"
 
 [project.urls]
 Repository = "https://github.com/DavidPal/whitespace-format"
@@ -41,8 +41,13 @@ dev = [
 [project.scripts]
 whitespace-format = "whitespace_format:main"
 
-[tool.setuptools.packages.find]
-exclude = ["pytest_results/"]
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+ignore-vcs = true
+only-include = ["whitespace_format.py", "README.md", "LICENSE"]
 
 [tool.uv]
 package = true
