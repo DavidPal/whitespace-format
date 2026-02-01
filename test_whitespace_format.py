@@ -68,11 +68,17 @@ class TestWhitespaceFormat(unittest.TestCase):
     def test_find_all_files_recursively(self) -> None:
         """Tests find_all_files_recursively() function."""
         self.assertEqual(
-            [".github/workflows/build.yaml"],
+            [
+                ".github/workflows/build.yaml",
+                ".github/workflows/publish-to-pypi.yaml.yml",
+            ],
             whitespace_format.find_all_files_recursively(".github", False),
         )
         self.assertEqual(
-            [".github/workflows/build.yaml"],
+            [
+                ".github/workflows/build.yaml",
+                ".github/workflows/publish-to-pypi.yaml.yml",
+            ],
             whitespace_format.find_all_files_recursively(".github/", True),
         )
         self.assertEqual(
