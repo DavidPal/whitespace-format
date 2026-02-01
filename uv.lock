@@ -1061,7 +1061,7 @@ wheels = [
 [[package]]
 name = "whitespace-format"
 version = "0.0.16"
-source = { virtual = "." }
+source = { editable = "." }
 
 [package.dev-dependencies]
 dev = [
