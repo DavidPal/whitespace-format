@@ -3,7 +3,7 @@ name: Publish to Test PyPi
 on:
   push:
     tags:
-      - made_up_0*
+      - 0*
 
 jobs:
   run:
@@ -27,15 +27,16 @@ jobs:
           activate-environment: "true"
 
       - name: Print Python version
-        run: |
-          python --version
+        run: python --version
+
+      - name: Check lock file consistency
+        run: make check-lock-file
 
       - name: Install the project dependencies
-        run: uv sync --locked --all-extras --dev
+        run: make install-dependencies
 
       - name: Lint and test code
-        run: |
-          make clean check-lock-file lint test coverage
+        run: make clean lint test coverage
 
       - name: Build
         run: make build

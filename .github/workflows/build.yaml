@@ -35,13 +35,15 @@ jobs:
           activate-environment: "true"
 
       - name: Print Python version
-        run: |
-          python --version
+        run: python --version
+
+      - name: Check lock file consistency
+        run: make check-lock-file
 
       - name: Install the project dependencies
-        run: uv sync --locked --all-extras --dev
+        run: make install-dependencies
 
       - name: Lint and test code
-        run: make clean check-lock-file lint test coverage
+        run: make clean lint test coverage
 
       - run: echo "This job's status is ${{ job.status }}."
