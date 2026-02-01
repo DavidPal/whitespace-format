@@ -119,7 +119,7 @@ delete-environment:
 
 install-dependencies:
 	# Install all dependencies.
-	uv sync --frozen
+	uv sync --locked --all-extras --dev
 
 build-package:
 	# Build a wheel package.

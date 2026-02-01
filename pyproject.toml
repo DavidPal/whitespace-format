@@ -44,6 +44,18 @@ whitespace-format = "whitespace_format:main"
 [tool.setuptools.packages.find]
 exclude = ["pytest_results/"]
 
+[[tool.uv.index]]
+name = "test-pypi"
+url = "https://test.pypi.org/simple/"
+publish-url = "https://upload.pypi.org/legacy/"
+explicit = true
+
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple/"
+publish-url = "https://test.pypi.org/legacy/"
+explicit = true
+
 [tool.black]
 line-length = 100
 skip-string-normalization = true

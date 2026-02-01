@@ -1,4 +1,4 @@
-name: publish-to-pypi.yaml
+name: Publish to Test PyPi
 
 on:
   push:
@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     environment:
-      name: pypi
+      name: test-pypi
 
     permissions:
       id-token: write
@@ -27,20 +27,20 @@ jobs:
           activate-environment: "true"
 
       - name: Print Python version
-        run: |
-          python --version
+        run: python --version
 
-      - name: Install the project
-        run: uv sync --locked --all-extras --dev
+      - name: Check lock file consistency
+        run: make check-lock-file
+
+      - name: Install the project dependencies
+        run: make install-dependencies
 
       - name: Lint and test code
-        run: |
-          make clean check-lock-file lint test coverage
+        run: make clean lint test coverage
 
       - name: Build
         run: make build
 
-      # Check that basic features work and we didn't miss to include crucial files
       - name: Smoke test (wheel)
         run: uv run --isolated --no-project --with dist/*.whl tests/test_whitespace_format.py
 
@@ -48,4 +48,4 @@ jobs:
         run: uv run --isolated --no-project --with dist/*.tar.gz tests/test_whitespace_format.py
 
       - name: Publish
-        run: uv publish
+        run: uv publish --index test-pypi

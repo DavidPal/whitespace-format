@@ -70,14 +70,16 @@ class TestWhitespaceFormat(unittest.TestCase):
         self.assertEqual(
             [
                 ".github/workflows/build.yaml",
-                ".github/workflows/publish-to-pypi.yaml.yml",
+                ".github/workflows/publish-to-pypi.yaml",
+                ".github/workflows/publish-to-test-pypi.yaml",
             ],
             whitespace_format.find_all_files_recursively(".github", False),
         )
         self.assertEqual(
             [
                 ".github/workflows/build.yaml",
-                ".github/workflows/publish-to-pypi.yaml.yml",
+                ".github/workflows/publish-to-pypi.yaml",
+                ".github/workflows/publish-to-test-pypi.yaml",
             ],
             whitespace_format.find_all_files_recursively(".github/", True),
         )

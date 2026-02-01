@@ -1,0 +1,51 @@
+name: Publish to PyPi
+
+on:
+  push:
+    tags:
+      - made_up_0*
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    environment:
+      name: pypi
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+          activate-environment: "true"
+
+      - name: Print Python version
+        run: python --version
+
+      - name: Check lock file consistency
+        run: make check-lock-file
+
+      - name: Install the project dependencies
+        run: make install-dependencies
+
+      - name: Lint and test code
+        run: make clean lint test coverage
+
+      - name: Build
+        run: make build
+
+      - name: Smoke test (wheel)
+        run: uv run --isolated --no-project --with dist/*.whl tests/test_whitespace_format.py
+
+      - name: Smoke test (source distribution)
+        run: uv run --isolated --no-project --with dist/*.tar.gz tests/test_whitespace_format.py
+
+      - name: Publish
+        run: uv publish --index pypi
