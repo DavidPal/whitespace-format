@@ -1,5 +1,5 @@
 SOURCE_FILES = *.py
-NON_TEXT_FILES_REGEX = "\.pyc$$|\.git/|\.idea/|^\.venv/|^test_data/|^\.coverage$$|^\.mypy_cache/|^.pytest_cache/|^.ruff_cache/"
+NON_TEXT_FILES_REGEX = "\.pyc$$|\.git/|\.idea/|^\.venv/|^test_data/|^\.coverage$$|^\.mypy_cache/|^.pytest_cache/|^.ruff_cache/|^pytest_results/"
 
 .PHONY: \
 	whitespace-format-check \
