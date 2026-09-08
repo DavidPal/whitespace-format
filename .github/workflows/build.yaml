@@ -5,6 +5,14 @@ on:
   pull_request:
   push:
 
+  # Runs at 2am UTC.
+  # That is 6pm Pacific Standard Time (observed in winter) / 7pm Pacific Daylight Time (observed in summer).
+  schedule:
+    - cron: "0 2 * * *"
+
+  # Allows to manually trigger the workflow anytime from the Actions tab.
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
